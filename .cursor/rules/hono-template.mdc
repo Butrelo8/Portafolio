@@ -1,0 +1,44 @@
+---
+description: This project uses the hono-template stack; apply its conventions and patterns.
+alwaysApply: true
+---
+
+# hono-template
+
+This project was created from **hono-template**. Use these conventions so rules and skills apply correctly.
+
+## Stack
+
+- **Runtime:** Bun
+- **Framework:** Hono
+- **Database:** PostgreSQL + Drizzle ORM
+- **Auth:** Clerk
+- **Payments:** Stripe
+
+## Conventions
+
+### API responses
+
+- Use `errorResponse(c, status, code, message)` from `src/lib/errors` for errors — never raw `c.json({ error: ... })`.
+- Use `successResponse(c, data, status?)` for success payloads.
+- Throw `AppError` from `src/middleware/error` for known app errors so the global handler can format them.
+
+### Routes
+
+- Mount route groups under `src/routes/` and register them in `src/routes/index.ts` under `/api`.
+- Protect routes with `authMiddleware` from `src/middleware/auth`; verify Clerk/JWT in that middleware.
+
+### Database
+
+- Define tables in `src/db/schema.ts` with Drizzle; run `bun db:generate` then `bun db:migrate` for changes.
+- Use `db` from `src/db/index.ts`; do not create new postgres connections elsewhere.
+
+### Stripe
+
+- Use `stripe` and `verifyWebhookSignature` from `src/lib/stripe`. Always verify webhook signatures before processing.
+
+### Structure
+
+- Keep route handlers thin; put business logic in `src/lib/` or dedicated modules.
+- Shared types live in `src/types/index.ts`.
+- Document notable decisions in DECISIONS.md and user-visible changes in CHANGELOG.md.

@@ -1,0 +1,11 @@
+---
+description: TypeScript and Hono patterns for hono-template
+globs: "**/*.ts"
+alwaysApply: false
+---
+
+# hono-template — TypeScript
+
+- Use strict TypeScript; follow existing `tsconfig.json` (noUncheckedIndexedAccess, exactOptionalPropertyTypes).
+- Prefer `import type` for types. Use `Env` from `src/types` for Hono context variables (e.g. `user`).
+- In route handlers, use the shared response helpers and avoid leaking stack traces or internal errors in production.
