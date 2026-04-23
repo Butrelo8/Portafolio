@@ -10,35 +10,84 @@ This project was created from **hono-template**. Use these conventions so rules 
 ## Stack
 
 - **Runtime:** Bun
-- **Framework:** Hono
-- **Database:** PostgreSQL + Drizzle ORM
-- **Auth:** Clerk
-- **Payments:** Stripe
+- **Framework:** Hono 4
+- **Database:** libsql / bun:sqlite + Drizzle ORM (driver auto-selected from `DATABASE_URL` prefix: `file:` → bun:sqlite, `libsql:`/`https:` → @libsql/client)
+- **Auth:** Clerk — API-only JWT verify via `@clerk/backend`
+- **Email:** Resend (configured via `RESEND_API_KEY` — no email routes exist yet)
+- **Validation:** Zod with `validate()` middleware from `src/middleware/validate.ts`
 
 ## Conventions
 
-### API responses
+### Errors
 
-- Use `errorResponse(c, status, code, message)` from `src/lib/errors` for errors — never raw `c.json({ error: ... })`.
-- Use `successResponse(c, data, status?)` for success payloads.
-- Throw `AppError` from `src/middleware/error` for known app errors so the global handler can format them.
+- Import `AppError` from `src/lib/errors.ts` (NOT from `src/middleware/error`).
+- **Throw** `new AppError(code, message, httpStatus)` from route handlers for known errors. The global `errorHandler` in `src/middleware/error.ts` catches it and formats the JSON envelope automatically.
+- Never call `c.json({ error: … })` directly for error cases.
+- Valid error codes (`ErrorCode` union in `src/lib/errors.ts`): `BAD_REQUEST`, `UNAUTHORIZED`, `FORBIDDEN`, `NOT_FOUND`, `CONFLICT`, `PAYLOAD_TOO_LARGE`, `RATE_LIMITED`, `VALIDATION`, `INTERNAL`.
+
+```typescript
+// CORRECT
+import { AppError } from '../lib/errors';
+if (!row) throw new AppError('NOT_FOUND', 'Item not found', 404);
+
+// WRONG — never do this
+return c.json({ error: 'not found' }, 404);
+```
+
+### Auth
+
+- Auth is injected as `AuthOptions` (from `src/middleware/auth.ts`) into route factory functions.
+- Protect a route group with `app.use('*', requireAuth(auth))`.
+- After the middleware runs, read `c.get('userId')` and `c.get('sessionId')` — typed via `src/types/hono.d.ts`.
+
+```typescript
+import { requireAuth, type AuthOptions } from '../middleware/auth';
+
+export function myRoute(auth: AuthOptions): Hono {
+  const app = new Hono();
+  app.use('*', requireAuth(auth));
+  // c.get('userId') available in all handlers below
+  return app;
+}
+```
+
+### Validation
+
+- Use `validate({ json, query, params })` from `src/middleware/validate.ts` with Zod schemas.
+- Read validated data via `c.get('validated').json`, `.query`, `.params`.
+
+```typescript
+import { validate } from '../middleware/validate';
+import { z } from 'zod';
+
+const createSchema = z.object({ name: z.string().min(1).max(200) });
+
+app.post('/', validate({ json: createSchema }), async (c) => {
+  const body = c.get('validated').json as z.infer<typeof createSchema>;
+});
+```
 
 ### Routes
 
-- Mount route groups under `src/routes/` and register them in `src/routes/index.ts` under `/api`.
-- Protect routes with `authMiddleware` from `src/middleware/auth`; verify Clerk/JWT in that middleware.
+- Add route files under `src/routes/` and register in `src/routes/index.ts` via `app.route('/path', myRoute(auth))`.
+- Routes mount at `/` (no extra API path segment before resources). Existing routes: `/health`, `/items`.
+- Keep handlers thin — business logic belongs in `src/lib/`.
 
 ### Database
 
-- Define tables in `src/db/schema.ts` with Drizzle; run `bun db:generate` then `bun db:migrate` for changes.
-- Use `db` from `src/db/index.ts`; do not create new postgres connections elsewhere.
+- Import `db` from `src/db/index.ts`. Never create new connections elsewhere.
+- Define tables in `src/db/schema.ts` using SQLite Drizzle helpers (`sqliteTable`, `text`, `integer`).
+- Use `crypto.randomUUID()` via `$defaultFn` for primary key `id` fields.
+- After schema changes: `bun run db:generate` → review generated SQL → `bun run db:migrate`.
 
-### Stripe
+### Environment
 
-- Use `stripe` and `verifyWebhookSignature` from `src/lib/stripe`. Always verify webhook signatures before processing.
+- Only `src/env.ts` reads `process.env`. Import `env` from there everywhere else — never `process.env` in handlers.
+- Required vars: `DATABASE_URL`, `CLERK_SECRET_KEY`, `CLERK_PUBLISHABLE_KEY`, `ALLOWED_ORIGINS`, `RESEND_API_KEY`.
+- Optional vars: `PORT`, `NODE_ENV`, `LOG_LEVEL`, `DATABASE_AUTH_TOKEN`, `RATE_LIMIT_MAX`, `RATE_LIMIT_WINDOW_MS`.
 
-### Structure
+### Types
 
-- Keep route handlers thin; put business logic in `src/lib/` or dedicated modules.
-- Shared types live in `src/types/index.ts`.
-- Document notable decisions in DECISIONS.md and user-visible changes in CHANGELOG.md.
+- Context variable types are declared via module augmentation in `src/types/hono.d.ts`. Add new context vars there.
+- Use `z.infer<typeof schema>` for Zod-derived types.
+- Use Drizzle's `$inferSelect` / `$inferInsert` for DB row types (see `src/db/schema.ts`).
