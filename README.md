@@ -44,7 +44,9 @@ All errors return `{ error: { code, message, status, details? } }`. Throw `AppEr
 Zod factory: `validate({ json?, query?, params? })`. Parsed data at `c.get('validated')`. Zod errors auto-return 400 with `details`.
 
 ### Rate Limiting (`src/middleware/rateLimitFactory.ts`, `rateLimitHealth.ts`)
-In-memory fixed-window. Global reads `RATE_LIMIT_MAX` + `RATE_LIMIT_WINDOW_MS`. Health has stricter per-IP limiter. Cleanup interval `unref()`'d so won't block shutdown. For distributed, swap `Map` for Redis.
+In-memory fixed-window per **process** (buckets live in a `Map` — no shared store). Global reads `RATE_LIMIT_MAX` + `RATE_LIMIT_WINDOW_MS`. Health has a stricter per-IP limiter. Cleanup interval `unref()`'d so it will not block shutdown.
+
+**Multi-instance:** Horizontal scale (Railway, Fly.io, k8s replicas) gives each API process its own counters, so clients can send roughly `max × replica_count` requests per window unless you add a shared limiter (Redis, KV, gateway). See `TODOS.md` for a future adapter task.
 
 ### Security Headers (`src/middleware/security.ts`)
 `hono/secure-headers` with CSP, HSTS, X-Frame-Options=DENY, X-Content-Type-Options=nosniff, strict Referrer-Policy. Tune CSP when adding CDNs/analytics.

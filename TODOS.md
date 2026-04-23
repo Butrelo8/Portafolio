@@ -22,20 +22,18 @@ _Context pass:_ `CLAUDE.md` ~73 lines — OK. No in-repo MCP. Stale rule + MCP +
 
 ## Security Advisories (from /cso audit 2026-04-23)
 
-### ~~Make RESEND_API_KEY optional~~ **Done (2026-04-23)**
 
-**Outcome:** `src/env.ts` — optional via preprocess (empty → unset); JSDoc when required. `.env.example`, `CLAUDE.md`, `.cursor/rules/hono-template.mdc`, tests/preload + `tests/env.test.ts` updated.
+---
 
-### Document rate limit is single-process only
+### Shared rate limit store (Redis / KV) — future
 
-**What:** Add clear note to README / CLAUDE.md that rate limit is in-memory per-process.
-**Why:** Multi-instance deploys (Railway, Fly.io horizontal scale) defeat rate limiting silently.
-**Context:** `src/middleware/rateLimitFactory.ts` — `Map<string, Bucket>` in-process, no shared store.
-**Solution:** Add warning to CLAUDE.md + `.env.example`. Future: add Redis/KV adapter when needed.
-**Done When:** Limitation documented; optional future task for Redis adapter created.
-**Effort:** S
-**Priority:** P2
-**Depends on:** None
+**What:** Optional backend so counters are shared across API replicas (Redis, Upstash, Cloudflare KV, etc.).
+**Why:** `src/middleware/rateLimitFactory.ts` is single-process only; horizontal scale multiplies effective client budget until a shared store or edge limiter exists.
+**Solution:** Pluggable store interface; keep in-memory default for single-instance templates.
+**Done When:** Adapter + docs; tests for at least one backend or contract tests for interface.
+**Effort:** M
+**Priority:** P4
+**Depends on:** Multi-instance production or compliance need for strict global limits
 
 ### Audit CORS credentials:true vs bearer-only auth
 
@@ -73,6 +71,12 @@ _Context pass:_ `CLAUDE.md` ~73 lines — OK. No in-repo MCP. Stale rule + MCP +
 ---
 
 ## Completed
+
+### ~~Make RESEND_API_KEY optional~~ **Done (2026-04-23)**
+**Outcome:** `src/env.ts` — optional via preprocess (empty → unset); JSDoc when required. `.env.example`, `CLAUDE.md`, `.cursor/rules/hono-template.mdc`, tests/preload + `tests/env.test.ts` updated.
+
+### ~~Document rate limit is single-process only~~ **Done (2026-04-23)**
+**Outcome:** README + `CLAUDE.md` + `.env.example` document in-process `Map` limits and multi-instance caveat. Env vars line in CLAUDE points at **Rate limits** section.
 
 ### Align `.cursor/rules/hono-template.mdc` with repo (2026-4-23)
 **What:** Rewrite project Cursor rule so stack + API patterns match real code and `CLAUDE.md`.

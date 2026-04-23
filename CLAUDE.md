@@ -63,6 +63,8 @@ cd web && bun run typecheck
 
 **Validation.** Use `validate({ json, query, params })`; read `c.get('validated')`. Typed via `ContextVariableMap`.
 
+**Rate limits.** `createRateLimit` (`src/middleware/rateLimitFactory.ts`) stores buckets in a process-local `Map`. Limits are **not shared across instances**: with horizontal scale (Fly.io, Railway, k8s replicas), each process applies its own counter, so a client’s effective budget is roughly `max × replica_count` unless you add a shared store (Redis, KV, edge gateway). Single-instance deploys behave as intended.
+
 **Shutdown.** `createShutdownManager()` in `src/index.ts`: register `globalLimiter.dispose`, `healthLimiter.dispose`, `closeDb`, then `attachSignals()`; after `Bun.serve`, register `server.stop()`.
 
 **Tests.** `bunfig.toml` sets `root = "tests"` and preloads `tests/preload.ts` so only `tests/**/`* runs under Bun and `items` tests get a clean SQLite file DB before `src/db` loads. Do not remove without replacing isolation strategy.
@@ -80,6 +82,6 @@ cd web && bun run typecheck
 
 Required (see `.env.example`): `DATABASE_URL`, `CLERK_SECRET_KEY`, `CLERK_PUBLISHABLE_KEY`, `ALLOWED_ORIGINS`.
 
-Common optional: `PORT`, `NODE_ENV`, `LOG_LEVEL`, `DATABASE_AUTH_TOKEN`, `RATE_LIMIT_MAX`, `RATE_LIMIT_WINDOW_MS`, `RESEND_API_KEY` (required when adding Resend email routes).
+Common optional: `PORT`, `NODE_ENV`, `LOG_LEVEL`, `DATABASE_AUTH_TOKEN`, `RATE_LIMIT_MAX`, `RATE_LIMIT_WINDOW_MS` (see **Rate limits** — in-process only), `RESEND_API_KEY` (required when adding Resend email routes).
 
 Web: `PUBLIC_API_URL` in `web/.env` (see `web/.env.example`).
