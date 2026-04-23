@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import { normalizeOrigins, isOriginAllowed } from '../src/lib/allowedOrigins';
+import { isOriginAllowed, normalizeOrigins } from '../src/lib/allowedOrigins';
 import { buildCorsConfig } from '../src/lib/corsOrigins';
 
 describe('normalizeOrigins', () => {
@@ -26,5 +26,10 @@ describe('buildCorsConfig', () => {
     const cfg = buildCorsConfig(['https://example.com']);
     expect(cfg.origin('https://example.com')).toBe('https://example.com');
     expect(cfg.origin('https://evil.com')).toBe(null);
+  });
+
+  it('does not use credentialed CORS (Bearer-only API)', () => {
+    const cfg = buildCorsConfig(['https://example.com']);
+    expect(cfg.credentials).toBe(false);
   });
 });

@@ -32,7 +32,7 @@ cd web && bun install && cp .env.example .env && bun run dev   # Web on :4321
 Zod-validated env loader. Fails fast at boot with precise error listing every missing/invalid variable. Add new vars to schema in `src/env.ts` and document in `.env.example`.
 
 ### CORS (`src/lib/corsOrigins.ts`, `src/lib/allowedOrigins.ts`)
-Env-driven allowlist via `ALLOWED_ORIGINS` (comma-separated). Auto-normalizes www↔apex pairs. Feeds both Hono `cors()` and Clerk `authorizedParties`.
+Env-driven allowlist via `ALLOWED_ORIGINS` (comma-separated). Auto-normalizes www↔apex pairs. Feeds both Hono `cors()` and Clerk `authorizedParties`. **`credentials: false`** — API auth is Bearer JWT (`Authorization`), not cookies; flip to `true` only if you add cookie sessions cross-origin and handle CSRF.
 
 ### Auth (`src/middleware/auth.ts`)
 Clerk JWT verification via `@clerk/backend`. `requireAuth({ verify })` injects `userId` + `sessionId` into Hono context. Uses `CLERK_SECRET_KEY` and CORS allowlist as `authorizedParties`.

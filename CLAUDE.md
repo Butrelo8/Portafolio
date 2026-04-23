@@ -49,7 +49,7 @@ cd web && bun run typecheck
 3. `requestLogger` — request id + JSON access log
 4. Global rate limit (`RATE_LIMIT_MAX` / `RATE_LIMIT_WINDOW_MS`, `clientIp`)
 5. Health-only rate limit — path prefix `/health`
-6. `cors(buildCorsConfig(env.ALLOWED_ORIGINS))`
+6. `cors(buildCorsConfig(env.ALLOWED_ORIGINS))` — allowlist + `Authorization`; **`credentials: false`** (Bearer JWT only; avoids `Allow-Credentials` until cookie cross-origin auth exists with CSRF).
 7. `bodyLimit()`
 8. `app.route('/', mountRoutes(auth))` — `/health`, `/items`, …
 

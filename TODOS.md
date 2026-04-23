@@ -35,16 +35,9 @@ _Context pass:_ `CLAUDE.md` ~73 lines — OK. No in-repo MCP. Stale rule + MCP +
 **Priority:** P4
 **Depends on:** Multi-instance production or compliance need for strict global limits
 
-### Audit CORS credentials:true vs bearer-only auth
+### ~~Audit CORS credentials:true vs bearer-only auth~~ **Done (2026-04-23)**
 
-**What:** Evaluate whether `credentials: true` is needed given auth is bearer JWT, not cookies.
-**Why:** `credentials: true` widens future attack surface if cookie auth is ever added without CSRF protection.
-**Context:** `src/lib/corsOrigins.ts:17`. All auth via `Authorization: Bearer` header — cookies unused.
-**Solution:** Flip to `credentials: false` unless a use-case for cookie auth exists. Document decision.
-**Done When:** Decision documented; either flipped or explicit rationale for keeping it written in CLAUDE.md.
-**Effort:** S
-**Priority:** P2
-**Depends on:** None
+**Outcome:** `buildCorsConfig` sets `credentials: false` (was `true`). Rationale in JSDoc on `src/lib/corsOrigins.ts`; Architecture + README CORS bullets; `tests/origins.test.ts` asserts false.
 
 ### Add minimal CI workflow
 
