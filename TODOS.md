@@ -14,16 +14,9 @@ _Context pass:_ `CLAUDE.md` ~73 lines — OK. No in-repo MCP. Stale rule + MCP +
 
 ## Database
 
-### Run initial migration
+### ~~Run initial migration~~ **Done (2026-04-23)**
 
-**What:** Generate and run the first Drizzle migration
-**Why:** Database schema needs to exist before any data can be stored
-**Context:** Schema is defined in `src/db/schema.ts`. Run `bun run db:generate` then `bun run db:migrate`
-**Solution:** From repo root: `bun run db:generate`, review migration SQL, then `bun run db:migrate`. Confirm `DATABASE_URL` matches target DB.
-**Done When:** Migration files exist under `drizzle/` (or project convention); migrate applies cleanly; app starts without DB connection errors.
-**Effort:** S
-**Priority:** P0
-**Depends on:** `DATABASE_URL` configured in `.env`
+**Outcome:** First migration `src/db/migrations/0000_*.sql` + `meta/` from `bun run db:generate` (drizzle-kit **generate:sqlite** — v0.20 has no plain `generate`). `bun run db:migrate` runs `scripts/run-migrations.ts` (bun-sqlite + libsql, matches `src/db/detect.ts`). `package.json` scripts fixed. Applied to DB from `.env` (`items` + `__drizzle_migrations` present).
 
 ---
 
