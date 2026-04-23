@@ -1,29 +1,12 @@
 # TODOS
 
-## Current plan (WIP)
+Track open work and completed items. See `CLAUDE.md` for stack and conventions.
 
 _Context pass:_ `CLAUDE.md` ~73 lines — OK. No in-repo MCP. Stale rule + MCP + harness skill list = main leverage; repo text alone ~few hundred tokens if rules tightened.
 
-
-
-### ~~Trim harness skills (ECC / agent-sort)~~ **Done (2026-04-23)**
-
-**Outcome:** No in-tree `.claude/skills` / commands / hooks — ECC bundle not vendored here (**Depends on** satisfied: skip in-repo trim; global list is operator concern). Ran agent-sort-style pass → `docs/ecc-harness-skill-trim.md` (STACK, DAILY/LIBRARY for this repo + global checklist).
-
 ---
 
-## Database
-
-### ~~Run initial migration~~ **Done (2026-04-23)**
-
-**Outcome:** First migration `src/db/migrations/0000_*.sql` + `meta/` from `bun run db:generate` (drizzle-kit **generate:sqlite** — v0.20 has no plain `generate`). `bun run db:migrate` runs `scripts/run-migrations.ts` (bun-sqlite + libsql, matches `src/db/detect.ts`). `package.json` scripts fixed. Applied to DB from `.env` (`items` + `__drizzle_migrations` present).
-
----
-
-## Security Advisories (from /cso audit 2026-04-23)
-
-
----
+## Open
 
 ### Shared rate limit store (Redis / KV) — future
 
@@ -34,21 +17,6 @@ _Context pass:_ `CLAUDE.md` ~73 lines — OK. No in-repo MCP. Stale rule + MCP +
 **Effort:** M
 **Priority:** P4
 **Depends on:** Multi-instance production or compliance need for strict global limits
-
-### ~~Audit CORS credentials:true vs bearer-only auth~~ **Done (2026-04-23)**
-
-**Outcome:** `buildCorsConfig` sets `credentials: false` (was `true`). Rationale in JSDoc on `src/lib/corsOrigins.ts`; Architecture + README CORS bullets; `tests/origins.test.ts` asserts false.
-
-### Add minimal CI workflow
-
-**What:** Add `.github/workflows/ci.yml` running lint + tests on push/PR.
-**Why:** Template ships with no CI; consumers copy it and have no automated checks.
-**Context:** No `.github/` directory exists. Commands: `bun run lint && bun test`.
-**Solution:** Create workflow with SHA-pinned `actions/checkout` + `oven-sh/setup-bun`. Run lint, typecheck, tests.
-**Done When:** PR + push triggers green CI; actions pinned to SHA (not tag).
-**Effort:** S
-**Priority:** P2
-**Depends on:** None
 
 ### Server-side request ID alongside client-supplied one
 
@@ -65,15 +33,49 @@ _Context pass:_ `CLAUDE.md` ~73 lines — OK. No in-repo MCP. Stale rule + MCP +
 
 ## Completed
 
-### ~~Make RESEND_API_KEY optional~~ **Done (2026-04-23)**
-**Outcome:** `src/env.ts` — optional via preprocess (empty → unset); JSDoc when required. `.env.example`, `CLAUDE.md`, `.cursor/rules/hono-template.mdc`, tests/preload + `tests/env.test.ts` updated.
+### Add minimal CI workflow (2026-04-23)
 
-### ~~Document rate limit is single-process only~~ **Done (2026-04-23)**
-**Outcome:** README + `CLAUDE.md` + `.env.example` document in-process `Map` limits and multi-instance caveat. Env vars line in CLAUDE points at **Rate limits** section.
+- **Outcome:** `.github/workflows/ci.yml` runs on `push` / `pull_request` to `main` and `master`: `bun install --frozen-lockfile`, `bun run lint`, `bun run typecheck`, `bun test` (unit/integration only; no Playwright).
+- **Actions:** SHA-pinned `actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683` (v4.2.2) and `oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6` (v2.2.0); Bun `1.3` via `setup-bun`.
+- **Concurrency:** Same-branch runs cancel superseded jobs.
 
-### Align `.cursor/rules/hono-template.mdc` with repo (2026-4-23)
-**What:** Rewrite project Cursor rule so stack + API patterns match real code and `CLAUDE.md`.
-**Done When:** Rule describes same stack as `CLAUDE.md`; examples cite real symbols only; no stale `errorResponse` / `authMiddleware` unless code adds them.
+### Trim harness skills (ECC / agent-sort) (2026-04-23)
 
-### ~~Cursor MCP audit (global config)~~ **Done (2026-04-23)**
-**Outcome:** `github` MCP removed from `~/.cursor/mcp.json` (overlaps `gh`/Shell; heavy tool schema). **Kept:** context7, sequential-thinking, playwright, code-review-graph — rationale + token notes in `docs/cursor-mcp-audit.md`. **Security:** rotate GitHub PAT if it was ever stored in that file or exposed.
+- **Outcome:** No in-tree `.claude/skills` / commands / hooks — ECC bundle not vendored here (**Depends on** satisfied: skip in-repo trim; global list is operator concern).
+- **Docs:** Agent-sort-style pass recorded in `docs/ecc-harness-skill-trim.md` (STACK, DAILY/LIBRARY for this repo + global checklist).
+
+### Run initial Drizzle migration (2026-04-23)
+
+- **Outcome:** First migration `src/db/migrations/0000_*.sql` + `meta/` from `bun run db:generate` (drizzle-kit **generate:sqlite** — v0.20 has no plain `generate`).
+- **Tooling:** `bun run db:migrate` runs `scripts/run-migrations.ts` (bun-sqlite + libsql, matches `src/db/detect.ts`); `package.json` scripts aligned.
+- **Verify:** Applied to DB from `.env` — `items` + `__drizzle_migrations` present.
+
+### Audit CORS `credentials` vs bearer-only auth (2026-04-23)
+
+- **Outcome:** `buildCorsConfig` sets `credentials: false` (was `true`); Bearer JWT via `Authorization` only; `web/src/lib/api.ts` does not use credentialed fetch.
+- **Code:** JSDoc on `src/lib/corsOrigins.ts`; `tests/origins.test.ts` asserts `credentials === false`.
+- **Docs:** `CLAUDE.md` middleware order + README CORS subsection.
+
+### Make `RESEND_API_KEY` optional (2026-04-23)
+
+- **Outcome:** `src/env.ts` — optional via preprocess (empty → unset); JSDoc when required for email routes.
+- **Docs / config:** `.env.example`, `CLAUDE.md`, `.cursor/rules/hono-template.mdc`.
+- **Tests:** `tests/preload.ts`, `tests/env.test.ts` updated.
+
+### Document rate limit is single-process only (2026-04-23)
+
+- **Outcome:** README + `CLAUDE.md` + `.env.example` document in-process `Map` limits and multi-instance caveat.
+- **Docs:** Env vars line in `CLAUDE.md` points at **Rate limits** section; `.cursor/rules/hono-template.mdc` optional-vars note.
+
+### Align `.cursor/rules/hono-template.mdc` with repo (2026-04-23)
+
+- **Outcome:** Rule describes same stack as `CLAUDE.md`; examples cite real symbols (`AppError`, `requireAuth`, `validate`, routes, sqlite/libsql).
+- **Done when met:** No stale `errorResponse` / `authMiddleware` unless code adds them.
+
+### Cursor MCP audit — global config (2026-04-23)
+
+- **Outcome:** `github` MCP removed from `~/.cursor/mcp.json` (overlaps `gh`/Shell; heavy tool schema).
+- **Kept:** context7, sequential-thinking, playwright, code-review-graph — rationale + token notes in `docs/cursor-mcp-audit.md`.
+- **Security:** Rotate GitHub PAT if it was ever stored in that file or exposed.
+
+---
