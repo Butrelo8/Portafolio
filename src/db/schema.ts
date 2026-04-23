@@ -1,13 +1,20 @@
-import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { sql } from 'drizzle-orm';
+import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
-export const users = pgTable('users', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  clerkId: text('clerk_id').notNull().unique(),
-  email: text('email').notNull().unique(),
-  name: text('name'),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
-})
+export const items = sqliteTable('items', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  ownerId: text('owner_id').notNull(),
+  name: text('name').notNull(),
+  description: text('description'),
+  createdAt: integer('created_at', { mode: 'timestamp_ms' })
+    .notNull()
+    .default(sql`(unixepoch() * 1000)`),
+  updatedAt: integer('updated_at', { mode: 'timestamp_ms' })
+    .notNull()
+    .default(sql`(unixepoch() * 1000)`),
+});
 
-// Add more tables here following the same pattern
-// export const subscriptions = pgTable('subscriptions', { ... })
+export type Item = typeof items.$inferSelect;
+export type NewItem = typeof items.$inferInsert;

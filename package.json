@@ -2,23 +2,33 @@
   "name": "hono-template",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "bun run --watch src/index.ts",
+    "dev": "bun run --hot src/index.ts",
     "start": "bun run src/index.ts",
-    "build": "bun build src/index.ts --outdir dist",
+    "build": "bun build src/index.ts --outdir dist --target bun",
     "test": "bun test",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
+    "test:e2e": "playwright test --config e2e/playwright.config.ts",
+    "lint": "biome check src tests scripts drizzle.config.ts web",
+    "lint:fix": "biome check --write src tests scripts drizzle.config.ts web",
+    "format": "biome format --write src tests scripts drizzle.config.ts web",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate:sqlite",
+    "db:migrate": "bun run scripts/run-migrations.ts",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "hono": "^4.0.0",
+    "@clerk/backend": "^3.2.0",
+    "@libsql/client": "^0.17.0",
     "drizzle-orm": "^0.30.0",
-    "postgres": "^3.4.0",
-    "stripe": "^14.0.0"
+    "resend": "^4.0.0",
+    "zod": "^3.23.0"
   },
   "devDependencies": {
-    "bun-types": "latest",
+    "@biomejs/biome": "^2.4.0",
+    "@playwright/test": "^1.45.0",
+    "@types/bun": "latest",
     "drizzle-kit": "^0.20.0",
     "typescript": "^5.0.0"
   }
