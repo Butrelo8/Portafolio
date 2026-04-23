@@ -1,73 +1,85 @@
-# CLAUDE.md
+# [CLAUDE.md](http://CLAUDE.md)
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for AI assistants working in this repository.
 
 ## Stack
 
-- **API:** Hono 4.0 + Bun (TS 5.0 strict)
-- **Web:** Astro 4.16 + Node SSR
-- **DB:** Drizzle 0.30 + libsql 0.17 (falls back to `bun:sqlite`)
-- **Auth:** @clerk/backend 3.2, @clerk/astro 3.0
-- **Email:** Resend 4.0
-- **Validation:** Zod 3.23
-- **Lint/Format:** Biome 2.4. **Test:** Bun + Playwright
+
+| Layer      | Choice                                                                   |
+| ---------- | ------------------------------------------------------------------------ |
+| API        | Hono 4 + Bun, TypeScript strict                                          |
+| Web        | Astro 4.16, Node SSR (`@astrojs/node` standalone)                        |
+| DB         | Drizzle 0.30 + `@libsql/client` or `bun:sqlite` (see `src/db/detect.ts`) |
+| Auth       | `@clerk/backend` — API-only JWT verify                                   |
+| Email      | Resend                                                                   |
+| Validation | Zod                                                                      |
+| API tests  | Bun test runner                                                          |
+| E2E        | Playwright (`e2e/playwright.config.ts`)                                  |
+| Lint       | Biome (API root; `web/` is separate)                                     |
+
 
 ## Commands
 
 ```bash
-bun run dev            # API hot reload on :3000
-bun run test           # Unit + integration
-bun run test:e2e       # Playwright
-bun run lint           # Biome check
-bun run lint:fix       # Biome autofix
-bun run typecheck      # tsc --noEmit
-bun run db:generate    # New Drizzle migration
-bun run db:migrate     # Apply migrations
-bun run db:studio      # Drizzle Studio
-cd web && bun run dev  # Astro on :4321
+bun run dev              # API :3000 (hot)
+bun run start            # API :3000
+bun run build            # API bundle → dist/
+bun test                 # API tests (bunfig preload → tests/preload.ts)
+bun run test:e2e         # Playwright — config e2e/playwright.config.ts
+bun run lint             # biome check src tests drizzle.config.ts web
+bun run lint:fix
+bun run typecheck        # tsc API + tests only (web/ excluded)
+bun run db:generate
+bun run db:migrate
+bun run db:studio
+cd web && bun run dev    # Astro :4321 — needs PUBLIC_API_URL
+cd web && bun run typecheck
 ```
 
 ## Architecture
 
-**Two-runtime split.** `src/` is the Hono API on Bun. `web/` is Astro SSR on Node. They are independent packages; the web app calls the API via `apiFetch()` in `web/src/lib/api.ts`.
+**Two packages.** Root = Hono API. `web/` = Astro. No workspace monorepo tool; install deps in each tree.
 
-**Middleware chain** (applied in `src/index.ts` — order matters):
-1. `errorHandler` (via `app.onError`) — catches `AppError` + `ZodError` + unknowns; returns `{error:{code,message,status}}`.
-2. `security` — secureHeaders (CSP/HSTS/XFO).
-3. `httpsRedirect` — production only, honors `X-Forwarded-Proto`.
-4. `requestLogger` — structured JSON logs, sets `x-request-id`.
-5. Global `rateLimitFactory` — fixed-window per-IP, env-configurable.
-6. `rateLimitHealth` — stricter per-IP cap on `/health`.
-7. `cors` — origin function built from `ALLOWED_ORIGINS` (www/apex normalized).
-8. `bodyLimit` — 100KB streaming cap.
-9. Routes (mounted via `mountRoutes()`); protected routes use `requireAuth` + `validate`.
+**Entry:** `src/index.ts` — `Bun.serve` + `mountRoutes()` from `src/routes/index.ts`.
 
-**Env.** `src/env.ts` is the only place to read `process.env`. Imports elsewhere use the exported `env` object. Zod validation fails fast at boot.
+**Middleware order** (after `app.onError(errorHandler)`):
 
-**DB.** `src/db/detect.ts` picks `libsql` vs `bun-sqlite` from `DATABASE_URL` (+ optional `DATABASE_AUTH_TOKEN`). `src/db/index.ts` exports `db` + `closeDb`. Schema in `src/db/schema.ts`.
+1. `security` — secure headers
+2. `httpsRedirect` — production only
+3. `requestLogger` — request id + JSON access log
+4. Global rate limit (`RATE_LIMIT_MAX` / `RATE_LIMIT_WINDOW_MS`, `clientIp`)
+5. Health-only rate limit — path prefix `/health`
+6. `cors(buildCorsConfig(env.ALLOWED_ORIGINS))`
+7. `bodyLimit()`
+8. `app.route('/', mountRoutes(auth))` — `/health`, `/items`, …
 
-**Errors.** Always throw `AppError(code, message, status)` from handlers. Never `c.json({error:...}, 500)` directly. Zod validation errors are auto-wrapped.
+**Env.** Only `src/env.ts` parses `process.env`; import `env` elsewhere. Never read raw `process.env` in route handlers.
 
-**Auth.** `requireAuth({ verify })` from `src/middleware/auth.ts`. `createClerkVerifier()` in the same file is the production implementation. Tests pass in a fake verifier.
+**DB.** `src/db/index.ts` exports `db` and `closeDb`. Driver from `DATABASE_URL` + optional `DATABASE_AUTH_TOKEN`. Migrations under Drizzle’s output path; schema in `src/db/schema.ts`.
 
-**Validation.** Always use `validate({ json, query, params })` — never parse inline in handlers. Parsed data is at `c.get('validated')`.
+**Errors.** Throw `AppError(code, message, status)` from handlers. `onError` maps `AppError`, `ZodError`, and unknowns to the standard JSON envelope.
 
-**Graceful shutdown.** Register teardown via the manager in `src/lib/gracefulShutdown.ts`. DB close + rate-limit `dispose()` + `Bun.serve` `stop()` are all registered in `src/index.ts`.
+**Auth.** `requireAuth(auth)` where `auth.verify` is `createClerkVerifier({ secretKey, authorizedParties })`. Context vars: `userId`, `sessionId` (see `src/types/hono.d.ts`).
+
+**Validation.** Use `validate({ json, query, params })`; read `c.get('validated')`. Typed via `ContextVariableMap`.
+
+**Shutdown.** `createShutdownManager()` in `src/index.ts`: register `globalLimiter.dispose`, `healthLimiter.dispose`, `closeDb`, then `attachSignals()`; after `Bun.serve`, register `server.stop()`.
+
+**Tests.** `bunfig.toml` sets `root = "tests"` and preloads `tests/preload.ts` so only `tests/**/`* runs under Bun and `items` tests get a clean SQLite file DB before `src/db` loads. Do not remove without replacing isolation strategy.
+
+**E2E.** `bun run test:e2e` runs `playwright test --config e2e/playwright.config.ts`. Default `baseURL` `http://localhost:4321` or `WEB_URL`. Web dev server must be up; set `web/.env` `PUBLIC_API_URL` to the API.
 
 ## Conventions
 
-- **Files:** kebab-case. **Exports:** camelCase. **Components:** PascalCase.
-- **Routes:** one file per domain under `src/routes/`, mounted in `src/routes/index.ts`.
-- **No shared types package yet** — duplicate types between `src/` and `web/` when needed; consolidate only when duplication hurts.
-- **All user-facing strings in English.**
+- **Files:** kebab-case where it fits the repo; **exports:** camelCase; **Astro components:** PascalCase.
+- **Routes:** `src/routes/*.ts`, composed in `src/routes/index.ts`.
+- **User-facing copy:** English.
+- **Types:** strict + `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitOverride`. Path `@/`* → `src/*` (API only).
 
-## Environment Variables
+## Environment variables
 
-Required: `DATABASE_URL`, `CLERK_SECRET_KEY`, `CLERK_PUBLISHABLE_KEY`, `ALLOWED_ORIGINS`, `RESEND_API_KEY`.
-Optional: `DATABASE_AUTH_TOKEN`, `PORT` (3000), `NODE_ENV` (development), `LOG_LEVEL` (info), `RATE_LIMIT_MAX` (60), `RATE_LIMIT_WINDOW_MS` (60000).
+Required (see `.env.example`): `DATABASE_URL`, `CLERK_SECRET_KEY`, `CLERK_PUBLISHABLE_KEY`, `ALLOWED_ORIGINS`.
 
-See `.env.example` for full list.
+Common optional: `PORT`, `NODE_ENV`, `LOG_LEVEL`, `DATABASE_AUTH_TOKEN`, `RATE_LIMIT_MAX`, `RATE_LIMIT_WINDOW_MS`, `RESEND_API_KEY` (required when adding Resend email routes).
 
-## TypeScript
-
-Strict mode + `noUncheckedIndexedAccess` + `exactOptionalPropertyTypes` + `noImplicitOverride`. Path alias `@/*` → `src/*`. Hono context augmented in `src/types/hono.d.ts`.
+Web: `PUBLIC_API_URL` in `web/.env` (see `web/.env.example`).

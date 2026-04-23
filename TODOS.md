@@ -22,16 +22,9 @@ _Context pass:_ `CLAUDE.md` ~73 lines — OK. No in-repo MCP. Stale rule + MCP +
 
 ## Security Advisories (from /cso audit 2026-04-23)
 
-### Make RESEND_API_KEY optional
+### ~~Make RESEND_API_KEY optional~~ **Done (2026-04-23)**
 
-**What:** Remove `RESEND_API_KEY` from required env schema until email routes exist.
-**Why:** No email code exists; operators set dummy/fake values in prod, masking a broken dep.
-**Context:** `src/env.ts` — `RESEND_API_KEY: z.string().min(1)`. No email send routes in `src/routes/`.
-**Solution:** Change to `z.string().optional()` or wrap in a feature flag env var (`ENABLE_EMAIL`).
-**Done When:** Server starts without `RESEND_API_KEY`; env schema documents when it is required.
-**Effort:** S
-**Priority:** P2
-**Depends on:** None
+**Outcome:** `src/env.ts` — optional via preprocess (empty → unset); JSDoc when required. `.env.example`, `CLAUDE.md`, `.cursor/rules/hono-template.mdc`, tests/preload + `tests/env.test.ts` updated.
 
 ### Document rate limit is single-process only
 

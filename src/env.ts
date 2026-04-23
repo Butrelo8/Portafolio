@@ -10,8 +10,18 @@ const schema = z.object({
   ALLOWED_ORIGINS: z
     .string()
     .min(1)
-    .transform((s) => s.split(',').map((o) => o.trim()).filter(Boolean)),
-  RESEND_API_KEY: z.string().min(1),
+    .transform((s) =>
+      s
+        .split(',')
+        .map((o) => o.trim())
+        .filter(Boolean),
+    ),
+  /** Required once you add Resend email send routes; omit or leave unset until then. */
+  RESEND_API_KEY: z.preprocess(
+    (v) =>
+      v === undefined || v === null || String(v).trim() === '' ? undefined : String(v).trim(),
+    z.string().min(1).optional(),
+  ),
   RATE_LIMIT_MAX: z.coerce.number().int().positive().default(60),
   RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(60_000),
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
