@@ -5,19 +5,10 @@
 _Context pass:_ `CLAUDE.md` ~73 lines — OK. No in-repo MCP. Stale rule + MCP + harness skill list = main leverage; repo text alone ~few hundred tokens if rules tightened.
 
 
-### ~~Cursor MCP audit (global config)~~ **Done (2026-04-23)**
 
-**Outcome:** `github` MCP removed from `~/.cursor/mcp.json` (overlaps `gh`/Shell; heavy tool schema). **Kept:** context7, sequential-thinking, playwright, code-review-graph — rationale + token notes in `docs/cursor-mcp-audit.md`. **Security:** rotate GitHub PAT if it was ever stored in that file or exposed.
+### ~~Trim harness skills (ECC / agent-sort)~~ **Done (2026-04-23)**
 
-### Trim harness skills (ECC / agent-sort)
-
-**What:** If using ECC-style harness, run agent-sort (or equivalent) — DAILY vs LIBRARY buckets for skills/rules.
-**Why:** Long default “available skills” list = large fixed session context; trimming cuts noise + cost.
-**Solution:** Follow `agent-sort` skill workflow for this repo; move rarely used items off hot path.
-**Done When:** Installed set reflects actual project needs; doc or checklist updated if team shares harness.
-**Effort:** S
-**Priority:** P3
-**Depends on:** Actually using ECC / multi-skill harness (skip if not)
+**Outcome:** No in-tree `.claude/skills` / commands / hooks — ECC bundle not vendored here (**Depends on** satisfied: skip in-repo trim; global list is operator concern). Ran agent-sort-style pass → `docs/ecc-harness-skill-trim.md` (STACK, DAILY/LIBRARY for this repo + global checklist).
 
 ---
 
@@ -100,3 +91,6 @@ _Context pass:_ `CLAUDE.md` ~73 lines — OK. No in-repo MCP. Stale rule + MCP +
 ### Align `.cursor/rules/hono-template.mdc` with repo (2026-4-23)
 **What:** Rewrite project Cursor rule so stack + API patterns match real code and `CLAUDE.md`.
 **Done When:** Rule describes same stack as `CLAUDE.md`; examples cite real symbols only; no stale `errorResponse` / `authMiddleware` unless code adds them.
+
+### ~~Cursor MCP audit (global config)~~ **Done (2026-04-23)**
+**Outcome:** `github` MCP removed from `~/.cursor/mcp.json` (overlaps `gh`/Shell; heavy tool schema). **Kept:** context7, sequential-thinking, playwright, code-review-graph — rationale + token notes in `docs/cursor-mcp-audit.md`. **Security:** rotate GitHub PAT if it was ever stored in that file or exposed.
