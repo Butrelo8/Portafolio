@@ -1,39 +1,11 @@
-# Dependencies
-node_modules/
-.pnp
-.pnp.js
-
-# Environment
+node_modules
+dist
 .env
 .env.local
-.env.*.local
-
-# Build
-dist/
-build/
-.next/
-
-# Bun
-bun.lockb
-
-# Database
 *.db
-*.sqlite
-
-# OS
+*.db-journal
 .DS_Store
-Thumbs.db
-
-# Editor
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Logs
-logs/
-*.log
-npm-debug.log*
-
-# Testing
-coverage/
+playwright-report
+test-results
+coverage
+.worktrees
