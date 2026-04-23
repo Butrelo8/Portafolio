@@ -46,7 +46,7 @@ cd web && bun run typecheck
 
 1. `security` — secure headers
 2. `httpsRedirect` — production only
-3. `requestLogger` — request id + JSON access log
+3. `requestLogger` — server-generated `requestId` (UUID); optional client `x-request-id` trimmed → `clientRequestId` on context + access log; response `x-request-id` is always the server id
 4. Global rate limit (`RATE_LIMIT_MAX` / `RATE_LIMIT_WINDOW_MS`, `clientIp`)
 5. Health-only rate limit — path prefix `/health`
 6. `cors(buildCorsConfig(env.ALLOWED_ORIGINS))` — allowlist + `Authorization`; **`credentials: false`** (Bearer JWT only; avoids `Allow-Credentials` until cookie cross-origin auth exists with CSRF).

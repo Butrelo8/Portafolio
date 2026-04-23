@@ -18,20 +18,16 @@ _Context pass:_ `CLAUDE.md` ~73 lines — OK. No in-repo MCP. Stale rule + MCP +
 **Priority:** P4
 **Depends on:** Multi-instance production or compliance need for strict global limits
 
-### Server-side request ID alongside client-supplied one
-
-**What:** Always generate server-side UUID for traces; log client id separately.
-**Why:** `x-request-id` from client accepted verbatim — trace correlation spoofable.
-**Context:** `src/middleware/requestLogger.ts:28` — `c.req.header('x-request-id') ?? crypto.randomUUID()`.
-**Solution:** Always call `crypto.randomUUID()` for `requestId`; log client-supplied as `clientRequestId`.
-**Done When:** Server always generates own id; client id logged separately if present; response echoes server id.
-**Effort:** S
-**Priority:** P3
-**Depends on:** None
-
 ---
 
 ## Completed
+
+### Server-side request ID (2026-04-23)
+
+- **Outcome:** `requestLogger` always sets `requestId = crypto.randomUUID()`; response header `x-request-id` is the server id only.
+- **Client correlation:** Non-empty client `x-request-id` is trimmed, stored as `c.set('clientRequestId', …)`, and included in the access log as `clientRequestId` (not used as canonical trace id).
+- **Types:** `ContextVariableMap.clientRequestId` optional in `src/types/hono.d.ts`.
+- **Tests:** `tests/requestLogger.test.ts`.
 
 ### Add minimal CI workflow (2026-04-23)
 
