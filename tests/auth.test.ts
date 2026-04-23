@@ -13,7 +13,12 @@ describe('requireAuth', () => {
 
   it('sets userId on valid token', async () => {
     const app = new Hono();
-    app.use('*', requireAuth({ verify: async (t) => (t === 'good' ? { userId: 'u1', sessionId: 's1' } : null) }));
+    app.use(
+      '*',
+      requireAuth({
+        verify: async (t) => (t === 'good' ? { userId: 'u1', sessionId: 's1' } : null),
+      }),
+    );
     app.get('/', (c) => c.text(c.get('userId')));
     const res = await app.request('/', { headers: { Authorization: 'Bearer good' } });
     expect(res.status).toBe(200);

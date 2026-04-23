@@ -1,0 +1,13 @@
+---
+// biome-ignore lint/correctness/noUnusedImports: default export used as <BaseLayout> in template
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getPublicApiUrl } from '../lib/api';
+
+// biome-ignore lint/correctness/noUnusedVariables: used in HTML template below
+const apiUrl = getPublicApiUrl();
+---
+<BaseLayout title="Template">
+  <h1>Hono + Astro Template</h1>
+  <p>API: <code>{apiUrl}</code></p>
+  <p><a href="/api/health">Health proxy</a></p>
+</BaseLayout>

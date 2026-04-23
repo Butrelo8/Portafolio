@@ -8,19 +8,15 @@ _Context pass:_ `CLAUDE.md` ~73 lines — OK. No in-repo MCP. Stale rule + MCP +
 
 ## Open
 
-### Shared rate limit store (Redis / KV) — future
-
-**What:** Optional backend so counters are shared across API replicas (Redis, Upstash, Cloudflare KV, etc.).
-**Why:** `src/middleware/rateLimitFactory.ts` is single-process only; horizontal scale multiplies effective client budget until a shared store or edge limiter exists.
-**Solution:** Pluggable store interface; keep in-memory default for single-instance templates.
-**Done When:** Adapter + docs; tests for at least one backend or contract tests for interface.
-**Effort:** M
-**Priority:** P4
-**Depends on:** Multi-instance production or compliance need for strict global limits
-
----
-
 ## Completed
+
+### Pluggable rate limit store — interface + MemoryStore (2026-04-23)
+
+- **Outcome:** `RateLimitStore` + `MemoryStore` in `src/lib/rateLimitStore.ts`; `createRateLimit({ …, store })` for shared backends; default remains in-process per replica.
+- **Middleware:** `src/middleware/rateLimitFactory.ts` delegates to `increment(key, windowMs)`; `dispose` calls `store.close()` only when the limiter created the store.
+- **Tests:** `tests/rateLimitStore.test.ts` — contract suite + Hono integration with injected store.
+- **Docs:** `CLAUDE.md` **Rate limits**; plan `docs/superpowers/plans/2026-04-23-rate-limit-store.md`.
+- **Still optional later:** Concrete Redis / Upstash / KV adapter when strict global limits matter.
 
 ### Server-side request ID (2026-04-23)
 

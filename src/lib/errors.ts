@@ -27,7 +27,9 @@ export class AppError extends Error {
 
 export function toErrorResponse(err: unknown): ErrorEnvelope {
   if (err instanceof AppError) {
-    return { error: { code: err.code, message: err.message, status: err.status, details: err.details } };
+    return {
+      error: { code: err.code, message: err.message, status: err.status, details: err.details },
+    };
   }
   return { error: { code: 'INTERNAL', message: 'Internal server error', status: 500 } };
 }

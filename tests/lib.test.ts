@@ -1,11 +1,16 @@
 import { describe, expect, it } from 'bun:test';
-import { redact } from '../src/lib/safeLog';
 import { appVersion } from '../src/lib/appVersion';
 import { isHttps } from '../src/lib/forwardedProto';
+import { redact } from '../src/lib/safeLog';
 
 describe('redact', () => {
   it('masks known secret fields', () => {
-    const out = redact({ email: 'a@b.c', token: 'secret', password: 'pw', nested: { apiKey: 'k' } });
+    const out = redact({
+      email: 'a@b.c',
+      token: 'secret',
+      password: 'pw',
+      nested: { apiKey: 'k' },
+    });
     expect(out.email).toBe('a@b.c');
     expect(out.token).toBe('[REDACTED]');
     expect(out.password).toBe('[REDACTED]');

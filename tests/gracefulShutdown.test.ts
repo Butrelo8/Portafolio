@@ -15,7 +15,9 @@ describe('createShutdownManager', () => {
     const mgr = createShutdownManager();
     const calls: string[] = [];
     mgr.register(async () => void calls.push('a'));
-    mgr.register(async () => { throw new Error('fail'); });
+    mgr.register(async () => {
+      throw new Error('fail');
+    });
     mgr.register(async () => void calls.push('c'));
     await mgr.shutdown();
     expect(calls).toEqual(['c', 'a']);

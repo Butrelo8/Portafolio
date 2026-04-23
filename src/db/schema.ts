@@ -2,7 +2,9 @@ import { sql } from 'drizzle-orm';
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
 export const items = sqliteTable('items', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
   ownerId: text('owner_id').notNull(),
   name: text('name').notNull(),
   description: text('description'),

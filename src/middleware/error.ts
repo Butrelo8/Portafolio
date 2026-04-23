@@ -1,44 +1,34 @@
-import type { Context } from 'hono'
-import type { StatusCode } from 'hono/utils/http-status'
+import type { ErrorHandler } from 'hono';
+import type { ContentfulStatusCode } from 'hono/utils/http-status';
+import { ZodError } from 'zod';
+import { AppError, toErrorResponse } from '../lib/errors';
+import { logger } from './requestLogger';
 
-export const errorHandler = (err: Error, c: Context) => {
-  console.error(`[ERROR] ${err.message}`, {
-    stack: err.stack,
-    path: c.req.path,
-    method: c.req.method,
-  })
+export const errorHandler: ErrorHandler = (err, c) => {
+  const requestId = c.get('requestId');
 
-  // Known app errors
-  if (err.name === 'AppError') {
-    const appErr = err as AppError
-    return c.json({
-      error: {
-        code: appErr.code,
-        message: appErr.message,
-        status: appErr.status,
-      }
-    }, appErr.status as StatusCode)
+  if (err instanceof AppError) {
+    logger.warn({
+      msg: 'app_error',
+      requestId,
+      code: err.code,
+      status: err.status,
+      message: err.message,
+    });
+    return c.json(toErrorResponse(err), err.status as ContentfulStatusCode);
   }
 
-  // Unknown errors — don't leak details in production
-  return c.json({
-    error: {
-      code: 'INTERNAL_SERVER_ERROR',
-      message: process.env.NODE_ENV === 'development'
-        ? err.message
-        : 'An unexpected error occurred',
-      status: 500,
-    }
-  }, 500)
-}
-
-export class AppError extends Error {
-  constructor(
-    public code: string,
-    public message: string,
-    public status: number = 400,
-  ) {
-    super(message)
-    this.name = 'AppError'
+  if (err instanceof ZodError) {
+    const wrapped = new AppError('VALIDATION', 'Validation failed', 400, err.issues);
+    logger.warn({ msg: 'validation_error', requestId, issues: err.issues });
+    return c.json(toErrorResponse(wrapped), 400);
   }
-}
+
+  logger.error({
+    msg: 'unhandled_error',
+    requestId,
+    error: err instanceof Error ? err.message : String(err),
+    stack: err instanceof Error ? err.stack : undefined,
+  });
+  return c.json(toErrorResponse(err), 500);
+};

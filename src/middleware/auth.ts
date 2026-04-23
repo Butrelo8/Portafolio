@@ -16,9 +16,14 @@ export function requireAuth(opts: AuthOptions): MiddlewareHandler {
   return async (c, next) => {
     const header = c.req.header('authorization') ?? c.req.header('Authorization');
     const token = header?.startsWith('Bearer ') ? header.slice(7).trim() : null;
-    if (!token) return c.json(toErrorResponse(new AppError('UNAUTHORIZED', 'Missing bearer token', 401)), 401);
+    if (!token)
+      return c.json(
+        toErrorResponse(new AppError('UNAUTHORIZED', 'Missing bearer token', 401)),
+        401,
+      );
     const session = await opts.verify(token);
-    if (!session) return c.json(toErrorResponse(new AppError('UNAUTHORIZED', 'Invalid token', 401)), 401);
+    if (!session)
+      return c.json(toErrorResponse(new AppError('UNAUTHORIZED', 'Invalid token', 401)), 401);
     c.set('userId', session.userId);
     c.set('sessionId', session.sessionId);
     await next();

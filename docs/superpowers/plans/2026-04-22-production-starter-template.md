@@ -90,17 +90,17 @@ Hono Template/
 ## Task 1: Clean Slate & Root Package Config
 
 **Files:**
+
 - Delete: entire existing `src/` (will rewrite)
 - Modify: `package.json`
 - Create: `.gitignore`, `biome.json`, `tsconfig.json`
-
-- [x] **Step 1: Remove stale source**
+- **Step 1: Remove stale source**
 
 ```bash
 rm -rf src/
 ```
 
-- [x] **Step 2: Write new `package.json`**
+- **Step 2: Write new `package.json`**
 
 ```json
 {
@@ -113,10 +113,10 @@ rm -rf src/
     "start": "bun run src/index.ts",
     "build": "bun build src/index.ts --outdir dist --target bun",
     "test": "bun test",
-    "test:e2e": "playwright test",
-    "lint": "biome check .",
-    "lint:fix": "biome check --write .",
-    "format": "biome format --write .",
+    "test:e2e": "playwright test --config e2e/playwright.config.ts",
+    "lint": "biome check src tests drizzle.config.ts web",
+    "lint:fix": "biome check --write src tests drizzle.config.ts web",
+    "format": "biome format --write src tests drizzle.config.ts web",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
@@ -140,7 +140,7 @@ rm -rf src/
 }
 ```
 
-- [x] **Step 3: Write `tsconfig.json`**
+- **Step 3: Write `tsconfig.json`**
 
 ```json
 {
@@ -168,7 +168,7 @@ rm -rf src/
 }
 ```
 
-- [x] **Step 4: Write `biome.json`**
+- **Step 4: Write `biome.json`**
 
 ```json
 {
@@ -188,7 +188,7 @@ rm -rf src/
 }
 ```
 
-- [x] **Step 5: Write `.gitignore`**
+- **Step 5: Write `.gitignore`**
 
 ```
 node_modules
@@ -203,12 +203,12 @@ test-results
 coverage
 ```
 
-- [x] **Step 6: Install & verify**
+- **Step 6: Install & verify**
 
 Run: `bun install && bun run typecheck`
 Expected: exit 0.
 
-- [x] **Step 7: Commit**
+- **Step 7: Commit**
 
 ```bash
 git add .
@@ -220,10 +220,10 @@ git commit -m "chore: reset template scaffold + root configs"
 ## Task 2: Env Validation
 
 **Files:**
+
 - Create: `src/env.ts`, `.env.example`
 - Test: `tests/env.test.ts`
-
-- [x] **Step 1: Write failing test `tests/env.test.ts`**
+- **Step 1: Write failing test `tests/env.test.ts`**
 
 ```ts
 import { describe, expect, it } from 'bun:test';
@@ -252,12 +252,12 @@ describe('parseEnv', () => {
 });
 ```
 
-- [x] **Step 2: Run test — expect FAIL**
+- **Step 2: Run test — expect FAIL**
 
 Run: `bun test tests/env.test.ts`
 Expected: cannot find module.
 
-- [x] **Step 3: Write `src/env.ts`**
+- **Step 3: Write `src/env.ts`**
 
 ```ts
 import { z } from 'zod';
@@ -293,7 +293,7 @@ export function parseEnv(raw: NodeJS.ProcessEnv | Record<string, string | undefi
 export const env: Env = parseEnv(process.env);
 ```
 
-- [x] **Step 4: Write `.env.example`**
+- **Step 4: Write `.env.example`**
 
 ```
 # Runtime
@@ -321,12 +321,12 @@ RATE_LIMIT_MAX=60
 RATE_LIMIT_WINDOW_MS=60000
 ```
 
-- [x] **Step 5: Run test — expect PASS**
+- **Step 5: Run test — expect PASS**
 
 Run: `bun test tests/env.test.ts`
 Expected: 2 pass.
 
-- [x] **Step 6: Commit**
+- **Step 6: Commit**
 
 ```bash
 git add src/env.ts .env.example tests/env.test.ts
@@ -338,10 +338,10 @@ git commit -m "feat(env): zod-validated env loader"
 ## Task 3: Error Envelope & AppError
 
 **Files:**
+
 - Create: `src/lib/errors.ts`
 - Test: `tests/errors.test.ts`
-
-- [x] **Step 1: Write failing test**
+- **Step 1: Write failing test**
 
 ```ts
 import { describe, expect, it } from 'bun:test';
@@ -363,9 +363,8 @@ describe('AppError', () => {
 });
 ```
 
-- [x] **Step 2: Run — expect FAIL**
-
-- [x] **Step 3: Write `src/lib/errors.ts`**
+- **Step 2: Run — expect FAIL**
+- **Step 3: Write `src/lib/errors.ts`**
 
 ```ts
 export type ErrorCode =
@@ -403,9 +402,8 @@ export function toErrorResponse(err: unknown): ErrorEnvelope {
 }
 ```
 
-- [x] **Step 4: Run — expect PASS**
-
-- [x] **Step 5: Commit**
+- **Step 4: Run — expect PASS**
+- **Step 5: Commit**
 
 ```bash
 git add src/lib/errors.ts tests/errors.test.ts
@@ -417,10 +415,10 @@ git commit -m "feat(errors): AppError + response envelope"
 ## Task 4: Safe Log + App Version + Forwarded Proto
 
 **Files:**
+
 - Create: `src/lib/safeLog.ts`, `src/lib/appVersion.ts`, `src/lib/forwardedProto.ts`
 - Test: `tests/lib.test.ts`
-
-- [x] **Step 1: Write failing test**
+- **Step 1: Write failing test**
 
 ```ts
 import { describe, expect, it } from 'bun:test';
@@ -454,7 +452,7 @@ describe('isHttps', () => {
 });
 ```
 
-- [x] **Step 2: Write `src/lib/safeLog.ts`**
+- **Step 2: Write `src/lib/safeLog.ts`**
 
 ```ts
 const SECRET_KEYS = new Set([
@@ -473,7 +471,7 @@ export function redact(input: unknown): unknown {
 }
 ```
 
-- [x] **Step 3: Write `src/lib/appVersion.ts`**
+- **Step 3: Write `src/lib/appVersion.ts`**
 
 ```ts
 import pkg from '../../package.json' with { type: 'json' };
@@ -481,7 +479,7 @@ import pkg from '../../package.json' with { type: 'json' };
 export const appVersion: string = (pkg as { version: string }).version;
 ```
 
-- [x] **Step 4: Write `src/lib/forwardedProto.ts`**
+- **Step 4: Write `src/lib/forwardedProto.ts`**
 
 ```ts
 export function isHttps(headers: Headers): boolean {
@@ -493,11 +491,11 @@ export function forwardedProto(headers: Headers): 'http' | 'https' {
 }
 ```
 
-- [x] **Step 5: Run — expect PASS**
+- **Step 5: Run — expect PASS**
 
 Run: `bun test tests/lib.test.ts`
 
-- [x] **Step 6: Commit**
+- **Step 6: Commit**
 
 ```bash
 git add src/lib tests/lib.test.ts
@@ -509,10 +507,10 @@ git commit -m "feat(lib): safeLog redaction, appVersion, forwardedProto"
 ## Task 5: Allowed Origins + CORS
 
 **Files:**
+
 - Create: `src/lib/allowedOrigins.ts`, `src/lib/corsOrigins.ts`
 - Test: `tests/origins.test.ts`
-
-- [x] **Step 1: Write failing test**
+- **Step 1: Write failing test**
 
 ```ts
 import { describe, expect, it } from 'bun:test';
@@ -547,7 +545,7 @@ describe('buildCorsConfig', () => {
 });
 ```
 
-- [x] **Step 2: Write `src/lib/allowedOrigins.ts`**
+- **Step 2: Write `src/lib/allowedOrigins.ts`**
 
 ```ts
 export function normalizeOrigins(origins: readonly string[]): string[] {
@@ -578,7 +576,7 @@ export function isOriginAllowed(origin: string, allowed: readonly string[]): boo
 }
 ```
 
-- [x] **Step 3: Write `src/lib/corsOrigins.ts`**
+- **Step 3: Write `src/lib/corsOrigins.ts`**
 
 ```ts
 import { isOriginAllowed, normalizeOrigins } from './allowedOrigins';
@@ -607,9 +605,8 @@ export function clerkAuthorizedParties(allowed: readonly string[]): string[] {
 }
 ```
 
-- [x] **Step 4: Run — expect PASS**
-
-- [x] **Step 5: Commit**
+- **Step 4: Run — expect PASS**
+- **Step 5: Commit**
 
 ```bash
 git add src/lib/allowedOrigins.ts src/lib/corsOrigins.ts tests/origins.test.ts
@@ -621,10 +618,10 @@ git commit -m "feat(cors): allowlist + www/apex normalize + config builder"
 ## Task 6: Graceful Shutdown
 
 **Files:**
+
 - Create: `src/lib/gracefulShutdown.ts`
 - Test: `tests/gracefulShutdown.test.ts`
-
-- [x] **Step 1: Write failing test**
+- **Step 1: Write failing test**
 
 ```ts
 import { describe, expect, it } from 'bun:test';
@@ -652,7 +649,7 @@ describe('createShutdownManager', () => {
 });
 ```
 
-- [x] **Step 2: Write `src/lib/gracefulShutdown.ts`**
+- **Step 2: Write `src/lib/gracefulShutdown.ts`**
 
 ```ts
 export type ShutdownHook = () => Promise<void> | void;
@@ -694,9 +691,8 @@ export function createShutdownManager(): ShutdownManager {
 }
 ```
 
-- [x] **Step 3: Run — expect PASS**
-
-- [x] **Step 4: Commit**
+- **Step 3: Run — expect PASS**
+- **Step 4: Commit**
 
 ```bash
 git add src/lib/gracefulShutdown.ts tests/gracefulShutdown.test.ts
@@ -708,10 +704,10 @@ git commit -m "feat(lib): graceful shutdown manager"
 ## Task 7: DB Detect + Dual-Mode Client
 
 **Files:**
+
 - Create: `src/db/detect.ts`, `src/db/schema.ts`, `src/db/index.ts`, `drizzle.config.ts`, `src/db/migrations/.gitkeep`
 - Test: `tests/db.test.ts`
-
-- [x] **Step 1: Write failing test**
+- **Step 1: Write failing test**
 
 ```ts
 import { describe, expect, it } from 'bun:test';
@@ -731,7 +727,7 @@ describe('detectDriver', () => {
 });
 ```
 
-- [x] **Step 2: Write `src/db/detect.ts`**
+- **Step 2: Write `src/db/detect.ts`**
 
 ```ts
 export type Driver = 'libsql' | 'bun-sqlite';
@@ -745,7 +741,7 @@ export function detectDriver(url: string, authToken?: string): Driver {
 }
 ```
 
-- [x] **Step 3: Write `src/db/schema.ts`**
+- **Step 3: Write `src/db/schema.ts`**
 
 ```ts
 import { sql } from 'drizzle-orm';
@@ -768,7 +764,7 @@ export type Item = typeof items.$inferSelect;
 export type NewItem = typeof items.$inferInsert;
 ```
 
-- [x] **Step 4: Write `src/db/index.ts`**
+- **Step 4: Write `src/db/index.ts`**
 
 ```ts
 import { Database } from 'bun:sqlite';
@@ -810,7 +806,7 @@ export const closeDb = instance.close;
 export { schema };
 ```
 
-- [x] **Step 5: Write `drizzle.config.ts`**
+- **Step 5: Write `drizzle.config.ts`**
 
 ```ts
 import type { Config } from 'drizzle-kit';
@@ -825,17 +821,17 @@ export default {
 } satisfies Config;
 ```
 
-- [x] **Step 6: Create migrations dir**
+- **Step 6: Create migrations dir**
 
 ```bash
 mkdir -p src/db/migrations && touch src/db/migrations/.gitkeep
 ```
 
-- [x] **Step 7: Run — expect PASS**
+- **Step 7: Run — expect PASS**
 
 Run: `bun test tests/db.test.ts`
 
-- [x] **Step 8: Commit**
+- **Step 8: Commit**
 
 ```bash
 git add src/db drizzle.config.ts tests/db.test.ts
@@ -847,10 +843,10 @@ git commit -m "feat(db): dual-mode libsql/bun-sqlite with Drizzle"
 ## Task 8: Rate Limit Factory
 
 **Files:**
+
 - Create: `src/middleware/rateLimitFactory.ts`
 - Test: `tests/rateLimit.test.ts`
-
-- [x] **Step 1: Write failing test**
+- **Step 1: Write failing test**
 
 ```ts
 import { describe, expect, it } from 'bun:test';
@@ -880,7 +876,7 @@ describe('createRateLimit', () => {
 });
 ```
 
-- [x] **Step 2: Write `src/middleware/rateLimitFactory.ts`**
+- **Step 2: Write `src/middleware/rateLimitFactory.ts`**
 
 ```ts
 import type { MiddlewareHandler } from 'hono';
@@ -944,9 +940,8 @@ export function clientIp(c: Parameters<MiddlewareHandler>[0]): string {
 }
 ```
 
-- [x] **Step 3: Run — expect PASS**
-
-- [x] **Step 4: Commit**
+- **Step 3: Run — expect PASS**
+- **Step 4: Commit**
 
 ```bash
 git add src/middleware/rateLimitFactory.ts tests/rateLimit.test.ts
@@ -958,9 +953,9 @@ git commit -m "feat(middleware): rate limit factory (fixed-window, unref interva
 ## Task 9: Health Rate Limit
 
 **Files:**
-- Create: `src/middleware/rateLimitHealth.ts`
 
-- [x] **Step 1: Write `src/middleware/rateLimitHealth.ts`**
+- Create: `src/middleware/rateLimitHealth.ts`
+- **Step 1: Write `src/middleware/rateLimitHealth.ts`**
 
 ```ts
 import { clientIp, createRateLimit, type RateLimiter } from './rateLimitFactory';
@@ -975,7 +970,7 @@ export function createHealthRateLimit(): RateLimiter {
 }
 ```
 
-- [x] **Step 2: Commit**
+- **Step 2: Commit**
 
 ```bash
 git add src/middleware/rateLimitHealth.ts
@@ -987,10 +982,10 @@ git commit -m "feat(middleware): per-IP health rate limit (English)"
 ## Task 10: Auth Middleware (Clerk)
 
 **Files:**
+
 - Create: `src/types/hono.d.ts`, `src/middleware/auth.ts`
 - Test: `tests/auth.test.ts`
-
-- [x] **Step 1: Write `src/types/hono.d.ts`**
+- **Step 1: Write `src/types/hono.d.ts`**
 
 ```ts
 import type {} from 'hono';
@@ -1004,7 +999,7 @@ declare module 'hono' {
 }
 ```
 
-- [x] **Step 2: Write failing test**
+- **Step 2: Write failing test**
 
 ```ts
 import { describe, expect, it } from 'bun:test';
@@ -1031,7 +1026,7 @@ describe('requireAuth', () => {
 });
 ```
 
-- [x] **Step 3: Write `src/middleware/auth.ts`**
+- **Step 3: Write `src/middleware/auth.ts`**
 
 ```ts
 import { verifyToken } from '@clerk/backend';
@@ -1080,9 +1075,8 @@ export function createClerkVerifier(config: {
 }
 ```
 
-- [x] **Step 4: Run — expect PASS**
-
-- [x] **Step 5: Commit**
+- **Step 4: Run — expect PASS**
+- **Step 5: Commit**
 
 ```bash
 git add src/types/hono.d.ts src/middleware/auth.ts tests/auth.test.ts
@@ -1094,9 +1088,9 @@ git commit -m "feat(auth): Clerk JWT middleware with pluggable verifier"
 ## Task 11: Body Limit, Security, HTTPS Middlewares
 
 **Files:**
-- Create: `src/middleware/bodyLimit.ts`, `src/middleware/security.ts`, `src/middleware/https.ts`
 
-- [x] **Step 1: Write `src/middleware/bodyLimit.ts`**
+- Create: `src/middleware/bodyLimit.ts`, `src/middleware/security.ts`, `src/middleware/https.ts`
+- **Step 1: Write `src/middleware/bodyLimit.ts`**
 
 ```ts
 import type { MiddlewareHandler } from 'hono';
@@ -1141,7 +1135,7 @@ export function bodyLimit(maxBytes: number = DEFAULT_LIMIT): MiddlewareHandler {
 }
 ```
 
-- [x] **Step 2: Write `src/middleware/security.ts`**
+- **Step 2: Write `src/middleware/security.ts`**
 
 ```ts
 import { secureHeaders } from 'hono/secure-headers';
@@ -1165,7 +1159,7 @@ export const security = secureHeaders({
 });
 ```
 
-- [x] **Step 3: Write `src/middleware/https.ts`**
+- **Step 3: Write `src/middleware/https.ts`**
 
 ```ts
 import type { MiddlewareHandler } from 'hono';
@@ -1183,7 +1177,7 @@ export function httpsRedirect(enabled: boolean): MiddlewareHandler {
 }
 ```
 
-- [x] **Step 4: Commit**
+- **Step 4: Commit**
 
 ```bash
 git add src/middleware/bodyLimit.ts src/middleware/security.ts src/middleware/https.ts
@@ -1195,9 +1189,9 @@ git commit -m "feat(middleware): body limit, secure headers, https redirect"
 ## Task 12: Request Logger + Error Middleware
 
 **Files:**
-- Create: `src/middleware/requestLogger.ts`, `src/middleware/error.ts`
 
-- [ ] **Step 1: Write `src/middleware/requestLogger.ts`**
+- Create: `src/middleware/requestLogger.ts`, `src/middleware/error.ts`
+- **Step 1: Write `src/middleware/requestLogger.ts`**
 
 ```ts
 import type { MiddlewareHandler } from 'hono';
@@ -1240,7 +1234,7 @@ export const requestLogger: MiddlewareHandler = async (c, next) => {
 };
 ```
 
-- [ ] **Step 2: Write `src/middleware/error.ts`**
+- **Step 2: Write `src/middleware/error.ts`**
 
 ```ts
 import type { ErrorHandler } from 'hono';
@@ -1267,22 +1261,17 @@ export const errorHandler: ErrorHandler = (err, c) => {
 };
 ```
 
-- [ ] **Step 3: Commit**
-
-```bash
-git add src/middleware/requestLogger.ts src/middleware/error.ts
-git commit -m "feat(middleware): structured request logger + error handler"
-```
+- **Step 3: Commit** (skipped per operator — no git commit)
 
 ---
 
 ## Task 13: Zod Validation Middleware Factory
 
 **Files:**
+
 - Create: `src/middleware/validate.ts`
 - Test: `tests/validate.test.ts`
-
-- [ ] **Step 1: Write failing test**
+- **Step 1: Write failing test**
 
 ```ts
 import { describe, expect, it } from 'bun:test';
@@ -1317,7 +1306,7 @@ describe('validate', () => {
 });
 ```
 
-- [ ] **Step 2: Augment hono.d.ts**
+- **Step 2: Augment hono.d.ts**
 
 Append to `src/types/hono.d.ts`:
 
@@ -1330,7 +1319,7 @@ declare module 'hono' {
 }
 ```
 
-- [ ] **Step 3: Write `src/middleware/validate.ts`**
+- **Step 3: Write `src/middleware/validate.ts`**
 
 ```ts
 import type { MiddlewareHandler } from 'hono';
@@ -1365,24 +1354,18 @@ export function validate(schemas: ValidationSchemas): MiddlewareHandler {
 }
 ```
 
-- [ ] **Step 4: Run — expect PASS**
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add src/middleware/validate.ts src/types/hono.d.ts tests/validate.test.ts
-git commit -m "feat(middleware): Zod validation factory"
-```
+- **Step 4: Run — expect PASS**
+- **Step 5: Commit** (skipped — no git commit)
 
 ---
 
 ## Task 14: Health Route
 
 **Files:**
+
 - Create: `src/routes/health.ts`
 - Test: `tests/health.test.ts`
-
-- [ ] **Step 1: Write failing test**
+- **Step 1: Write failing test**
 
 ```ts
 import { describe, expect, it } from 'bun:test';
@@ -1403,7 +1386,7 @@ describe('health', () => {
 });
 ```
 
-- [ ] **Step 2: Write `src/routes/health.ts`**
+- **Step 2: Write `src/routes/health.ts`**
 
 ```ts
 import { Hono } from 'hono';
@@ -1425,24 +1408,18 @@ export function healthRoute(): Hono {
 }
 ```
 
-- [ ] **Step 3: Run — expect PASS**
-
-- [ ] **Step 4: Commit**
-
-```bash
-git add src/routes/health.ts tests/health.test.ts
-git commit -m "feat(routes): health endpoint"
-```
+- **Step 3: Run — expect PASS**
+- **Step 4: Commit** (skipped — no git commit)
 
 ---
 
 ## Task 15: Example CRUD Route (Items)
 
 **Files:**
+
 - Create: `src/routes/items.ts`
 - Test: `tests/items.test.ts`
-
-- [ ] **Step 1: Write failing test**
+- **Step 1: Write failing test**
 
 ```ts
 import { describe, expect, it } from 'bun:test';
@@ -1475,7 +1452,7 @@ describe('items CRUD', () => {
 });
 ```
 
-- [ ] **Step 2: Write `src/routes/items.ts`**
+- **Step 2: Write `src/routes/items.ts`**
 
 ```ts
 import { and, eq } from 'drizzle-orm';
@@ -1549,23 +1526,17 @@ export function itemsRoute(auth: AuthOptions): Hono {
 }
 ```
 
-- [ ] **Step 3: Run — expect PASS**
-
-- [ ] **Step 4: Commit**
-
-```bash
-git add src/routes/items.ts tests/items.test.ts
-git commit -m "feat(routes): items CRUD with auth + Zod validation"
-```
+- **Step 3: Run — expect PASS**
+- **Step 4: Commit** (skipped — no git commit; added `tests/preload.ts` + `bunfig.toml` test preload for isolated SQLite + `items` DDL)
 
 ---
 
 ## Task 16: Route Mount Point
 
 **Files:**
-- Create: `src/routes/index.ts`
 
-- [ ] **Step 1: Write `src/routes/index.ts`**
+- Create: `src/routes/index.ts`
+- **Step 1: Write `src/routes/index.ts`**
 
 ```ts
 import { Hono } from 'hono';
@@ -1581,21 +1552,16 @@ export function mountRoutes(auth: AuthOptions): Hono {
 }
 ```
 
-- [ ] **Step 2: Commit**
-
-```bash
-git add src/routes/index.ts
-git commit -m "feat(routes): mount point"
-```
+- **Step 2: Commit** (skipped)
 
 ---
 
 ## Task 17: Main Entry — Wire Everything
 
 **Files:**
-- Create: `src/index.ts`
 
-- [ ] **Step 1: Write `src/index.ts`**
+- Create: `src/index.ts`
+- **Step 1: Write `src/index.ts`**
 
 ```ts
 import { Hono } from 'hono';
@@ -1664,32 +1630,18 @@ shutdown.register(async () => {
 });
 ```
 
-- [ ] **Step 2: Verify typecheck**
-
-Run: `bun run typecheck`
-Expected: exit 0.
-
-- [ ] **Step 3: Verify boots**
-
-Run: `cp .env.example .env && echo 'CLERK_SECRET_KEY=sk_test_dummy' >> .env && echo 'CLERK_PUBLISHABLE_KEY=pk_test_dummy' >> .env && echo 'RESEND_API_KEY=re_dummy' >> .env`
-Run: `bun run src/index.ts &` — then `curl http://localhost:3000/health`
-Expected: 200 with `{status:"ok",...}`. Kill with `kill %1`.
-
-- [ ] **Step 4: Commit**
-
-```bash
-git add src/index.ts
-git commit -m "feat(server): wire middleware chain + graceful shutdown"
-```
+- **Step 2: Verify typecheck** (`bun run typecheck` — pass)
+- **Step 3: Verify boots** (`curl http://localhost:3000/health` — user verified)
+- **Step 4: Commit** (skipped)
 
 ---
 
 ## Task 18: Astro Web Subproject
 
 **Files:**
-- Create: `web/package.json`, `web/astro.config.mjs`, `web/tsconfig.json`, `web/.env.example`, `web/src/env.d.ts`, `web/src/lib/api.ts`, `web/src/layouts/BaseLayout.astro`, `web/src/pages/index.astro`, `web/src/pages/api/health.ts`
 
-- [ ] **Step 1: Write `web/package.json`**
+- Create: `web/package.json`, `web/astro.config.mjs`, `web/tsconfig.json`, `web/.env.example`, `web/src/env.d.ts`, `web/src/lib/api.ts`, `web/src/layouts/BaseLayout.astro`, `web/src/pages/index.astro`, `web/src/pages/api/health.ts`
+- **Step 1: Write `web/package.json`**
 
 ```json
 {
@@ -1715,7 +1667,7 @@ git commit -m "feat(server): wire middleware chain + graceful shutdown"
 }
 ```
 
-- [ ] **Step 2: Write `web/astro.config.mjs`**
+- **Step 2: Write `web/astro.config.mjs`**
 
 ```js
 import node from '@astrojs/node';
@@ -1728,7 +1680,7 @@ export default defineConfig({
 });
 ```
 
-- [ ] **Step 3: Write `web/tsconfig.json`**
+- **Step 3: Write `web/tsconfig.json`**
 
 ```json
 {
@@ -1742,13 +1694,13 @@ export default defineConfig({
 }
 ```
 
-- [ ] **Step 4: Write `web/.env.example`**
+- **Step 4: Write `web/.env.example`**
 
 ```
 PUBLIC_API_URL=http://localhost:3000
 ```
 
-- [ ] **Step 5: Write `web/src/env.d.ts`**
+- **Step 5: Write `web/src/env.d.ts`**
 
 ```ts
 /// <reference path="../.astro/types.d.ts" />
@@ -1762,7 +1714,7 @@ interface ImportMeta {
 }
 ```
 
-- [ ] **Step 6: Write `web/src/lib/api.ts`**
+- **Step 6: Write `web/src/lib/api.ts`**
 
 ```ts
 export function getPublicApiUrl(): string {
@@ -1780,7 +1732,7 @@ export async function apiFetch(path: string, init: RequestInit & { token?: strin
 }
 ```
 
-- [ ] **Step 7: Write `web/src/layouts/BaseLayout.astro`**
+- **Step 7: Write `web/src/layouts/BaseLayout.astro`**
 
 ```astro
 ---
@@ -1804,7 +1756,7 @@ const { title } = Astro.props;
 </html>
 ```
 
-- [ ] **Step 8: Write `web/src/pages/index.astro`**
+- **Step 8: Write `web/src/pages/index.astro`**
 
 ```astro
 ---
@@ -1819,7 +1771,7 @@ const apiUrl = getPublicApiUrl();
 </BaseLayout>
 ```
 
-- [ ] **Step 9: Write `web/src/pages/api/health.ts`**
+- **Step 9: Write `web/src/pages/api/health.ts`**
 
 ```ts
 import type { APIRoute } from 'astro';
@@ -1835,26 +1787,17 @@ export const GET: APIRoute = async () => {
 };
 ```
 
-- [ ] **Step 10: Install web deps + typecheck**
-
-Run: `cd web && bun install && bun run typecheck && cd ..`
-Expected: exit 0.
-
-- [ ] **Step 11: Commit**
-
-```bash
-git add web
-git commit -m "feat(web): Astro 4.16 + Node SSR scaffold"
-```
+- **Step 10: Install web deps + typecheck** (`cd web && bun install && bunx astro sync && bun run typecheck`; `PUBLIC_API_URL=... bun run build` verified)
+- **Step 11: Commit** (skipped)
 
 ---
 
 ## Task 19: Playwright E2E Smoke
 
 **Files:**
-- Create: `e2e/playwright.config.ts`, `e2e/smoke.spec.ts`
 
-- [ ] **Step 1: Write `e2e/playwright.config.ts`**
+- Create: `e2e/playwright.config.ts`, `e2e/smoke.spec.ts`
+- **Step 1: Write `e2e/playwright.config.ts`**
 
 ```ts
 import { defineConfig } from '@playwright/test';
@@ -1867,7 +1810,7 @@ export default defineConfig({
 });
 ```
 
-- [ ] **Step 2: Write `e2e/smoke.spec.ts`**
+- **Step 2: Write `e2e/smoke.spec.ts`**
 
 ```ts
 import { expect, test } from '@playwright/test';
@@ -1878,66 +1821,54 @@ test('landing renders', async ({ page }) => {
 });
 ```
 
-- [ ] **Step 3: Commit**
+- **Step 3: Commit** (skipped)
 
-```bash
-git add e2e
-git commit -m "test(e2e): playwright smoke scaffold"
-```
+**Notes:** Root `test:e2e` uses `playwright test --config e2e/playwright.config.ts` so Playwright discovers the nested config. On Apple Silicon, run `bunx playwright install chromium --force` once if browsers were first installed under the wrong arch. Start the web app (`cd web && PUBLIC_API_URL=http://localhost:3000 bun run dev`) before `bun run test:e2e`, or set `WEB_URL` if using a different origin.
 
 ---
 
 ## Task 20: README + CLAUDE.md Update
 
 **Files:**
+
 - Create: `README.md`
 - Modify: `CLAUDE.md`
-
-- [ ] **Step 1: Write `README.md`**
-
-See README content (large block) — write directly.
-
-- [ ] **Step 2: Update `CLAUDE.md`**
-
-Replace entire file with updated CLAUDE.md for production stack.
-
-- [ ] **Step 3: Commit**
-
-```bash
-git add README.md CLAUDE.md
-git commit -m "docs: README infra sections + CLAUDE.md rewrite"
-```
+- **Step 1: Write `README.md`** — aligned with shipped stack (commands, `bunfig`/preload tests, E2E, `/items`, web health proxy).
+- **Step 2: Update `CLAUDE.md`** — production stack, middleware order, shutdown, tests/E2E notes.
+- **Step 3: Commit** (skipped)
 
 ---
 
 ## Task 21: Final Verification
 
-- [ ] **Step 1: Install all deps**
+- **Step 1: Install all deps**
 
 Run: `bun install && cd web && bun install && cd ..`
 
-- [ ] **Step 2: Full typecheck**
+- **Step 2: Full typecheck**
 
 Run: `bun run typecheck`
 Expected: exit 0.
 
-- [ ] **Step 3: Lint**
+- **Step 3: Lint**
 
 Run: `bun run lint`
 Expected: no errors.
 
-- [ ] **Step 4: All unit tests**
+- **Step 4: All unit tests**
 
 Run: `bun test`
 Expected: all pass.
 
-- [ ] **Step 5: Boot smoke**
+- **Step 5: Boot smoke**
 
 Run: `bun run dev &`, then `sleep 2 && curl -s localhost:3000/health | grep -q '"status":"ok"'`, then kill.
 
-- [ ] **Step 6: Final commit**
+- **Step 6: Final commit**
 
 ```bash
 git add -A
 git commit --allow-empty -m "chore: template scaffold verified"
 ```
+
+**Verification (2026-04-23):** `bun install && (cd web && bun install)` OK; `bun run typecheck`, `bun run lint`, and `bun test` pass; API `/health` smoke with minimal env OK. Final git commit (Step 6) left to the repo owner if desired.

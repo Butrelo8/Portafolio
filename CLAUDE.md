@@ -63,7 +63,7 @@ cd web && bun run typecheck
 
 **Validation.** Use `validate({ json, query, params })`; read `c.get('validated')`. Typed via `ContextVariableMap`.
 
-**Rate limits.** `createRateLimit` (`src/middleware/rateLimitFactory.ts`) stores buckets in a process-local `Map`. Limits are **not shared across instances**: with horizontal scale (Fly.io, Railway, k8s replicas), each process applies its own counter, so a client’s effective budget is roughly `max × replica_count` unless you add a shared store (Redis, KV, edge gateway). Single-instance deploys behave as intended.
+**Rate limits.** By default `createRateLimit` (`src/middleware/rateLimitFactory.ts`) uses in-process `MemoryStore` from `src/lib/rateLimitStore.ts` — buckets are per-process and **not shared across replicas**. With horizontal scale (Fly.io, Railway, k8s), a client’s effective budget is roughly `RATE_LIMIT_MAX × replica_count` unless you inject a shared `RateLimitStore` via `createRateLimit({ …, store })` implementing `increment(key, windowMs) → Promise<{ count, resetAt }>`. When `store` is omitted, `dispose` calls the store’s `close()`; when you pass your own store, you own its lifecycle.
 
 **Shutdown.** `createShutdownManager()` in `src/index.ts`: register `globalLimiter.dispose`, `healthLimiter.dispose`, `closeDb`, then `attachSignals()`; after `Bun.serve`, register `server.stop()`.
 

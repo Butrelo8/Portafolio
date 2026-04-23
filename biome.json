@@ -1,6 +1,9 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.4.0/schema.json",
-  "files": { "ignoreUnknown": true, "ignore": ["dist", "node_modules", "**/migrations/**"] },
+  "$schema": "https://biomejs.dev/schemas/2.4.12/schema.json",
+  "files": {
+    "ignoreUnknown": true,
+    "includes": ["**", "!**/dist", "!**/node_modules", "!**/migrations"]
+  },
   "formatter": { "enabled": true, "indentStyle": "space", "indentWidth": 2, "lineWidth": 100 },
   "linter": {
     "enabled": true,
@@ -11,5 +14,7 @@
       "correctness": { "noUnusedVariables": "error", "noUnusedImports": "error" }
     }
   },
-  "javascript": { "formatter": { "quoteStyle": "single", "semicolons": "always", "trailingCommas": "all" } }
+  "javascript": {
+    "formatter": { "quoteStyle": "single", "semicolons": "always", "trailingCommas": "all" }
+  }
 }

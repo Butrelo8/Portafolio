@@ -7,7 +7,10 @@ export function bodyLimit(maxBytes: number = DEFAULT_LIMIT): MiddlewareHandler {
   return async (c, next) => {
     const contentLength = c.req.header('content-length');
     if (contentLength && Number(contentLength) > maxBytes) {
-      return c.json(toErrorResponse(new AppError('PAYLOAD_TOO_LARGE', `Body exceeds ${maxBytes} bytes`, 413)), 413);
+      return c.json(
+        toErrorResponse(new AppError('PAYLOAD_TOO_LARGE', `Body exceeds ${maxBytes} bytes`, 413)),
+        413,
+      );
     }
     const body = c.req.raw.body;
     if (body) {
@@ -19,7 +22,12 @@ export function bodyLimit(maxBytes: number = DEFAULT_LIMIT): MiddlewareHandler {
         if (done) break;
         received += value.byteLength;
         if (received > maxBytes) {
-          return c.json(toErrorResponse(new AppError('PAYLOAD_TOO_LARGE', `Body exceeds ${maxBytes} bytes`, 413)), 413);
+          return c.json(
+            toErrorResponse(
+              new AppError('PAYLOAD_TOO_LARGE', `Body exceeds ${maxBytes} bytes`, 413),
+            ),
+            413,
+          );
         }
         chunks.push(value);
       }
