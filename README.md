@@ -1,60 +1,75 @@
-# hono-template
+# Hono Template
 
-> Starter for new projects: Hono + Bun + PostgreSQL (Drizzle) + Clerk + Stripe.
+Production-ready starter: Hono API (Bun) + Astro 4.16 (Node SSR) + Drizzle/libsql + Clerk + Resend.
 
-Use **Use this template** (green button on GitHub) to create a new repo from this template. The project name and Cursor rules expect the template to be used as **hono-template** so that rules and skills apply correctly.
-
-## Stack
-
-- **Runtime:** Bun
-- **Framework:** Hono
-- **Database:** PostgreSQL + Drizzle ORM
-- **Auth:** Clerk
-- **Payments:** Stripe
-
-## Getting Started
+## Quick Start
 
 ```bash
-# Install dependencies
 bun install
+cp .env.example .env      # fill Clerk keys, Resend key
+bun run db:generate
+bun run db:migrate
+bun run dev               # API on :3000
 
-# Copy env file and fill in values
-cp .env.example .env
-
-# Run database migrations
-bun db:migrate
-
-# Start dev server
-bun dev
+cd web && bun install && cp .env.example .env && bun run dev   # Web on :4321
 ```
+
+## Commands
+
+| Command | Purpose |
+|---------|---------|
+| `bun run dev` | API with hot reload |
+| `bun run test` | Unit + integration tests |
+| `bun run test:e2e` | Playwright E2E |
+| `bun run lint` | Biome check |
+| `bun run typecheck` | TS type check |
+| `bun run db:generate` | Generate Drizzle migration |
+| `bun run db:migrate` | Apply migrations |
+
+## Infrastructure
+
+### Env Validation (`src/env.ts`)
+Zod-validated env loader. Fails fast at boot with precise error listing every missing/invalid variable. Add new vars to schema in `src/env.ts` and document in `.env.example`.
+
+### CORS (`src/lib/corsOrigins.ts`, `src/lib/allowedOrigins.ts`)
+Env-driven allowlist via `ALLOWED_ORIGINS` (comma-separated). Auto-normalizes www↔apex pairs. Feeds both Hono `cors()` and Clerk `authorizedParties`.
+
+### Auth (`src/middleware/auth.ts`)
+Clerk JWT verification via `@clerk/backend`. `requireAuth({ verify })` injects `userId` + `sessionId` into Hono context. Uses `CLERK_SECRET_KEY` and CORS allowlist as `authorizedParties`.
+
+### Error Handling (`src/middleware/error.ts`, `src/lib/errors.ts`)
+All errors return `{ error: { code, message, status, details? } }`. Throw `AppError(code, message, status)` from handlers. Unhandled + `ZodError` auto-wrapped. Configure codes in `src/lib/errors.ts`.
+
+### Validation (`src/middleware/validate.ts`)
+Zod factory: `validate({ json?, query?, params? })`. Parsed data at `c.get('validated')`. Zod errors auto-return 400 with `details`.
+
+### Rate Limiting (`src/middleware/rateLimitFactory.ts`, `rateLimitHealth.ts`)
+In-memory fixed-window. Global reads `RATE_LIMIT_MAX` + `RATE_LIMIT_WINDOW_MS`. Health has stricter per-IP limiter. Cleanup interval `unref()`'d so won't block shutdown. For distributed, swap `Map` for Redis.
+
+### Security Headers (`src/middleware/security.ts`)
+`hono/secure-headers` with CSP, HSTS, X-Frame-Options=DENY, X-Content-Type-Options=nosniff, strict Referrer-Policy. Tune CSP when adding CDNs/analytics.
+
+### HTTPS Redirect (`src/middleware/https.ts`)
+Honors `X-Forwarded-Proto`. Enabled only in production (`NODE_ENV=production`). Toggle in `src/index.ts`.
+
+### Body Limit (`src/middleware/bodyLimit.ts`)
+Streaming cap (100KB default). Raises `413 PAYLOAD_TOO_LARGE` before fully buffering. Adjust per-route via `bodyLimit(size)`.
+
+### Structured Logging (`src/middleware/requestLogger.ts`, `src/lib/safeLog.ts`)
+JSON logs to stdout, redacts known secret fields. Level via `LOG_LEVEL` env. Request ID propagated via `x-request-id` header.
+
+### Graceful Shutdown (`src/lib/gracefulShutdown.ts`)
+Registers SIGTERM/SIGINT handlers. DB connections, rate-limit timers, server disposed in reverse registration order.
+
+### Database (`src/db/index.ts`, `src/db/detect.ts`)
+Dual-mode Drizzle: picks libsql (Turso/remote) when URL is `libsql://`, `https://`, or `file:` with auth token; else `bun:sqlite`. Migrations in `src/db/migrations/`; edit `src/db/schema.ts` then run `bun run db:generate`.
+
+### Health (`src/routes/health.ts`)
+`GET /health` → `{ status, version, uptimeSeconds, time }`. Version from `package.json`.
+
+### Web ↔ API (`web/src/lib/api.ts`)
+`getPublicApiUrl()` reads `PUBLIC_API_URL`. `apiFetch(path, { token })` injects Bearer token. No relay — Astro SSR pages fetch API directly.
 
 ## Project Structure
 
-```
-src/
-├── index.ts          # Entry point
-├── routes/           # Route handlers
-├── middleware/       # Auth, error handling
-├── db/               # Drizzle schema and connection
-├── lib/              # Stripe, utilities
-└── types/            # Shared TypeScript types
-```
-
-## Scripts
-
-| Command | Description |
-|---|---|
-| `bun dev` | Start dev server with hot reload |
-| `bun start` | Start production server |
-| `bun test` | Run tests |
-| `bun db:generate` | Generate Drizzle migrations |
-| `bun db:migrate` | Run pending migrations |
-| `bun db:studio` | Open Drizzle Studio |
-
-## Environment Variables
-
-See `.env.example` for all required variables.
-
-## Cursor
-
-This template includes `.cursor/rules/` for **hono-template**. When you create a new project from this repo, keep or rename the project so the hono-template rules and conventions apply.
+See `docs/superpowers/plans/` for implementation plans.
