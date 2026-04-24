@@ -31,6 +31,7 @@ export const requestLogger: MiddlewareHandler = async (c, next) => {
     typeof rawClient === 'string' && rawClient.trim().length > 0 ? rawClient.trim() : undefined;
 
   c.set('requestId', requestId);
+  c.set('traceId', requestId);
   if (clientRequestId !== undefined) c.set('clientRequestId', clientRequestId);
 
   c.header('x-request-id', requestId);
@@ -40,7 +41,7 @@ export const requestLogger: MiddlewareHandler = async (c, next) => {
   const durationMs = Math.round(performance.now() - start);
   logger.info({
     msg: 'request',
-    requestId,
+    traceId: requestId,
     ...(clientRequestId !== undefined ? { clientRequestId } : {}),
     method: c.req.method,
     path: c.req.path,

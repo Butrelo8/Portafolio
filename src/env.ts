@@ -24,6 +24,16 @@ const schema = z.object({
   ),
   RATE_LIMIT_MAX: z.coerce.number().int().positive().default(60),
   RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(60_000),
+  /** When true, rate-limit `clientIp` uses `x-forwarded-for` / `x-real-ip` (set only behind a trusted reverse proxy). */
+  TRUST_PROXY: z
+    .preprocess((v) => {
+      if (typeof v === 'boolean') return v;
+      const s = v === undefined || v === null ? '' : String(v).trim().toLowerCase();
+      if (s === '' || s === '0' || s === 'false' || s === 'no') return false;
+      if (s === '1' || s === 'true' || s === 'yes') return true;
+      return false;
+    }, z.boolean())
+    .default(false),
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
 });
 

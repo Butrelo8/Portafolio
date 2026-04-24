@@ -16,6 +16,7 @@ describe('parseEnv', () => {
     expect(env.PORT).toBe(3000);
     expect(env.ALLOWED_ORIGINS).toEqual(['http://localhost:4321']);
     expect(env.RESEND_API_KEY).toBeUndefined();
+    expect(env.TRUST_PROXY).toBe(false);
   });
 
   it('accepts RESEND_API_KEY when set', () => {

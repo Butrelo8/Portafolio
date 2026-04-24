@@ -1,0 +1,1 @@
+CREATE INDEX `items_owner_id_idx` ON `items` (`owner_id`);

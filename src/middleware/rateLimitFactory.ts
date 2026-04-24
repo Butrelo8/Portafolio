@@ -1,4 +1,5 @@
 import type { MiddlewareHandler } from 'hono';
+import { env } from '../env';
 import { AppError, toErrorResponse } from '../lib/errors';
 import { MemoryStore, type RateLimitStore } from '../lib/rateLimitStore';
 
@@ -40,8 +41,16 @@ export function createRateLimit(opts: RateLimitOptions): RateLimiter {
   };
 }
 
+/** Client IP key for rate limiting; `trustProxy` mirrors `env.TRUST_PROXY` (explicit param for tests). */
+export function resolveClientIp(c: Parameters<MiddlewareHandler>[0], trustProxy: boolean): string {
+  if (trustProxy) {
+    const fwd = c.req.header('x-forwarded-for');
+    if (fwd) return fwd.split(',')[0]?.trim() ?? 'unknown';
+    return c.req.header('x-real-ip') ?? 'unknown';
+  }
+  return (c.get('socketIp') as string | undefined) ?? 'unknown';
+}
+
 export function clientIp(c: Parameters<MiddlewareHandler>[0]): string {
-  const fwd = c.req.header('x-forwarded-for');
-  if (fwd) return fwd.split(',')[0]?.trim() ?? 'unknown';
-  return c.req.header('x-real-ip') ?? 'unknown';
+  return resolveClientIp(c, env.TRUST_PROXY);
 }

@@ -33,5 +33,6 @@ sqlite.exec(`
     created_at integer NOT NULL DEFAULT (unixepoch() * 1000),
     updated_at integer NOT NULL DEFAULT (unixepoch() * 1000)
   );
+  CREATE INDEX IF NOT EXISTS items_owner_id_idx ON items(owner_id);
 `);
 sqlite.close();

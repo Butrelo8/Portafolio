@@ -8,7 +8,53 @@ _Context pass:_ `CLAUDE.md` ~73 lines — OK. No in-repo MCP. Stale rule + MCP +
 
 ## Open
 
+### Redis RateLimitStore adapter (P1)
+
+- **What:** `RedisRateLimitStore` class in `src/lib/rateLimitStore.ts` implementing `RateLimitStore` interface. Uses `@upstash/redis` (HTTP-based, no persistent connection). Atomic `INCR` + `EXPIREAT` via pipeline. `REDIS_URL` optional env var — absent = MemoryStore fallback. Both `globalLimiter` and `healthLimiter` share same store instance. Fail-open: `store.increment()` wrapped in try/catch in `rateLimitFactory.ts`; on error log `warn` with `msg: 'rate_limit_store_error'` and pass request through.
+- **Why:** In-process `MemoryStore` gives each replica its own budget. 2 replicas = 2× allowed budget per IP. Redis fixes this — all replicas share one counter per key.
+- **Effort:** M (human: ~1 day / CC: ~15 min). **Priority: P4.**
+- **Notes:** ms→s conversion for `EXPIREAT` (`Math.ceil(resetAt / 1000)`). Add `REDIS_URL` to `.env.example` + `safeLog.ts` SECRET_KEYS. Tests: Redis contract + fail-open + MemoryStore fallback when `REDIS_URL` absent. Plan at ~/Cursor Projects/Hono Template/docs/superpowers/plans/2026-04-23-redis-rate-limit-adapter.md
+
+### Clerk org support — orgId on context (P2)
+
+- **What:** Extract `orgId` from Clerk JWT claims in `requireAuth`. Add to `ContextVariableMap`. Items queries optionally scope by `orgId` when present.
+- **Why:** Foundation for org-scoped SaaS. Clerk already returns `orgId` in JWT — just not extracted. Every multi-tenant user implements this from scratch today.
+- **Effort:** M (human: ~1 day / CC: ~20 min). **Priority: P2.**
+- **Notes:** Items table may need `org_id` column + Drizzle migration. Verify Clerk JWT claim field name. Design before implementing.
+
+### Fly.io deploy config — fly.toml + Dockerfile (P2)
+
+- **What:** `fly.toml` targeting Bun runtime, multi-stage Dockerfile, README 'Deploy' section step-by-step.
+- **Why:** Design doc success criterion: "Clone to bun dev in under 5 minutes." Without deploy scaffolding users spend 30–60 min on config.
+- **Effort:** S (human: ~3h / CC: ~10 min). **Priority: P2.**
+
+### Resend email route — POST /email/send (P3)
+
+- **What:** `src/routes/email.ts` with `POST /email/send`, Zod validation, `requireAuth`, Resend SDK call. `RESEND_API_KEY` already stubbed in `src/env.ts`.
+- **Why:** Completes auth + CRUD + email primitives. Env var stub confuses cloners.
+- **Effort:** S (human: ~4h / CC: ~10 min). **Priority: P3.**
+- **Notes:** Test suite needs Resend SDK mock.
+
 ## Completed
+
+### Structured traceId propagation (2026-04-24)
+
+- **Outcome:** `requestLogger.ts` sets `c.set('traceId', requestId)` (same UUID as `requestId`; no second `randomUUID`). `ContextVariableMap` has `traceId` in `src/types/hono.d.ts`. Access log (`msg: request`) and `errorHandler` logs use field `traceId`. `error.ts` resolves via `c.get('traceId') ?? c.get('requestId')`.
+- **Tests:** `tests/requestLogger.test.ts` — `traceId` on context + access log JSON; `tests/errors.test.ts` — unhandled error log line matches `x-request-id`.
+
+### Full CRUD tests + owner isolation for /items (2026-04-23)
+
+- **Outcome:** `tests/items.test.ts` — `buildItemsApp`, `fakeAuth` / `fakeAuthU2` (`good` / `good2`). Covers POST create, GET/PATCH/DELETE 404 unknown id, POST empty name → 400, PATCH/DELETE happy path, owner isolation on GET/PATCH/DELETE (u2 → 404; delete case confirms u1 still has row).
+
+### GET /items pagination + `items_owner_id_idx` (2026-04-23)
+
+- **Outcome:** `?limit` (1–200, default 50) and optional `?cursor` (item UUID) on `GET /items`; Zod via `validate({ query: listQuery })`; response `{ items, nextCursor }` with `limit+1` fetch and `orderBy(asc(items.id))`. Index `items_owner_id_idx` on `owner_id` in `src/db/schema.ts`; migration `0001_sticky_madelyne_pryor.sql`.
+- **Tests:** `tests/items.test.ts` asserts `nextCursor`; `paginates with limit and cursor`. `tests/preload.ts` creates the same index on the test file DB.
+
+### Fix clientIp spoofing — TRUST_PROXY + socket IP (2026-04-23)
+
+- **Outcome:** `TRUST_PROXY` in `src/env.ts` (default `false`, safe string/boolean parsing). `resolveClientIp` / `clientIp` in `rateLimitFactory.ts` use `c.get('socketIp')` unless proxy trust is on. `src/index.ts` sets `socketIp` via `bunServer.requestIP` before global rate limit. `ContextVariableMap.socketIp`, `.env.example`, `tests/rateLimit.test.ts` (spoofed `X-Forwarded-For` same bucket when `resolveClientIp(..., false)`).
+- **Docs:** `CLAUDE.md` middleware order + rate limit note.
 
 ### Pluggable rate limit store — interface + MemoryStore (2026-04-23)
 
