@@ -5,12 +5,12 @@ import { AppError, toErrorResponse } from '../lib/errors';
 import { logger } from './requestLogger';
 
 export const errorHandler: ErrorHandler = (err, c) => {
-  const requestId = c.get('requestId');
+  const traceId = c.get('traceId') ?? c.get('requestId');
 
   if (err instanceof AppError) {
     logger.warn({
       msg: 'app_error',
-      requestId,
+      traceId,
       code: err.code,
       status: err.status,
       message: err.message,
@@ -20,13 +20,13 @@ export const errorHandler: ErrorHandler = (err, c) => {
 
   if (err instanceof ZodError) {
     const wrapped = new AppError('VALIDATION', 'Validation failed', 400, err.issues);
-    logger.warn({ msg: 'validation_error', requestId, issues: err.issues });
+    logger.warn({ msg: 'validation_error', traceId, issues: err.issues });
     return c.json(toErrorResponse(wrapped), 400);
   }
 
   logger.error({
     msg: 'unhandled_error',
-    requestId,
+    traceId,
     error: err instanceof Error ? err.message : String(err),
     stack: err instanceof Error ? err.stack : undefined,
   });

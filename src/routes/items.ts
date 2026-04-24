@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm';
+import { and, asc, eq, gt } from 'drizzle-orm';
 import { Hono } from 'hono';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
 import { z } from 'zod';
@@ -17,14 +17,37 @@ const updateSchema = createSchema.partial();
 
 const idParams = z.object({ id: z.string().uuid() });
 
+const listQuery = z.object({
+  limit: z.coerce.number().int().min(1).max(200).default(50),
+  cursor: z.preprocess(
+    (v) => (v === '' || v === undefined || v === null ? undefined : String(v)),
+    z.string().uuid().optional(),
+  ),
+});
+
 export function itemsRoute(auth: AuthOptions): Hono {
   const app = new Hono();
   app.use('*', requireAuth(auth));
 
-  app.get('/', async (c) => {
+  app.get('/', validate({ query: listQuery }), async (c) => {
     const ownerId = c.get('userId');
-    const rows = await db.select().from(items).where(eq(items.ownerId, ownerId));
-    return c.json({ items: rows });
+    const { limit, cursor } = c.get('validated').query as z.infer<typeof listQuery>;
+    const conditions = cursor
+      ? and(eq(items.ownerId, ownerId), gt(items.id, cursor))
+      : eq(items.ownerId, ownerId);
+    const rows = await db
+      .select()
+      .from(items)
+      .where(conditions)
+      .orderBy(asc(items.id))
+      .limit(limit + 1);
+    const hasMore = rows.length > limit;
+    const page = hasMore ? rows.slice(0, limit) : rows;
+    const last = page[page.length - 1];
+    return c.json({
+      items: page,
+      nextCursor: hasMore && last ? last.id : null,
+    });
   });
 
   app.post('/', validate({ json: createSchema }), async (c) => {

@@ -14,6 +14,9 @@ import { logger, requestLogger } from './middleware/requestLogger';
 import { security } from './middleware/security';
 import { mountRoutes } from './routes';
 
+/** Assigned in `Bun.serve`; request handlers run only after listen, so `requestIP` is valid for live traffic. */
+let bunServer: ReturnType<typeof Bun.serve>;
+
 const app = new Hono();
 const shutdown = createShutdownManager();
 
@@ -22,6 +25,11 @@ app.onError(errorHandler);
 app.use('*', security);
 app.use('*', httpsRedirect(env.NODE_ENV === 'production'));
 app.use('*', requestLogger);
+app.use('*', async (c, next) => {
+  const ip = bunServer.requestIP(c.req.raw);
+  c.set('socketIp', ip?.address ?? 'unknown');
+  await next();
+});
 
 const globalLimiter = createRateLimit({
   max: env.RATE_LIMIT_MAX,
@@ -52,7 +60,7 @@ shutdown.register(async () => {
 });
 shutdown.attachSignals();
 
-const server = Bun.serve({
+bunServer = Bun.serve({
   port: env.PORT,
   fetch: app.fetch,
 });
@@ -60,5 +68,5 @@ const server = Bun.serve({
 logger.info({ msg: 'server_started', port: env.PORT, env: env.NODE_ENV });
 
 shutdown.register(async () => {
-  server.stop();
+  bunServer.stop();
 });
