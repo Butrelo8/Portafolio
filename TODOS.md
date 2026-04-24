@@ -8,6 +8,20 @@ _Context pass:_ `CLAUDE.md` ~73 lines — OK. No in-repo MCP. Stale rule + MCP +
 
 ## Open
 
+### Fail-open wrapper for rate limit store (Blocking P1)
+
+- **What:** Wrap `store.increment(key, windowMs)` in try/catch in `src/middleware/rateLimitFactory.ts:27`. On error: log `warn` with `msg: 'rate_limit_store_error'`, pass request through (fail open), no 500.
+- **Why:** MemoryStore never throws. When Redis adapter lands, any store error (network, Redis down, auth fail) currently crashes all requests. Fail-open prevents cascading outage.
+- **Effort:** S (human: ~30m / CC: ~5 min). **Priority: Blocking P1.**
+- **Notes:** Error log must include error message + store type for debugging. Add unit test for try/catch path (simulate store.increment() throw).
+
+### Log clientIp in request access log (Medium quality)
+
+- **What:** Add `clientIp` field to access log in `src/middleware/requestLogger.ts:42-50`. Call `resolveClientIp(c, env.TRUST_PROXY)` post-`next()` when `socketIp` is available. Move `resolveClientIp` to shared utility (`src/lib/clientIp.ts` or similar) to avoid circular import with `rateLimitFactory`.
+- **Why:** When rate limit spike fires, ops need IP in access log to correlate spike with source. Currently only have `traceId`. MemoryStore keys use IP but it's not visible in logs.
+- **Effort:** S (human: ~45m / CC: ~10 min). **Priority: MEDIUM.**
+- **Notes:** Check `socketIp` is always set at post-`next()` time (it is — socketIp middleware runs before rate limit). Test with TRUST_PROXY=true + spoofed X-Forwarded-For to verify correct IP logged.
+
 ### Redis RateLimitStore adapter (P1)
 
 - **What:** `RedisRateLimitStore` class in `src/lib/rateLimitStore.ts` implementing `RateLimitStore` interface. Uses `@upstash/redis` (HTTP-based, no persistent connection). Atomic `INCR` + `EXPIREAT` via pipeline. `REDIS_URL` optional env var — absent = MemoryStore fallback. Both `globalLimiter` and `healthLimiter` share same store instance. Fail-open: `store.increment()` wrapped in try/catch in `rateLimitFactory.ts`; on error log `warn` with `msg: 'rate_limit_store_error'` and pass request through.

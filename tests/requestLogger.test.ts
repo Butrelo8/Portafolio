@@ -8,9 +8,7 @@ describe('requestLogger', () => {
   it('always sets server x-request-id; response does not echo client-supplied id', async () => {
     const app = new Hono();
     app.use('*', requestLogger);
-    app.get('/', (c) =>
-      c.json({ requestId: c.get('requestId'), traceId: c.get('traceId') }),
-    );
+    app.get('/', (c) => c.json({ requestId: c.get('requestId'), traceId: c.get('traceId') }));
 
     const res = await app.request('/', {
       headers: { 'x-request-id': 'client-controlled-id' },
