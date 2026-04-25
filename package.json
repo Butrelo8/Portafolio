@@ -12,7 +12,7 @@
     "lint": "biome check src tests scripts web",
     "lint:fix": "biome check --write src tests scripts web",
     "format": "biome format --write src tests scripts web",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "hono": "^4.0.0",
