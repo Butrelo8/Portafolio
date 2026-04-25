@@ -8,27 +8,21 @@ _Context pass:_ `CLAUDE.md` ~73 lines — OK. No in-repo MCP. Stale rule + MCP +
 
 ## Open
 
-### Redis RateLimitStore adapter (P1)
+### Redis RateLimitStore adapter (P4)
 
 - **What:** `RedisRateLimitStore` class in `src/lib/rateLimitStore.ts` implementing `RateLimitStore` interface. Uses `@upstash/redis` (HTTP-based, no persistent connection). Atomic `INCR` + `EXPIREAT` via pipeline. `REDIS_URL` optional env var — absent = MemoryStore fallback. Both `globalLimiter` and `healthLimiter` share same store instance. Store errors already fail-open in `rateLimitFactory.ts` (`msg: 'rate_limit_store_error'`).
 - **Why:** In-process `MemoryStore` gives each replica its own budget. 2 replicas = 2× allowed budget per IP. Redis fixes this — all replicas share one counter per key.
 - **Effort:** M (human: ~1 day / CC: ~15 min). **Priority: P4.**
 - **Notes:** ms→s conversion for `EXPIREAT` (`Math.ceil(resetAt / 1000)`). Add `REDIS_URL` to `.env.example` + `safeLog.ts` SECRET_KEYS. Tests: Redis contract + fail-open + MemoryStore fallback when `REDIS_URL` absent. Plan at ~/Cursor Projects/Hono Template/docs/superpowers/plans/2026-04-23-redis-rate-limit-adapter.md
 
-### Clerk org support — orgId on context (P2)
+### Clerk org support — orgId on context (P4)
 
 - **What:** Extract `orgId` from Clerk JWT claims in `requireAuth`. Add to `ContextVariableMap`. Items queries optionally scope by `orgId` when present.
 - **Why:** Foundation for org-scoped SaaS. Clerk already returns `orgId` in JWT — just not extracted. Every multi-tenant user implements this from scratch today.
 - **Effort:** M (human: ~1 day / CC: ~20 min). **Priority: P2.**
 - **Notes:** Items table may need `org_id` column + Drizzle migration. Verify Clerk JWT claim field name. Design before implementing.
 
-### Fly.io deploy config — fly.toml + Dockerfile (P2)
-
-- **What:** `fly.toml` targeting Bun runtime, multi-stage Dockerfile, README 'Deploy' section step-by-step.
-- **Why:** Design doc success criterion: "Clone to bun dev in under 5 minutes." Without deploy scaffolding users spend 30–60 min on config.
-- **Effort:** S (human: ~3h / CC: ~10 min). **Priority: P2.**
-
-### Resend email route — POST /email/send (P3)
+### Resend email route — POST /email/send (P4)
 
 - **What:** `src/routes/email.ts` with `POST /email/send`, Zod validation, `requireAuth`, Resend SDK call. `RESEND_API_KEY` already stubbed in `src/env.ts`.
 - **Why:** Completes auth + CRUD + email primitives. Env var stub confuses cloners.
@@ -36,6 +30,11 @@ _Context pass:_ `CLAUDE.md` ~73 lines — OK. No in-repo MCP. Stale rule + MCP +
 - **Notes:** Test suite needs Resend SDK mock.
 
 ## Completed
+
+### Fly.io deploy config — fly.toml + Dockerfile (2026-04-25)
+
+- **Outcome:** `Dockerfile` — multi-stage `oven/bun:1.3`: builder `bun install --frozen-lockfile` + `bun build src/index.ts --outdir dist --target bun`; runtime production deps + `dist/`, `src/` (migrations), `scripts/`, non-root user, `CMD ["bun","dist/index.js"]`. `fly.toml` — `http_service` on 3000, `GET /health` check, `release_command` = `bun run scripts/run-migrations.ts`, `[[vm]]` 512mb / 1 CPU. `.dockerignore` adds `web/` + `e2e/`. README **Deploy (Fly.io) — API** — flyctl, secrets, libsql note, `TRUST_PROXY`, deploy, logs/scale, optional `docker build` smoke. **Tests:** `tests/flyDeployArtifacts.test.ts` — root `Dockerfile`/`fly.toml` exist; key strings for port, health path, build/run.
+- **Note:** Rename `app` in `fly.toml` or use `fly launch` before first deploy.
 
 ### Log clientIp in request access log (2026-04-25)
 

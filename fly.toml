@@ -1,0 +1,38 @@
+# Fly.io — Hono API (Bun). Rename `app` or run `fly launch` to pick a unique name.
+app = "hono-template-api"
+primary_region = "iad"
+kill_signal = "SIGINT"
+kill_timeout = "30s"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "3000"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 100
+    hard_limit = 200
+
+[[http_service.checks]]
+  grace_period = "10s"
+  interval = "30s"
+  method = "GET"
+  path = "/health"
+  timeout = "5s"
+
+[deploy]
+  release_command = "bun run scripts/run-migrations.ts"
+
+[[vm]]
+  memory = "512mb"
+  cpus = 1

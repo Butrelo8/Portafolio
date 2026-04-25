@@ -1,51 +1,33 @@
 ---
-description: Tech stack preferences and conventions for full stack + infrastructure work
+description: Stack and conventions for this project — see CLAUDE.md for full context
 alwaysApply: true
 ---
 
-## LANGUAGE & TYPING
-- TypeScript over JavaScript always — strict mode enabled, no `any` without justification
+## STACK (this project)
+- Language: TypeScript (strict mode, noUncheckedIndexedAccess, exactOptionalPropertyTypes)
+- Frontend: Astro 4.16 — `web/` directory, Node SSR via `@astrojs/node` standalone
+- Backend: Hono 4
+- Runtime: Bun
+- Database: libsql / bun:sqlite + Drizzle ORM (driver auto-selected: `file:` → bun:sqlite, `libsql:`/`https:` → @libsql/client)
+- Auth: Clerk — API-only JWT verify via `@clerk/backend`. Never roll your own.
+- Email: Resend — optional until email send routes exist (`RESEND_API_KEY`)
+- Payments: not used
+- Deploy: Fly.io (planned — see TODOS.md)
 
-## PREFERRED STACK (suggest these before alternatives)
-- Frontend: Next.js (apps/dashboards) or Astro (landing/content)
-- Backend: Hono over Express or Fastify — TypeScript-native, edge-ready
-- Runtime: Bun over Node when possible
-- Database: PostgreSQL + Drizzle ORM
-- Auth: Clerk — never roll your own
-- Payments: Stripe — use webhook handlers with idempotency keys always
+## SOURCE OF TRUTH
+Stack decisions live in `CLAUDE.md`. This file is a Cursor-facing summary.
+If they conflict, `CLAUDE.md` wins.
 
-## PATTERNS
+## PATTERNS (always apply)
 - Functional patterns preferred over classes where it makes sense
-- Typed errors — never swallow exceptions silently, always log or propagate
-- Named exports over default exports (easier to refactor and search)
-- Barrel files (index.ts) only when the module surface is stable
-
-## BACKEND
+- Typed errors — never swallow silently, always log or propagate
+- Named exports over default exports
+- Barrel files (index.ts) only when module surface is stable
 - REST APIs: consistent error response shape across all endpoints
-- Validate request inputs at the route handler level before business logic
-- Database: parameterized queries always, never string interpolation in SQL
-- Migrations: always reversible, never destructive without explicit backup step
-- Stripe webhooks: always verify signature, always return 200 before processing
-
-## DOCKER & INFRA
-- No root in containers — always use a non-root user
-- Multi-stage builds to keep images small
-- .dockerignore always present — use the project's existing 
-- .dockerignore, never create one from scratch
-- Environment variables via .env or secrets manager, never hardcoded
-- Idempotent scripts — running twice should not break anything
-- Dry-run flags on destructive scripts
-
-## FRONTEND
-- CSS: use variables for colors, spacing, and typography
-- No inline styles unless dynamically computed
-- Accessible by default — semantic HTML, alt text, keyboard navigation
-
-## DEPLOY GUIDANCE (default picks)
-- Backend: Railway (fast MVP) or Render (stable pricing); Coolify if you already have a VPS you manage.
-- Frontend: Vercel for Next.js; Netlify for Astro/other non-Next static/content stacks.
-
-## QUICK STACK REASONING (why this default set)
-- Prefer frameworks that minimize TypeScript impedance mismatch: Hono + Bun keeps the stack “type-native”.
-- Prefer data tooling that produces readable SQL: PostgreSQL + Drizzle keeps queries understandable and maintainable.
-- Prefer managed auth and payments: Clerk and Stripe reduce time-to-correctness, especially around edge cases and security boundaries.
+- Validate inputs at route handler level before business logic
+- Parameterized queries always — never string interpolation in SQL
+- Migrations: always reversible, never destructive without backup step
+- Webhook handlers: verify signature, return 200 before processing
+- Docker: no root in containers, multi-stage builds, .dockerignore required
+- Env vars via .env or secrets manager — never hardcoded
+- Idempotent scripts — running twice must not break anything
