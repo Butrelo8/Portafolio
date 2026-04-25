@@ -1,14 +1,62 @@
 ---
 export const prerender = true
+import BaseLayout from '../../../layouts/BaseLayout.astro'
 import { fetchProjects, fetchProject } from '../../../lib/api'
+
 export async function getStaticPaths() {
   const projects = await fetchProjects()
   return projects.map(p => ({ params: { slug: p.slug } }))
 }
+
 const { slug } = Astro.params
 const project = await fetchProject(slug)
 if (!project) return Astro.redirect('/404')
 ---
-<html lang="es"><head><title>{project.name}</title></head><body>
-  <h1>{project.name}</h1><p>{project.description}</p>
-</body></html>
+
+<BaseLayout title={project.name} description={project.description} lang="es">
+  <article class="project container">
+    <header>
+      <p class="mono project__back"><a href="/es/">← Volver</a></p>
+      <h1 class="project__name mono">{project.name}</h1>
+      {project.tagline && <p class="project__tagline">{project.tagline}</p>}
+      <div class="project__meta mono">
+        <span>★ {project.stars}</span>
+        {project.language && <span>{project.language}</span>}
+        <span>{new Date(project.updatedAt).toLocaleDateString('es-ES', { year: 'numeric', month: 'short' })}</span>
+      </div>
+      <ul class="project__stack" aria-label="Stack">
+        {project.stack.map(t => <li class="mono">{t}</li>)}
+      </ul>
+      <div class="project__links">
+        <a href={project.repoUrl} target="_blank" rel="noopener noreferrer" class="brut-btn">GitHub ↗</a>
+        {project.homepage && <a href={project.homepage} target="_blank" rel="noopener noreferrer" class="brut-btn">Demo ↗</a>}
+      </div>
+    </header>
+    {project.screenshot && (
+      <div class="project__screenshot brut-card">
+        <img src={project.screenshot} alt={`${project.name} captura`} />
+      </div>
+    )}
+    <div class="project__readme prose" set:html={project.readmeMarkdown} />
+  </article>
+</BaseLayout>
+
+<style>
+  .project { padding-block: var(--space-12); }
+  .project__back { margin-bottom: var(--space-6); font-size: var(--text-sm); }
+  .project__back a:hover { color: var(--color-accent); }
+  .project__name { font-size: var(--text-2xl); font-weight: 700; margin-bottom: var(--space-3); }
+  .project__tagline { font-size: var(--text-lg); color: var(--color-accent); font-weight: 600; margin-bottom: var(--space-4); }
+  .project__meta { display: flex; gap: var(--space-6); font-size: var(--text-sm); color: var(--color-muted); margin-bottom: var(--space-4); }
+  .project__stack { display: flex; flex-wrap: wrap; gap: var(--space-2); list-style: none; margin-bottom: var(--space-6); }
+  .project__stack li { padding: var(--space-1) var(--space-3); border: var(--border-width) solid var(--color-border); font-size: var(--text-xs); }
+  .project__links { display: flex; gap: var(--space-4); flex-wrap: wrap; margin-bottom: var(--space-8); }
+  .project__screenshot { margin-bottom: var(--space-8); overflow: hidden; }
+  .project__readme { max-width: 70ch; }
+  .prose :global(h1), .prose :global(h2), .prose :global(h3) { font-family: var(--font-mono); margin-block: var(--space-6) var(--space-3); }
+  .prose :global(p) { margin-bottom: var(--space-4); line-height: 1.7; }
+  .prose :global(code) { font-family: var(--font-mono); font-size: 0.9em; background: var(--color-fg); color: var(--color-bg); padding: 0.1em 0.3em; }
+  .prose :global(pre) { background: var(--color-fg); color: var(--color-bg); padding: var(--space-6); overflow-x: auto; margin-bottom: var(--space-4); border: var(--border-width) solid var(--color-border); }
+  .prose :global(ul), .prose :global(ol) { margin-left: var(--space-6); margin-bottom: var(--space-4); }
+  .prose :global(a) { color: var(--color-accent); text-decoration: underline; }
+</style>
