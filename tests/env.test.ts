@@ -1,49 +1,22 @@
-import { describe, expect, it } from 'bun:test';
-import { parseEnv } from '../src/env';
+import { beforeEach, describe, expect, test } from 'bun:test';
 
-describe('parseEnv', () => {
-  it('accepts minimal valid env without Resend', () => {
-    const env = parseEnv({
-      NODE_ENV: 'test',
-      PORT: '3000',
-      DATABASE_URL: 'file:./local.db',
-      CLERK_SECRET_KEY: 'sk_test_x',
-      CLERK_PUBLISHABLE_KEY: 'pk_test_x',
-      ALLOWED_ORIGINS: 'http://localhost:4321',
-      RATE_LIMIT_MAX: '60',
-      RATE_LIMIT_WINDOW_MS: '60000',
-    });
-    expect(env.PORT).toBe(3000);
-    expect(env.ALLOWED_ORIGINS).toEqual(['http://localhost:4321']);
-    expect(env.RESEND_API_KEY).toBeUndefined();
-    expect(env.TRUST_PROXY).toBe(false);
+describe('env', () => {
+  beforeEach(() => {
+    process.env.GITHUB_TOKEN = 'ghp_test';
+    process.env.GITHUB_USERNAME = 'testuser';
+    process.env.PORTFOLIO_TOPIC = 'portfolio';
   });
 
-  it('accepts RESEND_API_KEY when set', () => {
-    const env = parseEnv({
-      NODE_ENV: 'test',
-      DATABASE_URL: 'file:./local.db',
-      CLERK_SECRET_KEY: 'sk_test_x',
-      CLERK_PUBLISHABLE_KEY: 'pk_test_x',
-      ALLOWED_ORIGINS: 'http://localhost:4321',
-      RESEND_API_KEY: 're_x',
-    });
-    expect(env.RESEND_API_KEY).toBe('re_x');
+  test('parses required vars', async () => {
+    const { env } = await import('../src/env');
+    expect(env.GITHUB_TOKEN).toBe('ghp_test');
+    expect(env.GITHUB_USERNAME).toBe('testuser');
+    expect(env.PORTFOLIO_TOPIC).toBe('portfolio');
   });
 
-  it('treats empty RESEND_API_KEY as unset', () => {
-    const env = parseEnv({
-      NODE_ENV: 'test',
-      DATABASE_URL: 'file:./local.db',
-      CLERK_SECRET_KEY: 'sk_test_x',
-      CLERK_PUBLISHABLE_KEY: 'pk_test_x',
-      ALLOWED_ORIGINS: 'http://localhost:4321',
-      RESEND_API_KEY: '',
-    });
-    expect(env.RESEND_API_KEY).toBeUndefined();
-  });
-
-  it('rejects missing CLERK_SECRET_KEY', () => {
-    expect(() => parseEnv({ NODE_ENV: 'test' } as never)).toThrow();
+  test('CACHE_TTL_MS defaults to 600000', async () => {
+    delete process.env.CACHE_TTL_MS;
+    const { env } = await import('../src/env');
+    expect(env.CACHE_TTL_MS).toBe(600000);
   });
 });

@@ -1,0 +1,55 @@
+---
+import type { Project } from '../lib/api'
+
+interface Props {
+  project: Project
+  lang: 'en' | 'es'
+}
+
+const { project, lang } = Astro.props
+const href = lang === 'es' ? `/es/projects/${project.slug}` : `/projects/${project.slug}`
+---
+
+<article class="brut-card project-card">
+  {project.screenshot && (
+    <div class="project-card__image">
+      <img src={project.screenshot} alt={`${project.name} screenshot`} loading="lazy" />
+    </div>
+  )}
+  <div class="project-card__body">
+    <div class="project-card__meta mono">
+      <span>★ {project.stars}</span>
+      {project.language && <span>{project.language}</span>}
+    </div>
+    <h3 class="project-card__name mono">{project.name}</h3>
+    {project.tagline && <p class="project-card__tagline">{project.tagline}</p>}
+    <p class="project-card__desc">{project.description}</p>
+    <ul class="project-card__stack" aria-label="Tech stack">
+      {project.stack.map(t => <li class="mono">{t}</li>)}
+    </ul>
+    <div class="project-card__links">
+      <a href={href} class="brut-btn">
+        {lang === 'es' ? 'Ver proyecto' : 'View project'}
+      </a>
+      {project.homepage && (
+        <a href={project.homepage} target="_blank" rel="noopener noreferrer" class="brut-btn brut-btn--secondary">
+          {lang === 'es' ? 'Demo en vivo' : 'Live demo'}
+        </a>
+      )}
+    </div>
+  </div>
+</article>
+
+<style>
+  .project-card { display: flex; flex-direction: column; }
+  .project-card__image img { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-bottom: var(--border-width-thick) solid var(--color-border); }
+  .project-card__body { padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-3); flex: 1; }
+  .project-card__meta { display: flex; gap: var(--space-4); font-size: var(--text-xs); color: var(--color-muted); }
+  .project-card__name { font-size: var(--text-lg); font-weight: 700; }
+  .project-card__tagline { font-size: var(--text-sm); color: var(--color-accent); font-weight: 600; }
+  .project-card__desc { font-size: var(--text-sm); color: var(--color-muted); flex: 1; }
+  .project-card__stack { display: flex; flex-wrap: wrap; gap: var(--space-2); list-style: none; font-size: var(--text-xs); }
+  .project-card__stack li { padding: var(--space-1) var(--space-2); border: var(--border-width) solid var(--color-border); background: var(--color-bg); }
+  .project-card__links { display: flex; gap: var(--space-3); flex-wrap: wrap; margin-top: var(--space-2); }
+  .brut-btn--secondary { background: var(--color-surface); color: var(--color-fg); }
+</style>

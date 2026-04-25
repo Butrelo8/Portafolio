@@ -1,37 +1,37 @@
 ---
 export const prerender = true
-import BaseLayout from '../layouts/BaseLayout.astro'
-import ProjectCard from '../components/ProjectCard.astro'
-import { fetchProjects } from '../lib/api'
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import ProjectCard from '../../components/ProjectCard.astro'
+import { fetchProjects } from '../../lib/api'
 
 const projects = await fetchProjects()
 const featured = projects.filter(p => p.featured)
 const rest = projects.filter(p => !p.featured)
 ---
 
-<BaseLayout title="Portfolio" description="My open-source projects" lang="en">
+<BaseLayout title="Portafolio" description="Mis proyectos open source" lang="es">
   <section class="hero container">
-    <p class="hero__label mono">hello world</p>
+    <p class="hero__label mono">hola mundo</p>
     <h1 class="hero__title">
-      I build things<br />
-      <span class="hero__accent">for the web.</span>
+      Construyo cosas<br />
+      <span class="hero__accent">para la web.</span>
     </h1>
-    <p class="hero__sub">Full-stack developer. Open source contributor. TypeScript enthusiast.</p>
+    <p class="hero__sub">Desarrollador full-stack. Contribuidor open source. Entusiasta de TypeScript.</p>
   </section>
 
   {featured.length > 0 && (
     <section class="section container">
-      <h2 class="section__title mono">// featured</h2>
+      <h2 class="section__title mono">// destacados</h2>
       <div class="grid grid--featured">
-        {featured.map(p => <ProjectCard project={p} lang="en" />)}
+        {featured.map(p => <ProjectCard project={p} lang="es" />)}
       </div>
     </section>
   )}
 
   <section class="section container">
-    <h2 class="section__title mono">// all projects</h2>
+    <h2 class="section__title mono">// todos los proyectos</h2>
     <div class="grid">
-      {rest.map(p => <ProjectCard project={p} lang="en" />)}
+      {rest.map(p => <ProjectCard project={p} lang="es" />)}
     </div>
   </section>
 </BaseLayout>

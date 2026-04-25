@@ -7,7 +7,7 @@ type Level = 'debug' | 'info' | 'warn' | 'error';
 const ORDER: Record<Level, number> = { debug: 10, info: 20, warn: 30, error: 40 };
 
 function log(level: Level, payload: Record<string, unknown>): void {
-  if (ORDER[level] < ORDER[env.LOG_LEVEL]) return;
+  if (ORDER[level] < ORDER[env.LOG_LEVEL as Level]) return;
   const entry = {
     time: new Date().toISOString(),
     level,
