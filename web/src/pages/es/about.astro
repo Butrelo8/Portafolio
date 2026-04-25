@@ -1,0 +1,26 @@
+---
+export const prerender = true
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import { getEntry } from 'astro:content'
+
+const about = await getEntry('about', 'es')
+const { Content } = await about!.render()
+---
+
+<BaseLayout title="Sobre Mí" description="Sobre mí" lang="es">
+  <div class="about container">
+    <h1 class="about__title mono">// sobre mí</h1>
+    <div class="prose about__content"><Content /></div>
+  </div>
+</BaseLayout>
+
+<style>
+  .about { padding-block: var(--space-section); }
+  .about__title { font-size: var(--text-xl); color: var(--color-muted); margin-bottom: var(--space-8); }
+  .about__content { max-width: 60ch; }
+  .prose :global(h2) { font-family: var(--font-mono); font-size: var(--text-lg); margin-block: var(--space-8) var(--space-4); }
+  .prose :global(p) { margin-bottom: var(--space-4); line-height: 1.7; }
+  .prose :global(ul) { margin-left: var(--space-6); margin-bottom: var(--space-4); }
+  .prose :global(strong) { font-weight: 700; }
+  .prose :global(a) { color: var(--color-accent); text-decoration: underline; }
+</style>

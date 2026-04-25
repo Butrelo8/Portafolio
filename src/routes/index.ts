@@ -1,11 +1,12 @@
 import { Hono } from 'hono';
-import type { AuthOptions } from '../middleware/auth';
 import { healthRoute } from './health';
-import { itemsRoute } from './items';
+import projects from './projects';
+import revalidate from './revalidate';
 
-export function mountRoutes(auth: AuthOptions): Hono {
+export function mountRoutes(): Hono {
   const app = new Hono();
   app.route('/health', healthRoute());
-  app.route('/items', itemsRoute(auth));
+  app.route('/', projects);
+  app.route('/', revalidate);
   return app;
 }

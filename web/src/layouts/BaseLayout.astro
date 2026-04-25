@@ -1,20 +1,44 @@
 ---
+import Nav from '../components/Nav.astro'
+import '../styles/global.css'
+
 interface Props {
-  title: string;
+  title: string
+  description?: string
+  lang?: 'en' | 'es'
 }
-// biome-ignore lint/correctness/noUnusedVariables: used in HTML template below
-const { title } = Astro.props;
+
+const { title, description = '', lang = 'en' } = Astro.props
+const currentPath = Astro.url.pathname
 ---
+
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
     <title>{title}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
   <body>
-    <main>
-      <slot />
-    </main>
+    <Nav lang={lang} currentPath={currentPath} />
+    <main><slot /></main>
+    <footer class="footer">
+      <div class="container footer__inner mono">
+        <p>© {new Date().getFullYear()} — Built with Astro + Hono</p>
+        <div class="footer__social">
+          <a href="https://github.com/Butrelo8" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>
+
+<style>
+  main { min-height: calc(100vh - 8rem); }
+  .footer { border-top: var(--border-width-thick) solid var(--color-border); padding-block: var(--space-8); background: var(--color-fg); color: var(--color-bg); }
+  .footer__inner { display: flex; justify-content: space-between; align-items: center; font-size: var(--text-xs); }
+  .footer__social { display: flex; gap: var(--space-4); }
+  .footer__social a:hover { color: var(--color-accent); }
+</style>
