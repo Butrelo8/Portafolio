@@ -1,5 +1,6 @@
 import type { MiddlewareHandler } from 'hono';
 import { env } from '../env';
+import { resolveClientIp } from '../lib/clientIp';
 import { redact } from '../lib/safeLog';
 
 type Level = 'debug' | 'info' | 'warn' | 'error';
@@ -39,9 +40,11 @@ export const requestLogger: MiddlewareHandler = async (c, next) => {
   const start = performance.now();
   await next();
   const durationMs = Math.round(performance.now() - start);
+  const clientIp = resolveClientIp(c, env.TRUST_PROXY);
   logger.info({
     msg: 'request',
     traceId: requestId,
+    clientIp,
     ...(clientRequestId !== undefined ? { clientRequestId } : {}),
     method: c.req.method,
     path: c.req.path,
