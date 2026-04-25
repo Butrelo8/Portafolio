@@ -41,7 +41,7 @@ const healthLimiter = createHealthRateLimit();
 shutdown.register(healthLimiter.dispose);
 app.use('/health', healthLimiter.middleware);
 
-app.use('*', cors(buildCorsConfig(env.ALLOWED_ORIGINS.split(',').map(s => s.trim()))));
+app.use('*', cors(buildCorsConfig(env.ALLOWED_ORIGINS.split(',').map((s) => s.trim()))));
 app.use('*', bodyLimit());
 
 app.route('/', mountRoutes());

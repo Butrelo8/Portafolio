@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
 const schema = z.object({
   PORT: z.coerce.number().default(3000),
@@ -16,7 +16,7 @@ const schema = z.object({
     .transform((v) => v === 'true'),
   RATE_LIMIT_MAX: z.coerce.number().default(100),
   RATE_LIMIT_WINDOW_MS: z.coerce.number().default(60_000),
-})
+});
 
-export const env = schema.parse(process.env)
-export type Env = z.infer<typeof schema>
+export const env = schema.parse(process.env);
+export type Env = z.infer<typeof schema>;
