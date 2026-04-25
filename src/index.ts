@@ -1,10 +1,8 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import { closeDb } from './db';
 import { env } from './env';
 import { buildCorsConfig } from './lib/corsOrigins';
 import { createShutdownManager } from './lib/gracefulShutdown';
-import { type AuthOptions, createClerkVerifier } from './middleware/auth';
 import { bodyLimit } from './middleware/bodyLimit';
 import { errorHandler } from './middleware/error';
 import { httpsRedirect } from './middleware/https';
@@ -46,18 +44,8 @@ app.use('/health', healthLimiter.middleware);
 app.use('*', cors(buildCorsConfig(env.ALLOWED_ORIGINS)));
 app.use('*', bodyLimit());
 
-const auth: AuthOptions = {
-  verify: createClerkVerifier({
-    secretKey: env.CLERK_SECRET_KEY,
-    authorizedParties: env.ALLOWED_ORIGINS,
-  }),
-};
+app.route('/', mountRoutes());
 
-app.route('/', mountRoutes(auth));
-
-shutdown.register(async () => {
-  await closeDb();
-});
 shutdown.attachSignals();
 
 bunServer = Bun.serve({

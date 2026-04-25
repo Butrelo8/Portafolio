@@ -4,8 +4,6 @@ declare module 'hono' {
   interface ContextVariableMap {
     /** TCP peer address from `Bun.serve` `requestIP`; not settable by clients. */
     socketIp: string;
-    userId: string;
-    sessionId: string;
     requestId: string;
     /** Same UUID as `requestId`; canonical key for cross-log correlation. */
     traceId: string;
