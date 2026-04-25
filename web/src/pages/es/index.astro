@@ -1,0 +1,9 @@
+---
+export const prerender = true
+import { fetchProjects } from '../../lib/api'
+const projects = await fetchProjects()
+---
+<html lang="es"><head><title>Portafolio</title></head><body>
+  <h1>Proyectos</h1>
+  <ul>{projects.map(p => <li><a href={`/es/projects/${p.slug}`}>{p.name}</a></li>)}</ul>
+</body></html>

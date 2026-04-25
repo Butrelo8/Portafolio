@@ -1,0 +1,7 @@
+---
+export const prerender = true
+import { getEntry } from 'astro:content'
+const about = await getEntry('about', 'es')
+const { Content } = await about!.render()
+---
+<html lang="es"><head><title>Sobre Mí</title></head><body><Content /></body></html>

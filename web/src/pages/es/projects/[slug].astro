@@ -1,0 +1,14 @@
+---
+export const prerender = true
+import { fetchProjects, fetchProject } from '../../../lib/api'
+export async function getStaticPaths() {
+  const projects = await fetchProjects()
+  return projects.map(p => ({ params: { slug: p.slug } }))
+}
+const { slug } = Astro.params
+const project = await fetchProject(slug)
+if (!project) return Astro.redirect('/404')
+---
+<html lang="es"><head><title>{project.name}</title></head><body>
+  <h1>{project.name}</h1><p>{project.description}</p>
+</body></html>
