@@ -10,3 +10,5 @@ test-results
 coverage
 .worktrees
 .env.test
+.vercel
+.astro
