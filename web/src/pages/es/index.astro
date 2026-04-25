@@ -1,9 +1,49 @@
 ---
 export const prerender = true
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import ProjectCard from '../../components/ProjectCard.astro'
 import { fetchProjects } from '../../lib/api'
+
 const projects = await fetchProjects()
+const featured = projects.filter(p => p.featured)
+const rest = projects.filter(p => !p.featured)
 ---
-<html lang="es"><head><title>Portafolio</title></head><body>
-  <h1>Proyectos</h1>
-  <ul>{projects.map(p => <li><a href={`/es/projects/${p.slug}`}>{p.name}</a></li>)}</ul>
-</body></html>
+
+<BaseLayout title="Portafolio" description="Mis proyectos open source" lang="es">
+  <section class="hero container">
+    <p class="hero__label mono">hola mundo</p>
+    <h1 class="hero__title">
+      Construyo cosas<br />
+      <span class="hero__accent">para la web.</span>
+    </h1>
+    <p class="hero__sub">Desarrollador full-stack. Contribuidor open source. Entusiasta de TypeScript.</p>
+  </section>
+
+  {featured.length > 0 && (
+    <section class="section container">
+      <h2 class="section__title mono">// destacados</h2>
+      <div class="grid grid--featured">
+        {featured.map(p => <ProjectCard project={p} lang="es" />)}
+      </div>
+    </section>
+  )}
+
+  <section class="section container">
+    <h2 class="section__title mono">// todos los proyectos</h2>
+    <div class="grid">
+      {rest.map(p => <ProjectCard project={p} lang="es" />)}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero { padding-top: var(--space-section); padding-bottom: var(--space-16); }
+  .hero__label { font-size: var(--text-sm); color: var(--color-accent); font-weight: 700; margin-bottom: var(--space-4); text-transform: uppercase; letter-spacing: 0.1em; }
+  .hero__title { font-family: var(--font-mono); font-size: var(--text-hero); font-weight: 700; line-height: 1.05; margin-bottom: var(--space-6); }
+  .hero__accent { color: var(--color-accent); -webkit-text-stroke: 2px var(--color-fg); }
+  .hero__sub { font-size: var(--text-lg); color: var(--color-muted); max-width: 48ch; }
+  .section { padding-block: var(--space-16); }
+  .section__title { font-size: var(--text-xl); font-weight: 700; margin-bottom: var(--space-8); color: var(--color-muted); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--space-6); }
+  .grid--featured { grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); }
+</style>
