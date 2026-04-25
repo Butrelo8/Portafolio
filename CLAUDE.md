@@ -8,14 +8,15 @@ Guidance for AI assistants working in this repository.
 | Layer      | Choice                                                                   |
 | ---------- | ------------------------------------------------------------------------ |
 | API        | Hono 4 + Bun, TypeScript strict                                          |
-| Web        | Astro 4.16, Node SSR (`@astrojs/node` standalone)                        |
-| DB         | Drizzle 0.30 + `@libsql/client` or `bun:sqlite` (see `src/db/detect.ts`) |
-| Auth       | `@clerk/backend` — API-only JWT verify                                   |
+| Web        | Astro 4.16, hybrid ISR 600s                                              |
+| GitHub API | Github repos with `gray-matter` parsing                                   |
+| Cache      | `TtlCache` in-process, default 10min                                      |
 | Email      | Resend                                                                   |
 | Validation | Zod                                                                      |
 | API tests  | Bun test runner                                                          |
 | E2E        | Playwright (`e2e/playwright.config.ts`)                                  |
 | Lint       | Biome (API root; `web/` is separate)                                     |
+| Deploy     | Render (API), Vercel (Web)                                               |
 
 
 ## Commands
@@ -26,14 +27,12 @@ bun run start            # API :3000
 bun run build            # API bundle → dist/
 bun test                 # API tests (bunfig preload → tests/preload.ts)
 bun run test:e2e         # Playwright — config e2e/playwright.config.ts
-bun run lint             # biome check src tests drizzle.config.ts web
+bun run lint             # biome check src tests web
 bun run lint:fix
 bun run typecheck        # tsc API + tests only (web/ excluded)
-bun run db:generate
-bun run db:migrate
-bun run db:studio
 cd web && bun run dev    # Astro :4321 — needs PUBLIC_API_URL
 cd web && bun run typecheck
+cd web && bun run build  # Astro build
 ```
 
 ## Architecture
@@ -56,19 +55,19 @@ cd web && bun run typecheck
 
 **Env.** Only `src/env.ts` parses `process.env`; import `env` elsewhere. Never read raw `process.env` in route handlers.
 
-**DB.** `src/db/index.ts` exports `db` and `closeDb`. Driver from `DATABASE_URL` + optional `DATABASE_AUTH_TOKEN`. Migrations under Drizzle’s output path; schema in `src/db/schema.ts`.
+**GitHub API.** Projects are fetched from GitHub repositories matching `PORTFOLIO_TOPIC`. `GitHubClient` parses `README.md` front-matter using `gray-matter`.
+
+**Cache.** `TtlCache<T>` in `src/lib/cache.ts` provides simple in-process TTL caching. Default TTL is 10 minutes. Revalidation can be triggered via `/api/revalidate` with `CRON_SECRET`.
 
 **Errors.** Throw `AppError(code, message, status)` from handlers. `onError` maps `AppError`, `ZodError`, and unknowns to the standard JSON envelope.
 
-**Auth.** `requireAuth(auth)` where `auth.verify` is `createClerkVerifier({ secretKey, authorizedParties })`. Context vars: `userId`, `sessionId` (see `src/types/hono.d.ts`).
-
 **Validation.** Use `validate({ json, query, params })`; read `c.get('validated')`. Typed via `ContextVariableMap`.
 
-**Rate limits.** By default `createRateLimit` (`src/middleware/rateLimitFactory.ts`) uses in-process `MemoryStore` from `src/lib/rateLimitStore.ts` — buckets are per-process and **not shared across replicas**. With horizontal scale (Fly.io, Railway, k8s), a client’s effective budget is roughly `RATE_LIMIT_MAX × replica_count` unless you inject a shared `RateLimitStore` via `createRateLimit({ …, store })` implementing `increment(key, windowMs) → Promise<{ count, resetAt }>`. When `store` is omitted, `dispose` calls the store’s `close()`; when you pass your own store, you own its lifecycle. If `increment` throws (e.g. Redis/network), the middleware logs `msg: 'rate_limit_store_error'` (with `err` + `storeType`) and **fails open** (request proceeds; no 500). `**clientIp`:** with `TRUST_PROXY=false` (default), keys use `socketIp` from Bun `requestIP` (clients cannot spoof). Set `TRUST_PROXY=true` only behind a trusted reverse proxy that sets `X-Forwarded-For`.
+**Rate limits.** By default `createRateLimit` (`src/middleware/rateLimitFactory.ts`) uses in-process `MemoryStore` from `src/lib/rateLimitStore.ts` — buckets are per-process and **not shared across replicas**. `**clientIp`:** with `TRUST_PROXY=false` (default), keys use `socketIp` from Bun `requestIP` (clients cannot spoof). Set `TRUST_PROXY=true` only behind a trusted reverse proxy that sets `X-Forwarded-For`.
 
-**Shutdown.** `createShutdownManager()` in `src/index.ts`: register `globalLimiter.dispose`, `healthLimiter.dispose`, `closeDb`, then `attachSignals()`; after `Bun.serve`, register `bunServer.stop()`.
+**Shutdown.** `createShutdownManager()` in `src/index.ts`: register `globalLimiter.dispose`, `healthLimiter.dispose`, then `attachSignals()`; after `Bun.serve`, register `bunServer.stop()`.
 
-**Tests.** `bunfig.toml` sets `root = "tests"` and preloads `tests/preload.ts` so only `tests/**/`* runs under Bun and `items` tests get a clean SQLite file DB before `src/db` loads. Do not remove without replacing isolation strategy.
+**Tests.** `bunfig.toml` sets `root = "tests"` and preloads `tests/preload.ts` so only `tests/**/`* runs under Bun.
 
 **E2E.** `bun run test:e2e` runs `playwright test --config e2e/playwright.config.ts`. Default `baseURL` `http://localhost:4321` or `WEB_URL`. Web dev server must be up; set `web/.env` `PUBLIC_API_URL` to the API.
 
