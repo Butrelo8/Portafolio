@@ -1,6 +1,6 @@
-# [CLAUDE.md](http://CLAUDE.md)
+# CLAUDE.md
 
-Guidance for AI assistants working in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Stack
 
@@ -33,7 +33,17 @@ bun run db:generate
 bun run db:migrate
 bun run db:studio
 cd web && bun run dev    # Astro :4321 — needs PUBLIC_API_URL
+cd web && bun run build
+cd web && bun run start
 cd web && bun run typecheck
+
+# Single test
+bun test tests/path/to/file.test.ts
+bun test --test-name-pattern "items create"  # filter by name
+
+# Deploy (Fly.io)
+bun run scripts/run-migrations.ts   # release migration (matches fly.toml release_command)
+flyctl deploy
 ```
 
 ## Architecture
@@ -64,11 +74,15 @@ cd web && bun run typecheck
 
 **Validation.** Use `validate({ json, query, params })`; read `c.get('validated')`. Typed via `ContextVariableMap`.
 
-**Rate limits.** By default `createRateLimit` (`src/middleware/rateLimitFactory.ts`) uses in-process `MemoryStore` from `src/lib/rateLimitStore.ts` — buckets are per-process and **not shared across replicas**. With horizontal scale (Fly.io, Railway, k8s), a client’s effective budget is roughly `RATE_LIMIT_MAX × replica_count` unless you inject a shared `RateLimitStore` via `createRateLimit({ …, store })` implementing `increment(key, windowMs) → Promise<{ count, resetAt }>`. When `store` is omitted, `dispose` calls the store’s `close()`; when you pass your own store, you own its lifecycle. If `increment` throws (e.g. Redis/network), the middleware logs `msg: 'rate_limit_store_error'` (with `err` + `storeType`) and **fails open** (request proceeds; no 500). `**clientIp`:** with `TRUST_PROXY=false` (default), keys use `socketIp` from Bun `requestIP` (clients cannot spoof). Set `TRUST_PROXY=true` only behind a trusted reverse proxy that sets `X-Forwarded-For`.
+**Rate limits.**
+- `createRateLimit` (`src/middleware/rateLimitFactory.ts`) uses in-process `MemoryStore` (`src/lib/rateLimitStore.ts`) — **not shared across replicas**. Effective budget = `RATE_LIMIT_MAX × replica_count` on horizontal scale.
+- Inject shared store via `createRateLimit({ …, store })` implementing `increment(key, windowMs) → Promise<{ count, resetAt }>`. When `store` omitted, `dispose` closes it; custom store = your lifecycle.
+- If `increment` throws, logs `msg: ‘rate_limit_store_error’` and **fails open** (request proceeds, no 500).
+- `clientIp`: `TRUST_PROXY=false` (default) → keys use `socketIp` from Bun `requestIP` (unspoofable). Set `TRUST_PROXY=true` only behind a trusted reverse proxy forwarding `X-Forwarded-For`.
 
 **Shutdown.** `createShutdownManager()` in `src/index.ts`: register `globalLimiter.dispose`, `healthLimiter.dispose`, `closeDb`, then `attachSignals()`; after `Bun.serve`, register `bunServer.stop()`.
 
-**Tests.** `bunfig.toml` sets `root = "tests"` and preloads `tests/preload.ts` so only `tests/**/`* runs under Bun and `items` tests get a clean SQLite file DB before `src/db` loads. Do not remove without replacing isolation strategy.
+**Tests.** `bunfig.toml` sets `root = "tests"` and preloads `tests/preload.ts` so only `tests/**/*` runs under Bun and `items` tests get a clean SQLite file DB before `src/db` loads. Do not remove without replacing isolation strategy. `tests/preload.ts` overrides `DATABASE_URL` to a throwaway file — overriding it again in env breaks isolation.
 
 **E2E.** `bun run test:e2e` runs `playwright test --config e2e/playwright.config.ts`. Default `baseURL` `http://localhost:4321` or `WEB_URL`. Web dev server must be up; set `web/.env` `PUBLIC_API_URL` to the API.
 
@@ -77,12 +91,14 @@ cd web && bun run typecheck
 - **Files:** kebab-case where it fits the repo; **exports:** camelCase; **Astro components:** PascalCase.
 - **Routes:** `src/routes/*.ts`, composed in `src/routes/index.ts`.
 - **User-facing copy:** English.
-- **Types:** strict + `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitOverride`. Path `@/`* → `src/`* (API only).
+- **Types:** strict + `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitOverride`. Path `@/*` → `src/*` (API only).
+- **Typecheck scope:** `bun run typecheck` covers API + tests only. `web/` requires separate `cd web && bun run typecheck`.
+- **Project files:** `DECISIONS.md`, `BUGS.md`, `CHANGELOG.md`, `TODOS.md` (ticket queue) are living docs — update when relevant. `STATE.md`/`DESIGN.md` not used in this repo.
 
 ## Environment variables
 
 Required (see `.env.example`): `DATABASE_URL`, `CLERK_SECRET_KEY`, `CLERK_PUBLISHABLE_KEY`, `ALLOWED_ORIGINS`.
 
-Common optional: `PORT`, `NODE_ENV`, `LOG_LEVEL`, `DATABASE_AUTH_TOKEN`, `RATE_LIMIT_MAX`, `RATE_LIMIT_WINDOW_MS` (see **Rate limits** — in-process only), `RESEND_API_KEY` (required when adding Resend email routes).
+Common optional: `PORT`, `NODE_ENV`, `LOG_LEVEL`, `DATABASE_AUTH_TOKEN`, `RATE_LIMIT_MAX`, `RATE_LIMIT_WINDOW_MS` (see **Rate limits** — in-process only), `RESEND_API_KEY` (required when adding Resend email routes), `TRUST_PROXY` (set `true` only behind trusted reverse proxy).
 
 Web: `PUBLIC_API_URL` in `web/.env` (see `web/.env.example`).

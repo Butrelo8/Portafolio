@@ -84,7 +84,7 @@ app.post('/', validate({ json: createSchema }), async (c) => {
 
 - Only `src/env.ts` reads `process.env`. Import `env` from there everywhere else — never `process.env` in handlers.
 - Required vars: `DATABASE_URL`, `CLERK_SECRET_KEY`, `CLERK_PUBLISHABLE_KEY`, `ALLOWED_ORIGINS`.
-- Optional vars: `PORT`, `NODE_ENV`, `LOG_LEVEL`, `DATABASE_AUTH_TOKEN`, `RATE_LIMIT_MAX`, `RATE_LIMIT_WINDOW_MS` (in-process per instance — see CLAUDE.md **Rate limits**), `RESEND_API_KEY` (set when implementing Resend email sends).
+- Optional vars: `PORT`, `NODE_ENV`, `LOG_LEVEL`, `DATABASE_AUTH_TOKEN`, `RATE_LIMIT_MAX`, `RATE_LIMIT_WINDOW_MS` (in-process per instance — see CLAUDE.md **Rate limits**), `RESEND_API_KEY` (set when implementing Resend email sends), `TRUST_PROXY` (set `true` only behind a trusted reverse proxy that sets `X-Forwarded-For`).
 
 ### Types
 
