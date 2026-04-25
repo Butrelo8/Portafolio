@@ -10,7 +10,7 @@ _Context pass:_ `CLAUDE.md` ~73 lines — OK. No in-repo MCP. Stale rule + MCP +
 
 ### Redis RateLimitStore adapter (P1)
 
-- **What:** `RedisRateLimitStore` class in `src/lib/rateLimitStore.ts` implementing `RateLimitStore` interface. Uses `@upstash/redis` (HTTP-based, no persistent connection). Atomic `INCR` + `EXPIREAT` via pipeline. `REDIS_URL` optional env var — absent = MemoryStore fallback. Both `globalLimiter` and `healthLimiter` share same store instance. Fail-open: `store.increment()` wrapped in try/catch in `rateLimitFactory.ts`; on error log `warn` with `msg: 'rate_limit_store_error'` and pass request through.
+- **What:** `RedisRateLimitStore` class in `src/lib/rateLimitStore.ts` implementing `RateLimitStore` interface. Uses `@upstash/redis` (HTTP-based, no persistent connection). Atomic `INCR` + `EXPIREAT` via pipeline. `REDIS_URL` optional env var — absent = MemoryStore fallback. Both `globalLimiter` and `healthLimiter` share same store instance. Store errors already fail-open in `rateLimitFactory.ts` (`msg: 'rate_limit_store_error'`).
 - **Why:** In-process `MemoryStore` gives each replica its own budget. 2 replicas = 2× allowed budget per IP. Redis fixes this — all replicas share one counter per key.
 - **Effort:** M (human: ~1 day / CC: ~15 min). **Priority: P4.**
 - **Notes:** ms→s conversion for `EXPIREAT` (`Math.ceil(resetAt / 1000)`). Add `REDIS_URL` to `.env.example` + `safeLog.ts` SECRET_KEYS. Tests: Redis contract + fail-open + MemoryStore fallback when `REDIS_URL` absent. Plan at ~/Cursor Projects/Hono Template/docs/superpowers/plans/2026-04-23-redis-rate-limit-adapter.md
@@ -37,6 +37,17 @@ _Context pass:_ `CLAUDE.md` ~73 lines — OK. No in-repo MCP. Stale rule + MCP +
 
 ## Completed
 
+### Log clientIp in request access log (2026-04-25)
+
+- **Outcome:** `src/lib/clientIp.ts` — `resolveClientIp` + `clientIp` (reads `env.TRUST_PROXY`). `requestLogger` adds `clientIp` to `msg: request` JSON after `await next()` via `resolveClientIp(c, env.TRUST_PROXY)` (always present; `unknown` if `socketIp` unset). `rateLimitFactory.ts` re-exports `clientIp` / `resolveClientIp` from lib (no circular import with `requestLogger`).
+- **Tests:** `tests/clientIp.test.ts` — trust off ignores spoofed `X-Forwarded-For`; trust on uses first forwarded hop + `x-real-ip` fallback. `tests/requestLogger.test.ts` — `unknown` without `socketIp`; `192.0.2.10` when prior middleware sets `socketIp`. `tests/rateLimit.test.ts` imports `resolveClientIp` from `src/lib/clientIp`.
+- **Cleanup:** Removed duplicate "Log clientIp in request access log" from Open. Adjusted prior "Fix clientIp spoofing" completed entry to note `resolveClientIp` / `clientIp` now live in `src/lib/clientIp.ts` (since 2026-04-25), not only in `rateLimitFactory.ts`.
+
+### Fail-open wrapper for rate limit store (2026-04-24)
+
+- **Outcome:** `createRateLimit` middleware wraps `store.increment` in try/catch. On throw: `logger.warn({ msg: 'rate_limit_store_error', err, storeType })` (`storeType` = `store.constructor.name` fallback `unknown`), then `await next()` — no 500.
+- **Tests:** `tests/rateLimit.test.ts` — `FailingStore` throws; burst stays 200; console JSON lines assert `err` + `storeType`.
+
 ### Structured traceId propagation (2026-04-24)
 
 - **Outcome:** `requestLogger.ts` sets `c.set('traceId', requestId)` (same UUID as `requestId`; no second `randomUUID`). `ContextVariableMap` has `traceId` in `src/types/hono.d.ts`. Access log (`msg: request`) and `errorHandler` logs use field `traceId`. `error.ts` resolves via `c.get('traceId') ?? c.get('requestId')`.
@@ -53,7 +64,7 @@ _Context pass:_ `CLAUDE.md` ~73 lines — OK. No in-repo MCP. Stale rule + MCP +
 
 ### Fix clientIp spoofing — TRUST_PROXY + socket IP (2026-04-23)
 
-- **Outcome:** `TRUST_PROXY` in `src/env.ts` (default `false`, safe string/boolean parsing). `resolveClientIp` / `clientIp` in `rateLimitFactory.ts` use `c.get('socketIp')` unless proxy trust is on. `src/index.ts` sets `socketIp` via `bunServer.requestIP` before global rate limit. `ContextVariableMap.socketIp`, `.env.example`, `tests/rateLimit.test.ts` (spoofed `X-Forwarded-For` same bucket when `resolveClientIp(..., false)`).
+- **Outcome:** `TRUST_PROXY` in `src/env.ts` (default `false`, safe string/boolean parsing). `resolveClientIp` / `clientIp` live in `src/lib/clientIp.ts` (since 2026-04-25, moved from `rateLimitFactory.ts`) — use `c.get('socketIp')` unless proxy trust is on. `src/index.ts` sets `socketIp` via `bunServer.requestIP` before global rate limit. `ContextVariableMap.socketIp`, `.env.example`, `tests/rateLimit.test.ts` (spoofed `X-Forwarded-For` same bucket when `resolveClientIp(..., false)`).
 - **Docs:** `CLAUDE.md` middleware order + rate limit note.
 
 ### Pluggable rate limit store — interface + MemoryStore (2026-04-23)

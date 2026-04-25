@@ -50,7 +50,7 @@ cd web && bun run typecheck
 4. `socketIp` — `Bun.serve` `requestIP` → `c.set('socketIp', …)` (not spoofable by clients)
 5. Global rate limit (`RATE_LIMIT_MAX` / `RATE_LIMIT_WINDOW_MS`, `clientIp`)
 6. Health-only rate limit — path prefix `/health`
-7. `cors(buildCorsConfig(env.ALLOWED_ORIGINS))` — allowlist + `Authorization`; **`credentials: false`** (Bearer JWT only; avoids `Allow-Credentials` until cookie cross-origin auth exists with CSRF).
+7. `cors(buildCorsConfig(env.ALLOWED_ORIGINS))` — allowlist + `Authorization`; `**credentials: false`** (Bearer JWT only; avoids `Allow-Credentials` until cookie cross-origin auth exists with CSRF).
 8. `bodyLimit()`
 9. `app.route('/', mountRoutes(auth))` — `/health`, `/items`, …
 
@@ -64,7 +64,7 @@ cd web && bun run typecheck
 
 **Validation.** Use `validate({ json, query, params })`; read `c.get('validated')`. Typed via `ContextVariableMap`.
 
-**Rate limits.** By default `createRateLimit` (`src/middleware/rateLimitFactory.ts`) uses in-process `MemoryStore` from `src/lib/rateLimitStore.ts` — buckets are per-process and **not shared across replicas**. With horizontal scale (Fly.io, Railway, k8s), a client’s effective budget is roughly `RATE_LIMIT_MAX × replica_count` unless you inject a shared `RateLimitStore` via `createRateLimit({ …, store })` implementing `increment(key, windowMs) → Promise<{ count, resetAt }>`. When `store` is omitted, `dispose` calls the store’s `close()`; when you pass your own store, you own its lifecycle. **`clientIp`:** with `TRUST_PROXY=false` (default), keys use `socketIp` from Bun `requestIP` (clients cannot spoof). Set `TRUST_PROXY=true` only behind a trusted reverse proxy that sets `X-Forwarded-For`.
+**Rate limits.** By default `createRateLimit` (`src/middleware/rateLimitFactory.ts`) uses in-process `MemoryStore` from `src/lib/rateLimitStore.ts` — buckets are per-process and **not shared across replicas**. With horizontal scale (Fly.io, Railway, k8s), a client’s effective budget is roughly `RATE_LIMIT_MAX × replica_count` unless you inject a shared `RateLimitStore` via `createRateLimit({ …, store })` implementing `increment(key, windowMs) → Promise<{ count, resetAt }>`. When `store` is omitted, `dispose` calls the store’s `close()`; when you pass your own store, you own its lifecycle. If `increment` throws (e.g. Redis/network), the middleware logs `msg: 'rate_limit_store_error'` (with `err` + `storeType`) and **fails open** (request proceeds; no 500). `**clientIp`:** with `TRUST_PROXY=false` (default), keys use `socketIp` from Bun `requestIP` (clients cannot spoof). Set `TRUST_PROXY=true` only behind a trusted reverse proxy that sets `X-Forwarded-For`.
 
 **Shutdown.** `createShutdownManager()` in `src/index.ts`: register `globalLimiter.dispose`, `healthLimiter.dispose`, `closeDb`, then `attachSignals()`; after `Bun.serve`, register `bunServer.stop()`.
 
@@ -77,7 +77,7 @@ cd web && bun run typecheck
 - **Files:** kebab-case where it fits the repo; **exports:** camelCase; **Astro components:** PascalCase.
 - **Routes:** `src/routes/*.ts`, composed in `src/routes/index.ts`.
 - **User-facing copy:** English.
-- **Types:** strict + `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitOverride`. Path `@/`* → `src/*` (API only).
+- **Types:** strict + `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitOverride`. Path `@/`* → `src/`* (API only).
 
 ## Environment variables
 

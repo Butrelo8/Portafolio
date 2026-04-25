@@ -1,7 +1,7 @@
 import type { MiddlewareHandler } from 'hono';
-import { env } from '../env';
 import { AppError, toErrorResponse } from '../lib/errors';
 import { MemoryStore, type RateLimitStore } from '../lib/rateLimitStore';
+import { logger } from './requestLogger';
 
 export interface RateLimitOptions {
   max: number;
@@ -24,7 +24,19 @@ export function createRateLimit(opts: RateLimitOptions): RateLimiter {
 
   const middleware: MiddlewareHandler = async (c, next) => {
     const key = opts.keyFn(c);
-    const { count, resetAt } = await store.increment(key, opts.windowMs);
+    let count: number;
+    let resetAt: number;
+    try {
+      const result = await store.increment(key, opts.windowMs);
+      count = result.count;
+      resetAt = result.resetAt;
+    } catch (err) {
+      const errMessage = err instanceof Error ? err.message : String(err);
+      const storeType = store.constructor?.name ?? 'unknown';
+      logger.warn({ msg: 'rate_limit_store_error', err: errMessage, storeType });
+      await next();
+      return;
+    }
     if (count > opts.max) {
       const retryAfter = Math.ceil((resetAt - Date.now()) / 1000);
       c.header('Retry-After', String(retryAfter));
@@ -41,16 +53,4 @@ export function createRateLimit(opts: RateLimitOptions): RateLimiter {
   };
 }
 
-/** Client IP key for rate limiting; `trustProxy` mirrors `env.TRUST_PROXY` (explicit param for tests). */
-export function resolveClientIp(c: Parameters<MiddlewareHandler>[0], trustProxy: boolean): string {
-  if (trustProxy) {
-    const fwd = c.req.header('x-forwarded-for');
-    if (fwd) return fwd.split(',')[0]?.trim() ?? 'unknown';
-    return c.req.header('x-real-ip') ?? 'unknown';
-  }
-  return (c.get('socketIp') as string | undefined) ?? 'unknown';
-}
-
-export function clientIp(c: Parameters<MiddlewareHandler>[0]): string {
-  return resolveClientIp(c, env.TRUST_PROXY);
-}
+export { clientIp, resolveClientIp } from '../lib/clientIp';
