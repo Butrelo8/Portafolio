@@ -12,3 +12,7 @@ coverage
 .env.test
 .vercel
 .astro
+# gstack local artifacts
+.gstack/
+.wrangler/
+.git.broken/
