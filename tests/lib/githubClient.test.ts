@@ -1,6 +1,6 @@
 import { describe, expect, test, mock, beforeEach } from 'bun:test'
 
-const mockFetch = mock(() => Promise.resolve())
+const mockFetch = mock((): Promise<any> => Promise.resolve())
 global.fetch = mockFetch as unknown as typeof fetch
 
 import { GitHubClient } from '../../src/lib/githubClient'

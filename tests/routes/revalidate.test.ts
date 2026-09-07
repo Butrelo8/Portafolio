@@ -28,7 +28,7 @@ describe('POST /api/revalidate', () => {
       headers: { Authorization: 'Bearer correct-secret' },
     })
     expect(res.status).toBe(200)
-    const body = await res.json()
+    const body = (await res.json()) as any
     expect(body.success).toBe(true)
     expect(mockClear).toHaveBeenCalled()
   })

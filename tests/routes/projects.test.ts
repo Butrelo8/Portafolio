@@ -44,7 +44,7 @@ describe('GET /projects', () => {
   test('returns 200 with projects array', async () => {
     const res = await app.request('/projects');
     expect(res.status).toBe(200);
-    const body = await res.json();
+    const body = (await res.json()) as any;
     expect(body.success).toBe(true);
     expect(body.data).toHaveLength(1);
     expect(body.data[0].slug).toBe('my-app');
@@ -55,7 +55,7 @@ describe('GET /projects/:slug', () => {
   test('returns 200 for known slug', async () => {
     const res = await app.request('/projects/my-app');
     expect(res.status).toBe(200);
-    const body = await res.json();
+    const body = (await res.json()) as any;
     expect(body.success).toBe(true);
     expect(body.data.slug).toBe('my-app');
   });

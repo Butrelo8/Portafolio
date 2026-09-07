@@ -30,7 +30,7 @@ export class GitHubClient {
     const url = `${this.baseUrl}/users/${this.username}/repos?per_page=100&sort=updated&type=public`
     const res = await fetch(url, { headers: this.headers })
     if (!res.ok) throw new Error(`GitHub listRepos failed: ${res.status}`)
-    const all: GithubRepo[] = await res.json()
+    const all = (await res.json()) as GithubRepo[]
     return all.filter((r) => r.topics.includes(topic))
   }
 
@@ -38,7 +38,7 @@ export class GitHubClient {
     const url = `${this.baseUrl}/repos/${this.username}/${repo}/readme`
     const res = await fetch(url, { headers: this.headers })
     if (!res.ok) return null
-    const data: { content: string; encoding: string } = await res.json()
+    const data = (await res.json()) as { content: string; encoding: string }
     return Buffer.from(data.content.replace(/\n/g, ''), 'base64').toString('utf-8')
   }
 }
