@@ -6,26 +6,28 @@ interface Props {
 
 const { lang, currentPath } = Astro.props
 const otherLang = lang === 'en' ? 'es' : 'en'
-const otherPath = lang === 'en'
-  ? `/es${currentPath}`
-  : currentPath.replace(/^\/es/, '') || '/'
+// Spanish lives at the root; English is prefixed with /en.
+const otherPath =
+  lang === 'es'
+    ? `/en${currentPath}`
+    : currentPath.replace(/^\/en/, '') || '/'
 
 const links = lang === 'en'
   ? [
-      { href: '/', label: 'Work' },
-      { href: '/about', label: 'About' },
-      { href: '/#contact', label: 'Contact' },
+      { href: '/en/', label: 'Work' },
+      { href: '/en/about', label: 'About' },
+      { href: '/en/#contact', label: 'Contact' },
     ]
   : [
-      { href: '/es/', label: 'Trabajo' },
-      { href: '/es/about', label: 'Sobre mí' },
-      { href: '/es/#contact', label: 'Contacto' },
+      { href: '/', label: 'Trabajo' },
+      { href: '/about', label: 'Sobre mí' },
+      { href: '/#contact', label: 'Contacto' },
     ]
 ---
 
 <nav class="nav" aria-label="Main navigation">
   <div class="container nav__inner">
-    <a href={lang === 'en' ? '/' : '/es/'} class="nav__brand mono">{'<portfolio />'}</a>
+    <a href={lang === 'en' ? '/en/' : '/'} class="nav__brand mono">{'<portfolio />'}</a>
     <ul class="nav__links" role="list">
       {links.map(l => <li><a href={l.href} class="nav__link mono">{l.label}</a></li>)}
     </ul>

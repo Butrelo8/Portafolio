@@ -5,6 +5,13 @@ Updated automatically by the AI agent when decisions are made.
 
 ---
 
+## 2026-09-07 — Spanish is the default language
+
+**Context:** The site opened in English with Spanish behind a toggle. Every client so far is in Veracruz or Xalapa, and the audience decision above targets local freelance clients.
+**Decision:** Spanish serves from `/`, English from `/en/`. Legacy `/es/*` URLs redirect to the root.
+**Alternatives considered:** Keep English default; detect browser language and redirect.
+**Why not the others:** English-first makes the most likely visitor do work before reading anything. Language detection breaks static hosting's simplicity and fights the visitor who deliberately picked a language.
+
 ## 2026-09-07 — Audience: freelance clients, not employers or OSS peers
 
 **Context:** The site had no stated audience, so project selection was accidental — whatever happened to carry the `portfolio` topic. That surfaced a forked template and the portfolio itself while real shipped work stayed invisible.

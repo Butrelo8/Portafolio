@@ -11,7 +11,7 @@ const { project, lang } = Astro.props;
 const { name, client, year, tagline, summary, stack, liveUrl, screenshot } = project.data;
 // Collection ids are "en/slug.md" / "es/slug.md"; the URL wants just the slug.
 const slug = project.slug.replace(/^(en|es)\//, '');
-const href = lang === 'es' ? `/es/projects/${slug}` : `/projects/${slug}`;
+const href = lang === 'en' ? `/en/projects/${slug}` : `/projects/${slug}`;
 ---
 
 <article class="brut-card project-card">

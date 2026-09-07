@@ -51,8 +51,9 @@ about what a business got, not what the code does. See `DECISIONS.md`.
 **Contact.** `ContactForm.astro` posts to Web3Forms. `PUBLIC_WEB3FORMS_KEY` is public by design; the
 form degrades to an email link when it's unset.
 
-**i18n.** English at `web/src/pages/*`, Spanish mirrored under `web/src/pages/es/*`. Adding a page
-means adding both.
+**i18n.** **Spanish is the default** — the clients are in Veracruz. Spanish lives at
+`web/src/pages/*` (served from `/`), English mirrors under `web/src/pages/en/*` (served from `/en/`).
+Adding a page means adding both. `astro.config.mjs` redirects the legacy `/es/*` URLs to the root.
 
 **Biome scope.** `biome.json` excludes `*.astro` (frontmatter vars used in the template read as
 unused) and the generated `web/.astro/`. Astro files are checked by `astro check` instead.

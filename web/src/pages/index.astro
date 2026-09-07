@@ -5,39 +5,39 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import ContactForm from '../components/ContactForm.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 
-const projects = (await getCollection('projects', (p) => p.id.startsWith('en/'))).sort(
+const projects = (await getCollection('projects', (p) => p.id.startsWith('es/'))).sort(
   (a, b) => a.data.order - b.data.order,
 );
 ---
 
 <BaseLayout
-  title="Ivan — Web developer in Veracruz"
-  description="I build booking platforms, event sites and internal tools for businesses in Veracruz."
-  lang="en"
+  title="Ivan — Desarrollador web en Veracruz"
+  description="Hago plataformas de reservas, sitios de eventos y herramientas internas para negocios en Veracruz."
+  lang="es"
 >
   <section class="hero container">
     <p class="hero__label mono">Veracruz, México</p>
     <h1 class="hero__title">
-      I build websites<br />
-      <span class="hero__accent">that do the work.</span>
+      Hago sitios web<br />
+      <span class="hero__accent">que trabajan.</span>
     </h1>
     <p class="hero__sub">
-      Booking platforms, event sites and internal tools for real businesses — not brochures. Four
-      shipped and running.
+      Plataformas de reservas, sitios de eventos y herramientas internas para negocios reales. No
+      folletos. Cuatro funcionando hoy.
     </p>
     <div class="hero__cta">
-      <a href="#contact" class="brut-btn">Start a project</a>
+      <a href="#contact" class="brut-btn">Empezar un proyecto</a>
     </div>
   </section>
 
   <section class="section container">
-    <h2 class="section__title mono">// selected work</h2>
+    <h2 class="section__title mono">// trabajo seleccionado</h2>
     <div class="grid">
-      {projects.map((p) => <ProjectCard project={p} lang="en" />)}
+      {projects.map((p) => <ProjectCard project={p} lang="es" />)}
     </div>
   </section>
 
-  <ContactForm lang="en" />
+  <ContactForm lang="es" />
 </BaseLayout>
 
 <style>

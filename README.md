@@ -75,8 +75,9 @@ Add a `testimonial: { quote, author, role }` block only when a real quote exists
 
 ## i18n
 
-EN at `/`, ES at `/es/`. Astro i18n routing (`prefixDefaultLocale: false`). Adding a page means
-adding both. About content lives in `web/src/content/about/en.md` + `es.md`.
+**Spanish is the default**: ES at `/`, EN at `/en/`. Astro i18n routing
+(`prefixDefaultLocale: false`). Adding a page means adding both. About content lives in
+`web/src/content/about/es.md` + `en.md`. Legacy `/es/*` URLs redirect to the root.
 
 ---
 

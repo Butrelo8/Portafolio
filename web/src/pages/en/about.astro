@@ -3,13 +3,13 @@ export const prerender = true
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import { getEntry } from 'astro:content'
 
-const about = await getEntry('about', 'es')
+const about = await getEntry('about', 'en')
 const { Content } = await about!.render()
 ---
 
-<BaseLayout title="Sobre Mí" description="Sobre mí" lang="es">
+<BaseLayout title="About" description="About me" lang="en">
   <div class="about container">
-    <h1 class="about__title mono">// sobre mí</h1>
+    <h1 class="about__title mono">// about</h1>
     <div class="prose about__content"><Content /></div>
   </div>
 </BaseLayout>
