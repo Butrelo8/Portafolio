@@ -1,0 +1,69 @@
+---
+description: TypeScript coding style: explicit public API types, no any, immutability, Zod validation.
+globs: "**/*.ts,**/*.tsx,**/*.js,**/*.jsx"
+---
+# TypeScript/JavaScript Coding Style
+
+## Types and Interfaces
+
+- Add parameter and return types to exported functions, shared utilities, and public class methods
+- Let TypeScript infer obvious local variable types
+- Extract repeated inline object shapes into named types or interfaces
+- Use `interface` for object shapes that may be extended or implemented; `type` for unions, intersections, tuples, mapped types
+- Prefer string literal unions over `enum` unless an `enum` is required for interoperability
+
+```typescript
+interface User {
+  id: string
+  email: string
+}
+
+type UserRole = 'admin' | 'member'
+type UserWithRole = User & { role: UserRole }
+```
+
+## Avoid `any`
+
+- Avoid `any` in application code
+- Use `unknown` for external or untrusted input, then narrow it safely
+- Use generics when a value's type depends on the caller
+
+```typescript
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message
+  }
+
+  return 'Unexpected error'
+}
+```
+
+## Immutability
+
+```typescript
+function updateUser(user: Readonly<User>, name: string): User {
+  return { ...user, name }
+}
+```
+
+## Error Handling
+
+Use async/await with try-catch and narrow unknown errors safely. In this repo, throw `AppError` from
+`src/lib/errors.ts` at route level rather than formatting error responses by hand.
+
+## Input Validation
+
+Use Zod for schema-based validation and infer types from the schema:
+
+```typescript
+const userSchema = z.object({
+  email: z.string().email(),
+  age: z.number().int().min(0).max(150)
+})
+
+type UserInput = z.infer<typeof userSchema>
+```
+
+## Console.log
+
+- No `console.log` statements in production code — use the logger from `src/middleware/requestLogger.ts`

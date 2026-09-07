@@ -1,0 +1,28 @@
+---
+description: Task discipline: read context, plan, execute, validate, report.
+alwaysApply: true
+---
+# Task Discipline Rules
+
+## Agent operating sequence
+
+Every agent invocation MUST follow this sequence. No step may be skipped.
+
+1. **Read context** — read `CLAUDE.md` (and `TODOS.md` / `DECISIONS.md` in this repo)
+2. **Confirm understanding** — restate the task in one sentence before acting
+3. **Plan if non-trivial** — for tasks touching more than 2 files, write a brief step list first
+4. **Execute** — implement the plan, one step at a time
+5. **Validate** — `bun run lint`, `bun run typecheck`, `bun test` as appropriate for the change
+6. **Report** — state what was done, what files changed, what is next
+
+## Forbidden shortcuts
+
+- Do not execute step 4 without completing steps 1–3
+- Do not skip validation (step 5) because "it looks right"
+- Do not report completion (step 6) before validation passes
+
+## Response style
+
+- Concise: one sentence per update
+- No re-stating what the user just said
+- No affirmations before technical content

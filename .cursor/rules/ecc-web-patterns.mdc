@@ -1,0 +1,35 @@
+---
+description: Web patterns: composition, state separation, URL as state, data fetching.
+globs: "web/**"
+---
+# Web Patterns
+
+## Component Composition
+
+- Compound components when related UI shares state and interaction semantics — parent owns state
+- Render props / slots when behavior is shared but markup must vary; keep keyboard handling, ARIA
+  and focus logic in the headless layer
+- Container/presentational split: containers own data loading, presentational components stay pure
+
+## State Management
+
+| Concern      | Tooling                            |
+| ------------ | ---------------------------------- |
+| Server state | TanStack Query, SWR, tRPC          |
+| Client state | Zustand, Jotai, signals            |
+| URL state    | search params, route segments      |
+| Form state   | React Hook Form or equivalent      |
+
+- Do not duplicate server state into client stores
+- Derive values instead of storing redundant computed state
+
+## URL As State
+
+Persist shareable state in the URL: filters, sort order, pagination, active tab, search query.
+
+## Data Fetching
+
+- Stale-while-revalidate: serve cache, revalidate in background (this project does it server-side
+  via `TtlCache` + Astro ISR — don't reimplement it in the client)
+- Optimistic updates: snapshot, apply, roll back on failure with visible error feedback
+- Fetch independent data in parallel; avoid parent-child request waterfalls

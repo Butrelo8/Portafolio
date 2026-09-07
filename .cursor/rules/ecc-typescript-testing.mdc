@@ -1,0 +1,11 @@
+---
+description: TypeScript testing: Bun test runner, Playwright E2E for critical flows.
+globs: "**/*.ts,**/*.tsx,**/*.js,**/*.jsx"
+---
+# TypeScript/JavaScript Testing
+
+- Unit and integration tests run under the Bun test runner from `tests/**` (`bunfig.toml` sets
+  `root = "tests"` and preloads `tests/preload.ts`).
+- Run one file: `bun test tests/lib/cache.test.ts`. Run one case: `bun test -t "name"`.
+- Use **Playwright** for E2E of critical user flows: `bun run test:e2e`
+  (`e2e/playwright.config.ts`, needs the Astro dev server up).

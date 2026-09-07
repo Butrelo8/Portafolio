@@ -1,0 +1,38 @@
+---
+description: Git safety: branching, commit format, forbidden destructive commands.
+alwaysApply: true
+---
+# Git Safety Rules
+
+## Forbidden actions
+
+- Force push to any branch: `git push --force` or `git push -f`
+- Destructive reset: `git reset --hard` without explicit user confirmation
+- Direct commits to `main` or `master`
+- Revert commits authored by other contributors without explicit user request
+- Delete remote branches without explicit user confirmation
+- Skip hooks: `--no-verify`
+
+## Required behaviors
+
+- Work on feature branches only
+- Review `git diff --staged` before every commit
+- Conventional commit format: `<type>: <description>` (types: feat, fix, refactor, docs, test, chore)
+- Commit messages in English
+- One logical change per commit
+
+## Branch naming
+
+```
+feat/<short-description>
+fix/<short-description>
+refactor/<short-description>
+chore/<short-description>
+```
+
+## Before any push
+
+- [ ] All tests pass
+- [ ] No secrets or credentials in diff
+- [ ] Commit message follows conventional format
+- [ ] Branch is not `main` or `master`

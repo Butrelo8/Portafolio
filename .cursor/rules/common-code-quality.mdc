@@ -1,0 +1,42 @@
+---
+description: Code quality: file/function size, naming, immutability, abstraction limits.
+alwaysApply: true
+---
+# Code Quality Rules
+
+## File size
+
+- Target: < 200 lines per file
+- Hard limit: 800 lines — split first if you would exceed this
+- Exception: generated files (lock files, build output)
+
+## Function size
+
+- Target: < 30 lines per function
+- Hard limit: 50 lines — extract helpers first if you would exceed this
+
+## Naming
+
+- Variables and functions: `camelCase`, descriptive
+- Types and interfaces: `PascalCase`
+- Constants: `UPPER_SNAKE_CASE`
+- Booleans: `is`, `has`, `should`, `can` prefix
+
+## Immutability
+
+- Never mutate function arguments
+- Return new objects for updates: `{ ...original, field: newValue }`
+- `const` by default; `let` only when reassignment is genuinely needed
+
+## Abstractions
+
+- Do not introduce abstractions for fewer than 3 real use cases
+- Duplication is preferable to the wrong abstraction
+- Refactor in a separate commit, not mixed with feature work
+
+## Before marking done
+
+- [ ] No `console.log` or debug statements
+- [ ] No unused variables or imports
+- [ ] Types explicit on all exported functions
+- [ ] No `any` in new code

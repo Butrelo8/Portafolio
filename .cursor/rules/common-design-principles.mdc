@@ -1,0 +1,47 @@
+---
+description: Design principles: SOLID, cohesion, coupling, boundary error handling.
+alwaysApply: true
+---
+# Design Principles
+
+Structural and architectural rules for all code. Covers SOLID, cohesion, coupling, and error handling.
+
+## SOLID
+
+- **S — Single Responsibility:** A module or class should have only one reason to change. One actor, one concern.
+- **O — Open/Closed:** Extend behavior by adding new code; never modify existing lower layers to support new behavior.
+- **L — Liskov Substitution:** Subtypes must be substitutable for their base type without breaking correctness.
+- **I — Interface Segregation:** Many small, client-specific interfaces are better than one large general-purpose interface.
+- **D — Dependency Inversion:** Depend on abstractions, not on concrete implementations. Expose a plug, never wire directly.
+
+## Cohesion
+
+- Target **functional cohesion**: all elements of a module serve one single well-defined task.
+- Never create `Utils`, `Helpers`, or `Common` catch-all modules — that is coincidental cohesion, the worst level.
+- High cohesion and low coupling always go together. You cannot have one without the other.
+- When writing business rules, communicational cohesion (multiple operations on the same data) is acceptable — if it is a conscious decision, not drift.
+
+## Deletability and coupling
+
+- Break code apart by what it does **not** share with the rest, not by common functionality.
+- Keep hard-to-delete code (stable libraries, protocols) far from easy-to-delete code (business logic). Never entangle them.
+- Each hard problem should be handled by only one module. If a module does two things, it is usually because changing one requires changing the other — split it.
+- Design so parts can be deleted without rewriting the rest. If deleting a module forces rewrites elsewhere, coupling is too tight.
+
+## Composition over inheritance
+
+- Prefer **contain-and-delegate** over class inheritance.
+- Never rely on the internal implementation of a base class — that is a white-box dependency and will break.
+- Keep inheritance hierarchies shallow. Deep hierarchies drag in the whole tree when you need one leaf.
+- Use interface-based polymorphism.
+
+## Error handling at the boundary
+
+- Handle errors at the **outer layers** (end-to-end principle).
+- If every layer handles the same error, the inner handling adds no value and obscures the source.
+- Validate at system boundaries: user input, external APIs, I/O. Trust internal code and framework guarantees.
+
+## Naming as a continuous act
+
+- Rename as your understanding of a concept evolves. A name is a claim about meaning — update it when the claim changes.
+- Good names make the program self-documenting; stale names add accidental complexity.

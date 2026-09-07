@@ -4,15 +4,15 @@ alwaysApply: true
 ---
 
 ## STACK (this project)
-- Language: TypeScript (strict mode, noUncheckedIndexedAccess, exactOptionalPropertyTypes)
-- Frontend: Astro 4.16 — `web/` directory, Node SSR via `@astrojs/node` standalone
+- Language: TypeScript (strict, noUncheckedIndexedAccess, exactOptionalPropertyTypes, noImplicitOverride)
+- Frontend: Astro 4.16 — `web/`, SSR via `@astrojs/node` / `@astrojs/vercel`, EN + mirrored `es/` pages
 - Backend: Hono 4
 - Runtime: Bun
-- Database: libsql / bun:sqlite + Drizzle ORM (driver auto-selected: `file:` → bun:sqlite, `libsql:`/`https:` → @libsql/client)
-- Auth: Clerk — API-only JWT verify via `@clerk/backend`. Never roll your own.
-- Email: Resend — optional until email send routes exist (`RESEND_API_KEY`)
+- Database: none — data comes from the GitHub API, cached in-process (`TtlCache`)
+- Auth: none
+- Email: Resend dependency present, no send routes yet
 - Payments: not used
-- Deploy: Fly.io (planned — see TODOS.md)
+- Deploy: Render (API) · Vercel (Web). `fly.toml` is a leftover artifact.
 
 ## SOURCE OF TRUTH
 Stack decisions live in `CLAUDE.md`. This file is a Cursor-facing summary.
@@ -25,9 +25,7 @@ If they conflict, `CLAUDE.md` wins.
 - Barrel files (index.ts) only when module surface is stable
 - REST APIs: consistent error response shape across all endpoints
 - Validate inputs at route handler level before business logic
-- Parameterized queries always — never string interpolation in SQL
-- Migrations: always reversible, never destructive without backup step
-- Webhook handlers: verify signature, return 200 before processing
+- Webhook/cron handlers: verify the shared secret before doing work
 - Docker: no root in containers, multi-stage builds, .dockerignore required
 - Env vars via .env or secrets manager — never hardcoded
 - Idempotent scripts — running twice must not break anything

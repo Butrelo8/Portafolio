@@ -1,0 +1,48 @@
+---
+description: Web performance: Core Web Vitals targets, bundle budgets, images, fonts, animation.
+globs: "web/**"
+---
+# Web Performance Rules
+
+## Core Web Vitals Targets
+
+| Metric | Target  |
+| ------ | ------- |
+| LCP    | < 2.5s  |
+| INP    | < 200ms |
+| CLS    | < 0.1   |
+| FCP    | < 1.5s  |
+| TBT    | < 200ms |
+
+## Bundle Budget
+
+| Page Type    | JS (gzipped) | CSS    |
+| ------------ | ------------ | ------ |
+| Landing page | < 150kb      | < 30kb |
+| App page     | < 300kb      | < 50kb |
+| Microsite    | < 80kb       | < 15kb |
+
+## Loading Strategy
+
+1. Inline critical above-the-fold CSS where justified
+2. Preload the hero image and primary font only
+3. Defer non-critical CSS or JS
+4. Dynamically import heavy libraries
+
+## Image Optimization
+
+- Explicit `width` and `height`
+- `loading="eager"` + `fetchpriority="high"` for hero media only; `loading="lazy"` below the fold
+- Prefer AVIF or WebP with fallbacks
+
+## Font Loading
+
+- Max two font families, `font-display: swap`, subset where possible, preload only the critical weight
+
+## Checklist
+
+- [ ] All images have explicit dimensions
+- [ ] No accidental render-blocking resources
+- [ ] No layout shifts from dynamic content
+- [ ] Motion stays on compositor-friendly properties
+- [ ] Third-party scripts load async/defer and only when needed

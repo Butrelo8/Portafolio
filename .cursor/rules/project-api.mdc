@@ -1,0 +1,61 @@
+---
+description: Hono API conventions for this project — errors, validation, routes, data source, env.
+alwaysApply: true
+---
+
+# Mi-Portafolio API
+
+Originally scaffolded from `hono-template`, but **no database and no auth provider**. Ignore any
+Clerk / Drizzle / libsql / Fly.io guidance from that template. `CLAUDE.md` is the source of truth.
+
+## Errors
+
+- Import `AppError` from `src/lib/errors.ts` (NOT from `src/middleware/error`).
+- **Throw** `new AppError(code, message, httpStatus)` from handlers; the global `errorHandler` formats
+  the JSON envelope. Never call `c.json({ error: … })` for error cases.
+- `ErrorCode` union: `BAD_REQUEST`, `UNAUTHORIZED`, `FORBIDDEN`, `NOT_FOUND`, `CONFLICT`,
+  `PAYLOAD_TOO_LARGE`, `RATE_LIMITED`, `VALIDATION`, `INTERNAL`.
+
+```typescript
+import { AppError } from '../lib/errors';
+if (!project) throw new AppError('NOT_FOUND', 'Project not found', 404);
+```
+
+## Validation
+
+Use `validate({ json, query, params })` from `src/middleware/validate.ts` with Zod schemas; read via
+`c.get('validated').json` / `.query` / `.params`.
+
+```typescript
+const querySchema = z.object({ topic: z.string().min(1).optional() });
+
+app.get('/projects', validate({ query: querySchema }), async (c) => {
+  const { topic } = c.get('validated').query as z.infer<typeof querySchema>;
+});
+```
+
+## Routes
+
+- Route files in `src/routes/`, registered in `src/routes/index.ts` via `mountRoutes()` — it takes no
+  arguments (no auth to inject).
+- Routes mount at `/`. Existing: `/health`, projects, `/api/revalidate`.
+- Keep handlers thin — logic belongs in `src/lib/`.
+
+## Data source
+
+No DB. `GitHubClient` (`src/lib/githubClient.ts`) fetches repos tagged `PORTFOLIO_TOPIC` and parses
+README front-matter with `gray-matter`; `projectAggregator` shapes them; `TtlCache` (`src/lib/cache.ts`,
+`CACHE_TTL_MS`) caches. `POST /api/revalidate` with `Authorization: Bearer <CRON_SECRET>` busts it.
+
+## Environment
+
+Only `src/env.ts` reads `process.env`; import `env` everywhere else.
+Required: `GITHUB_TOKEN`, `GITHUB_USERNAME`.
+Optional: `PORT`, `NODE_ENV`, `LOG_LEVEL`, `PORTFOLIO_TOPIC`, `CACHE_TTL_MS`, `CRON_SECRET`,
+`ALLOWED_ORIGINS`, `RATE_LIMIT_MAX`, `RATE_LIMIT_WINDOW_MS` (in-process per instance),
+`TRUST_PROXY` (`true` only behind a trusted proxy setting `X-Forwarded-For`).
+
+## Types
+
+Context vars via module augmentation in `src/types/hono.d.ts`. Use `z.infer<typeof schema>` for
+Zod-derived types.

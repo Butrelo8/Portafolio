@@ -1,0 +1,19 @@
+---
+description: TypeScript security: secrets via env only, never hardcoded.
+globs: "**/*.ts,**/*.tsx,**/*.js,**/*.jsx"
+---
+# TypeScript/JavaScript Security
+
+## Secret Management
+
+```typescript
+// NEVER: hardcoded secrets
+const apiKey = "sk-proj-xxxxx"
+
+// ALWAYS: environment variables — in this repo, only via `src/env.ts`
+import { env } from '@/env'
+const token = env.GITHUB_TOKEN
+```
+
+Never read raw `process.env` outside `src/env.ts`. Secrets must never appear in logs — see
+`src/lib/safeLog.ts` for the redaction list.
