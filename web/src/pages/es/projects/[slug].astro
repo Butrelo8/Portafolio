@@ -1,16 +1,17 @@
 ---
-export const prerender = true
-import BaseLayout from '../../../layouts/BaseLayout.astro'
-import { fetchProjects, fetchProject } from '../../../lib/api'
+export const prerender = true;
+
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { fetchProject, fetchProjects } from '../../../lib/api';
 
 export async function getStaticPaths() {
-  const projects = await fetchProjects()
-  return projects.map(p => ({ params: { slug: p.slug } }))
+  const projects = await fetchProjects();
+  return projects.map((p) => ({ params: { slug: p.slug } }));
 }
 
-const { slug } = Astro.params
-const project = await fetchProject(slug)
-if (!project) return Astro.redirect('/404')
+const { slug } = Astro.params;
+const project = await fetchProject(slug);
+if (!project) return Astro.redirect('/404');
 ---
 
 <BaseLayout title={project.name} description={project.description} lang="es">
@@ -37,7 +38,7 @@ if (!project) return Astro.redirect('/404')
         <img src={project.screenshot} alt={`${project.name} captura`} />
       </div>
     )}
-    <div class="project__readme prose" set:html={project.readmeMarkdown} />
+    <div class="project__readme prose" set:html={project.readmeHtml} />
   </article>
 </BaseLayout>
 

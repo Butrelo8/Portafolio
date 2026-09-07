@@ -8,6 +8,33 @@ _Context pass:_ `CLAUDE.md` ~73 lines — OK. No in-repo MCP. Stale rule + MCP +
 
 ## Open
 
+
+### Rewrite about bio — EN + ES (P1)
+
+- **What:** Replace placeholder bio in `web/src/content/about/en.md` and `web/src/content/about/es.md` with authentic, personal content reflecting Ivan's actual identity, voice, and stack.
+- **Why:** Current copy is generic subagent-generated placeholder. Doesn't reflect real personality, design aesthetic (neo-brutalism, #ff4500, JetBrains Mono), or actual focus areas.
+- **Context:** Ivan (Trelo), full-stack developer, México (UTC-6), email `av.ivan.8@gmail.com`, GitHub `Butrelo8`. Builds opinionated APIs + frontends with TypeScript, Hono 4, Bun, Astro. Deploys to Render + Vercel. Cares about design quality (neo-brutalism, no generic templates). Heavy Claude Code user with custom tooling (engram, Cursor rules, superpowers). Accurate stack: Hono, Bun, TypeScript strict, Astro, Biome, Playwright, Zod.
+- **Solution:** Rewrite both files. EN first, ES translation second (same voice, not literal). Keep contact block (`av.ivan.8@gmail.com`, `Butrelo8`). Keep `## What I work with` section or equivalent. Add personality — direct, technical, no corpo filler. No "passionate developer" or "love solving problems".
+- **Done When:** Both files sound like Ivan wrote them, not a template. Stack list accurate to current repo. EN + ES committed and pushed.
+- **Effort:** S (human: ~30m / CC: ~5 min)
+- **Priority:** P1
+- **Depends on:** Nothing.
+
+### Proposal generator page — /tools/proposal (P2)
+
+- **What:** Add freelance proposal generator as new page in Astro web app. 3-step form: (1) client + project brief, (2) deliverables + economics, (3) dev info + tone/language. Streams Claude-generated markdown proposal.
+- **Why:** Useful standalone tool for Ivan's freelance work. Lives on portfolio site as real product demo.
+- **Context:** Full React component already designed (dark theme, IBM Plex Mono, gold `#B8973A` accent — MafiaTumbadaOfi branding). Original code calls `api.anthropic.com` directly from browser — **must proxy through Hono** (`POST /tools/proposal`) to avoid exposing API key client-side.
+- **Solution:**
+  1. Add `POST /tools/proposal` route in `src/routes/` — accepts `{ system, messages }`, streams Claude response. Add `ANTHROPIC_API_KEY` to `src/env.ts` + `.env.example`.
+  2. Add `ProposalGenerator.tsx` to `web/src/components/` — port existing component, replace direct `api.anthropic.com` fetch with proxy call to `/tools/proposal`.
+  3. Add `web/src/pages/tools/proposal.astro` — `<ProposalGenerator client:load />`. Ensure `@astrojs/react` in `web/`.
+  4. Decide: keep gold `#B8973A` as tool-specific theme or swap to `#ff4500` to match portfolio neo-brutalism.
+- **Done When:** `/tools/proposal` renders 3-step form, streams proposal, copy-markdown works. API key never client-exposed. Deployed on Vercel.
+- **Effort:** M (human: ~2h / CC: ~30 min)
+- **Priority:** P2
+- **Depends on:** `ANTHROPIC_API_KEY` on Render. `@astrojs/react` in web deps.
+
 ### Redis RateLimitStore adapter (P4)
 
 - **What:** `RedisRateLimitStore` class in `src/lib/rateLimitStore.ts` implementing `RateLimitStore` interface. Uses `@upstash/redis` (HTTP-based, no persistent connection). Atomic `INCR` + `EXPIREAT` via pipeline. `REDIS_URL` optional env var — absent = MemoryStore fallback. Both `globalLimiter` and `healthLimiter` share same store instance. Store errors already fail-open in `rateLimitFactory.ts` (`msg: 'rate_limit_store_error'`).
@@ -30,6 +57,12 @@ _Context pass:_ `CLAUDE.md` ~73 lines — OK. No in-repo MCP. Stale rule + MCP +
 - **Notes:** Test suite needs Resend SDK mock.
 
 ## Completed
+
+### Sanitize README markdown rendering — XSS fix (2026-04-28)
+
+- **Outcome:** Removed `set:html={project.readmeMarkdown}` XSS risk in Spanish project pages. READMEs are now parsed by `marked` and sanitized with `sanitize-html` in `src/lib/projectAggregator.ts`.
+- **Changes:** Field renamed `readmeMarkdown` → `readmeHtml` in API and web types. English page unaffected (no render); Spanish page updated to use sanitized HTML. Sanitization pipeline added to `projectAggregator`.
+
 
 ### Fly.io deploy config — fly.toml + Dockerfile (2026-04-25)
 
