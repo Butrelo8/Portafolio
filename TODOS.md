@@ -13,7 +13,7 @@ _Context pass:_ `CLAUDE.md` ~73 lines — OK. No in-repo MCP. Stale rule + MCP +
 
 - **What:** Replace placeholder bio in `web/src/content/about/en.md` and `web/src/content/about/es.md` with authentic, personal content reflecting Ivan's actual identity, voice, and stack.
 - **Why:** Current copy is generic subagent-generated placeholder. Doesn't reflect real personality, design aesthetic (neo-brutalism, #ff4500, JetBrains Mono), or actual focus areas.
-- **Context:** Ivan (Trelo), full-stack developer, México (UTC-6), email `av.ivan.8@gmail.com`, GitHub `Butrelo8`. Builds opinionated APIs + frontends with TypeScript, Hono 4, Bun, Astro. Deploys to Render + Vercel. Cares about design quality (neo-brutalism, no generic templates). Heavy Claude Code user with custom tooling (engram, Cursor rules, superpowers). Accurate stack: Hono, Bun, TypeScript strict, Astro, Biome, Playwright, Zod.
+- **Context:** Ivan (Trelo), full-stack developer, México (UTC-6), email `av.ivan.8@gmail.com`, GitHub `Butrelo8`. Builds opinionated frontends and APIs with TypeScript, Bun, Astro, Hono. Deploys to Cloudflare Workers. Cares about design quality (neo-brutalism, no generic templates). Heavy Claude Code user with custom tooling (engram, Cursor rules, superpowers). Accurate stack for *this* site: Astro (static), TypeScript strict, Biome, Cloudflare Workers. Hono/Bun/Zod are real skills but no longer in this repo — see README History.
 - **Solution:** Rewrite both files. EN first, ES translation second (same voice, not literal). Keep contact block (`av.ivan.8@gmail.com`, `Butrelo8`). Keep `## What I work with` section or equivalent. Add personality — direct, technical, no corpo filler. No "passionate developer" or "love solving problems".
 - **Done When:** Both files sound like Ivan wrote them, not a template. Stack list accurate to current repo. EN + ES committed and pushed.
 - **Effort:** S (human: ~30m / CC: ~5 min)
@@ -22,41 +22,28 @@ _Context pass:_ `CLAUDE.md` ~73 lines — OK. No in-repo MCP. Stale rule + MCP +
 
 ### Proposal generator page — /tools/proposal (P2)
 
-- **What:** Add freelance proposal generator as new page in Astro web app. 3-step form: (1) client + project brief, (2) deliverables + economics, (3) dev info + tone/language. Streams Claude-generated markdown proposal.
-- **Why:** Useful standalone tool for Ivan's freelance work. Lives on portfolio site as real product demo.
-- **Context:** Full React component already designed (dark theme, IBM Plex Mono, gold `#B8973A` accent — MafiaTumbadaOfi branding). Original code calls `api.anthropic.com` directly from browser — **must proxy through Hono** (`POST /tools/proposal`) to avoid exposing API key client-side.
+- **What:** Freelance proposal generator as a page on the site. 3-step form: (1) client + project brief, (2) deliverables + economics, (3) dev info + tone/language. Streams a Claude-generated markdown proposal.
+- **Why:** Useful tool for Ivan's freelance work, and a real product demo on the portfolio rather than a screenshot.
+- **Blocker — needs a runtime.** The site is `output: 'static'` with no server; this is the one feature that justifies bringing a Worker back. `ANTHROPIC_API_KEY` must never reach the browser, and streaming needs a server. Never call `api.anthropic.com` from client JS.
 - **Solution:**
-  1. Add `POST /tools/proposal` route in `src/routes/` — accepts `{ system, messages }`, streams Claude response. Add `ANTHROPIC_API_KEY` to `src/env.ts` + `.env.example`.
-  2. Add `ProposalGenerator.tsx` to `web/src/components/` — port existing component, replace direct `api.anthropic.com` fetch with proxy call to `/tools/proposal`.
-  3. Add `web/src/pages/tools/proposal.astro` — `<ProposalGenerator client:load />`. Ensure `@astrojs/react` in `web/`.
-  4. Decide: keep gold `#B8973A` as tool-specific theme or swap to `#ff4500` to match portfolio neo-brutalism.
-- **Done When:** `/tools/proposal` renders 3-step form, streams proposal, copy-markdown works. API key never client-exposed. Deployed on Vercel.
-- **Effort:** M (human: ~2h / CC: ~30 min)
+  1. New Worker with its own `wrangler.jsonc`, deployed separately — do NOT resurrect the deleted Hono app wholesale. One route: `POST /proposal`, accepts `{ system, messages }`, streams the Claude response. Key as a Cloudflare secret, not a var. Lock CORS to the site origin.
+  2. Keep the site static and make this page a client island that fetches the Worker — lighter than switching the whole site to `output: 'server'`.
+  3. `web/src/components/ProposalGenerator.tsx` — port the existing React component (dark theme, IBM Plex Mono, gold `#B8973A`). Needs `@astrojs/react` in `web/`.
+  4. `web/src/pages/tools/proposal.astro` — `<ProposalGenerator client:load />`.
+  5. Decide: keep gold `#B8973A` as a tool-specific theme, or swap to `#ff4500` to match the portfolio.
+- **Done When:** `/tools/proposal` renders the 3-step form, streams a proposal, copy-markdown works. Key never client-exposed. Deployed.
+- **Effort:** M (human: ~3h / CC: ~45 min)
 - **Priority:** P2
-- **Depends on:** `ANTHROPIC_API_KEY` on Render. `@astrojs/react` in web deps.
-
-### Redis RateLimitStore adapter (P4)
-
-- **What:** `RedisRateLimitStore` class in `src/lib/rateLimitStore.ts` implementing `RateLimitStore` interface. Uses `@upstash/redis` (HTTP-based, no persistent connection). Atomic `INCR` + `EXPIREAT` via pipeline. `REDIS_URL` optional env var — absent = MemoryStore fallback. Both `globalLimiter` and `healthLimiter` share same store instance. Store errors already fail-open in `rateLimitFactory.ts` (`msg: 'rate_limit_store_error'`).
-- **Why:** In-process `MemoryStore` gives each replica its own budget. 2 replicas = 2× allowed budget per IP. Redis fixes this — all replicas share one counter per key.
-- **Effort:** M (human: ~1 day / CC: ~15 min). **Priority: P4.**
-- **Notes:** ms→s conversion for `EXPIREAT` (`Math.ceil(resetAt / 1000)`). Add `REDIS_URL` to `.env.example` + `safeLog.ts` SECRET_KEYS. Tests: Redis contract + fail-open + MemoryStore fallback when `REDIS_URL` absent. Plan at ~/Cursor Projects/Hono Template/docs/superpowers/plans/2026-04-23-redis-rate-limit-adapter.md
-
-### Clerk org support — orgId on context (P4)
-
-- **What:** Extract `orgId` from Clerk JWT claims in `requireAuth`. Add to `ContextVariableMap`. Items queries optionally scope by `orgId` when present.
-- **Why:** Foundation for org-scoped SaaS. Clerk already returns `orgId` in JWT — just not extracted. Every multi-tenant user implements this from scratch today.
-- **Effort:** M (human: ~1 day / CC: ~20 min). **Priority: P2.**
-- **Notes:** Items table may need `org_id` column + Drizzle migration. Verify Clerk JWT claim field name. Design before implementing.
-
-### Resend email route — POST /email/send (P4)
-
-- **What:** `src/routes/email.ts` with `POST /email/send`, Zod validation, `requireAuth`, Resend SDK call. `RESEND_API_KEY` already stubbed in `src/env.ts`.
-- **Why:** Completes auth + CRUD + email primitives. Env var stub confuses cloners.
-- **Effort:** S (human: ~4h / CC: ~10 min). **Priority: P3.**
-- **Notes:** Test suite needs Resend SDK mock.
+- **Depends on:** Anthropic API key. A decision on island vs `output: 'server'`.
 
 ## Completed
+
+### Collapse the API into the build (2026-09-07)
+
+- **Outcome:** Deleted the Hono API. The site is `output: 'static'`, so the deployed Worker only ever served our own CI — never a visitor. The GitHub fetch + README rendering now live in `web/src/lib/projects.ts`, memoized so one build makes one pass over the GitHub API.
+- **Changes:** Removed `src/`, `tests/`, `e2e/`, `wrangler.jsonc`, `Dockerfile`, `fly.toml`, `bunfig.toml`, root `tsconfig.json` (-2479 lines). Root `package.json` is now Biome + script delegation to `web/`. CI lints/typechecks the site; `deploy-web.yml` takes `PORTFOLIO_GITHUB_TOKEN` / `PORTFOLIO_GITHUB_USERNAME` instead of `PUBLIC_API_URL` — GitHub reserves the `GITHUB_` prefix for both secrets and variables. Biome skips `*.astro` and generated `web/.astro/`.
+- **Also fixed:** CI deploy had never once succeeded. `CLOUDFLARE_API_TOKEN` held an R2-only token, which authenticated fine but had no permission on `workers/services` — surfacing only as an opaque `Authentication error [code: 10000]`. Replaced with a Workers-scoped token.
+- **Dropped as moot:** Redis rate-limit adapter, Clerk org support, Resend email route — all API-only.
 
 ### Sanitize README markdown rendering — XSS fix (2026-04-28)
 
