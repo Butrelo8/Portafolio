@@ -2,7 +2,7 @@
 export const prerender = true;
 
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { fetchProject, fetchProjects } from '../../../lib/api';
+import { fetchProject, fetchProjects } from '../../../lib/projects';
 
 export async function getStaticPaths() {
   const projects = await fetchProjects();

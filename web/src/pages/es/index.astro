@@ -2,7 +2,7 @@
 export const prerender = true
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import ProjectCard from '../../components/ProjectCard.astro'
-import { fetchProjects } from '../../lib/api'
+import { fetchProjects } from '../../lib/projects'
 
 const projects = await fetchProjects()
 const featured = projects.filter(p => p.featured)

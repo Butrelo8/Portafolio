@@ -1,6 +1,6 @@
 ---
 export const prerender = true
-import { fetchProjects, fetchProject } from '../../lib/api'
+import { fetchProjects, fetchProject } from '../../lib/projects'
 export async function getStaticPaths() {
   const projects = await fetchProjects()
   return projects.map(p => ({ params: { slug: p.slug } }))

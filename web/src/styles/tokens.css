@@ -9,8 +9,8 @@
   --color-muted: #6b6b6b;
 
   /* Typography */
-  --font-mono: 'JetBrains Mono', 'Fira Mono', monospace;
-  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Mono", monospace;
+  --font-sans: "Inter", system-ui, sans-serif;
 
   --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
   --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);

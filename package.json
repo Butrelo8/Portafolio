@@ -1,33 +1,17 @@
 {
-  "name": "mi-portafolio-api",
+  "name": "mi-portafolio",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun run --hot src/index.ts",
-    "start": "bun run src/index.ts",
-    "build": "bun build src/index.ts --outdir dist --target bun",
-    "test": "bun test",
-    "test:e2e": "playwright test --config e2e/playwright.config.ts",
-    "lint": "biome check src tests scripts web",
-    "lint:fix": "biome check --write src tests scripts web",
-    "format": "biome format --write src tests scripts web",
-    "typecheck": "tsc --noEmit"
-  },
-  "dependencies": {
-    "gray-matter": "^4.0.3",
-    "hono": "^4.0.0",
-    "marked": "^18.0.2",
-    "resend": "^4.0.0",
-    "sanitize-html": "^2.17.3",
-    "zod": "^3.23.0"
+    "dev": "cd web && bun run dev",
+    "build": "cd web && bun run build",
+    "typecheck": "cd web && bun run typecheck",
+    "lint": "biome check web",
+    "lint:fix": "biome check --write web",
+    "format": "biome format --write web"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.0",
-    "@playwright/test": "^1.45.0",
-    "@types/bun": "latest",
-    "@types/sanitize-html": "^2.16.1",
-    "typescript": "^5.0.0",
-    "wrangler": "^4.129.0"
+    "@biomejs/biome": "^2.4.0"
   }
 }

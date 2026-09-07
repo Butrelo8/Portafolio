@@ -1,75 +1,62 @@
 # Mi Portafolio
 
-Personal portfolio API + frontend. GitHub repos tagged `portfolio` → bilingual (EN/ES) site.
+Personal portfolio site. GitHub repos tagged `portfolio` → bilingual (EN/ES) static site.
 
-**Stack:** Hono 4 + Bun (API) · Astro 4.16 ISR (Web) · GitHub API · gray-matter · TtlCache · Resend
-**Deploy:** Render (API) · Vercel (Web)
+**Stack:** Astro 4.16 (static) · GitHub API · gray-matter · marked + sanitize-html · Biome
+**Deploy:** Cloudflare Workers (static assets), built in GitHub Actions
+
+No server. Project data is fetched from GitHub at **build time**, so visitors get plain HTML and
+nothing ever calls the GitHub API from the browser. A new deploy is how the site refreshes.
 
 ---
 
-## Quick Start
+## Setup
 
 ```bash
-# API
-bun install
-cp .env.example .env      # fill GITHUB_TOKEN, GITHUB_USERNAME, etc.
-bun run dev               # :3001
-
-# Web
-cd web && bun install && cp .env.example .env   # fill PUBLIC_API_URL
-bun run dev               # :4321
+bun install                                     # root: Biome only
+cd web && bun install && cp .env.example .env   # fill GITHUB_TOKEN + GITHUB_USERNAME
+bun run dev                                     # :4321
 ```
+
+`GITHUB_TOKEN` needs only `public_repo` scope.
 
 ---
 
 ## Deploy
 
-### API → Render
+GitHub Actions (`.github/workflows/deploy-web.yml`) builds `web/` and deploys to Cloudflare Workers
+on every push to `main`.
 
-1. New Web Service → connect repo, root dir `/`, runtime Bun
-2. Build: `bun install` · Start: `bun run start`
-3. Set env vars (see `.env.example`): `GITHUB_TOKEN`, `GITHUB_USERNAME`, `PORTFOLIO_TOPIC`, `CRON_SECRET`, `ALLOWED_ORIGINS`
+Repo secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `PORTFOLIO_GITHUB_TOKEN`.
+Repo variables: `GITHUB_USERNAME`, `PORTFOLIO_TOPIC`.
 
-### Web → Vercel
-
-1. New project → root dir `web/`
-2. Framework: Astro
-3. Set `PUBLIC_API_URL` → your Render API URL
-
-### Cache Revalidation
-
-API caches GitHub data 10 min in-process. To warm before ISR refresh, schedule a POST ping:
-
-```
-POST /api/revalidate
-Authorization: Bearer <CRON_SECRET>
-```
-
-Use [cron-job.org](https://cron-job.org) or similar, every 9 min.
+`PORTFOLIO_GITHUB_TOKEN` is a separate secret because Actions reserves the name `GITHUB_TOKEN`.
 
 ---
 
 ## Commands
 
-| Command             | Purpose                  |
-| ------------------- | ------------------------ |
-| `bun run dev`       | API hot reload (:3001)   |
-| `bun test`          | Unit + integration tests |
-| `bun run test:e2e`  | Playwright E2E           |
-| `bun run lint`      | Biome check              |
-| `bun run typecheck` | TS type check            |
-| `cd web && bun run dev` | Astro dev (:4321)   |
-| `cd web && bun run build` | Astro prod build  |
+| Command                   | Does                      |
+| ------------------------- | ------------------------- |
+| `bun run dev`             | Astro dev (:4321)         |
+| `bun run build`           | Astro prod build → `web/dist` |
+| `bun run typecheck`       | `astro check` + `tsc`     |
+| `bun run lint` / `lint:fix` | Biome over `web/`       |
+
+Root scripts delegate to `web/`. Biome skips `*.astro` (it misreads frontmatter vars used in the
+template as unused) and the generated `web/.astro/` types.
 
 ---
 
 ## How Projects Work
 
-1. GitHub API lists public repos for `GITHUB_USERNAME` filtered by topic `PORTFOLIO_TOPIC`
-2. `GitHubClient.getReadme(repo)` fetches each repo's `README.md`
-3. `gray-matter` parses frontmatter: `tagline`, `stack`, `screenshot`, `featured`, `order`
-4. `TtlCache` stores result 10 min in-process
-5. Astro pages fetch `GET /projects` at build/ISR time
+`web/src/lib/projects.ts` runs during `astro build`:
+
+1. Lists public repos for `GITHUB_USERNAME`, keeps those tagged `PORTFOLIO_TOPIC`
+2. Fetches each repo's `README.md`
+3. `gray-matter` parses frontmatter; `marked` + `sanitize-html` render the body to safe HTML
+4. Sorts by `order`, then stars
+5. Memoized per build — one pass over the GitHub API no matter how many pages import it
 
 **README frontmatter fields** (in your portfolio repos):
 ```yaml
@@ -84,25 +71,16 @@ order: 1
 
 ---
 
-## Infrastructure
+## i18n
 
-### GitHub Client (`src/lib/githubClient.ts`)
-Wraps GitHub REST API. `listRepos(topic)` + `getReadme(repo)`. Requires `GITHUB_TOKEN` with `public_repo` scope.
+EN at `/`, ES at `/es/`. Astro i18n routing (`prefixDefaultLocale: false`). Adding a page means
+adding both. About content lives in `web/src/content/about/en.md` + `es.md`.
 
-### Cache (`src/lib/cache.ts`)
-`TtlCache<T>` — in-process Map, default 10 min TTL. Not shared across replicas; single Render instance fine.
+---
 
-### Env (`src/env.ts`)
-Zod-validated. Fails fast at boot. Never read `process.env` directly — import `env`.
+## History
 
-### Error Handling
-Throw `AppError(code, message, status)`. `onError` formats `{ error: { code, message, status } }`.
-
-### Rate Limiting
-In-memory fixed-window per process. `RATE_LIMIT_MAX` + `RATE_LIMIT_WINDOW_MS`. Stricter limit on `/health`.
-
-### i18n
-EN at `/`, ES at `/es/`. Astro i18n routing (`prefixDefaultLocale: false`). About content in `web/src/content/about/en.md` + `es.md`.
-
-### Health
-`GET /health` → `{ status, version, uptimeSeconds, time }`
+This repo used to ship a Hono + Bun API on Cloudflare Workers that proxied GitHub for the site.
+Since the site is `output: 'static'`, that API only ever served the build — so it was removed and
+the fetch moved into the build. It's in git history if a real backend is ever needed (a contact
+form, a newsletter, an LLM-backed tool).
