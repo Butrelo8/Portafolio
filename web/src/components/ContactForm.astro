@@ -1,0 +1,97 @@
+---
+interface Props {
+  lang: 'en' | 'es';
+}
+
+const { lang } = Astro.props;
+
+// Web3Forms delivers straight to your inbox; the access key is public by design.
+// Set PUBLIC_WEB3FORMS_KEY in web/.env and as a CI variable.
+const accessKey = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
+
+const t =
+  lang === 'es'
+    ? {
+        heading: '// hablemos',
+        title: '¿Tienes un proyecto?',
+        blurb:
+          'Cuéntame qué necesitas y qué problema quieres resolver. Respondo en menos de 24 horas.',
+        name: 'Nombre',
+        email: 'Correo',
+        message: 'Qué necesitas',
+        placeholder: 'Un sitio para mi negocio, una plataforma de reservas, una herramienta interna…',
+        send: 'Enviar',
+        or: 'O escríbeme directo:',
+        missing: 'Formulario sin configurar — escríbeme por correo mientras tanto.',
+      }
+    : {
+        heading: '// let’s talk',
+        title: 'Have a project?',
+        blurb: 'Tell me what you need and what problem you want solved. I reply within 24 hours.',
+        name: 'Name',
+        email: 'Email',
+        message: 'What you need',
+        placeholder: 'A site for my business, a booking platform, an internal tool…',
+        send: 'Send',
+        or: 'Or email me directly:',
+        missing: 'Form not configured yet — email me in the meantime.',
+      };
+---
+
+<section id="contact" class="section container">
+  <h2 class="section__title mono">{t.heading}</h2>
+  <div class="contact brut-card">
+    <div class="contact__intro">
+      <h3 class="contact__title mono">{t.title}</h3>
+      <p class="contact__blurb">{t.blurb}</p>
+      <p class="contact__direct mono">
+        {t.or} <a href="mailto:av.ivan.8@gmail.com">av.ivan.8@gmail.com</a>
+      </p>
+    </div>
+
+    {accessKey ? (
+      <form action="https://api.web3forms.com/submit" method="POST" class="contact__form">
+        <input type="hidden" name="access_key" value={accessKey} />
+        <input type="hidden" name="subject" value="New project enquiry from your portfolio" />
+        <input type="checkbox" name="botcheck" class="contact__honeypot" tabindex="-1" autocomplete="off" />
+
+        <label class="contact__field">
+          <span class="mono">{t.name}</span>
+          <input type="text" name="name" required autocomplete="name" />
+        </label>
+
+        <label class="contact__field">
+          <span class="mono">{t.email}</span>
+          <input type="email" name="email" required autocomplete="email" />
+        </label>
+
+        <label class="contact__field">
+          <span class="mono">{t.message}</span>
+          <textarea name="message" rows="5" required placeholder={t.placeholder}></textarea>
+        </label>
+
+        <button type="submit" class="brut-btn">{t.send}</button>
+      </form>
+    ) : (
+      <p class="contact__missing mono">{t.missing}</p>
+    )}
+  </div>
+</section>
+
+<style>
+  .section { padding-block: var(--space-16); }
+  .section__title { font-size: var(--text-xl); font-weight: 700; margin-bottom: var(--space-8); color: var(--color-muted); }
+  .contact { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-10); padding: var(--space-8); }
+  .contact__title { font-size: var(--text-2xl); font-weight: 700; margin-bottom: var(--space-4); }
+  .contact__blurb { color: var(--color-muted); margin-bottom: var(--space-6); max-width: 34ch; }
+  .contact__direct { font-size: var(--text-sm); color: var(--color-muted); }
+  .contact__direct a { color: var(--color-accent); text-decoration: underline; }
+  .contact__form { display: flex; flex-direction: column; gap: var(--space-4); }
+  .contact__field { display: flex; flex-direction: column; gap: var(--space-2); }
+  .contact__field span { font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-muted); }
+  .contact__field input, .contact__field textarea { font: inherit; padding: var(--space-3); border: var(--border-width) solid var(--color-border); background: var(--color-bg); color: var(--color-fg); }
+  .contact__field input:focus-visible, .contact__field textarea:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 2px; }
+  .contact__honeypot { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+  .contact__missing { font-size: var(--text-sm); color: var(--color-muted); }
+  @media (max-width: 800px) { .contact { grid-template-columns: 1fr; gap: var(--space-8); } }
+</style>

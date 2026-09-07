@@ -1,12 +1,11 @@
 # Mi Portafolio
 
-Personal portfolio site. GitHub repos tagged `portfolio` → bilingual (EN/ES) static site.
+Freelance portfolio — bilingual (EN/ES) case studies of shipped client work.
 
-**Stack:** Astro 4.16 (static) · GitHub API · gray-matter · marked + sanitize-html · Biome
+**Stack:** Astro 4.16 (static) · content collections · astro:assets · Biome
 **Deploy:** Cloudflare Workers (static assets), built in GitHub Actions
 
-No server. Project data is fetched from GitHub at **build time**, so visitors get plain HTML and
-nothing ever calls the GitHub API from the browser. A new deploy is how the site refreshes.
+No server, no database, no API, no credentials to build. Case studies are markdown in the repo.
 
 ---
 
@@ -14,11 +13,12 @@ nothing ever calls the GitHub API from the browser. A new deploy is how the site
 
 ```bash
 bun install                                     # root: Biome only
-cd web && bun install && cp .env.example .env   # fill GITHUB_TOKEN + GITHUB_USERNAME
+cd web && bun install && cp .env.example .env   # optional: PUBLIC_WEB3FORMS_KEY
 bun run dev                                     # :4321
 ```
 
-`GITHUB_TOKEN` needs only `public_repo` scope.
+The only env var is the Web3Forms key for the contact form. Without it the form degrades to an
+email link, and everything else builds.
 
 ---
 
@@ -27,10 +27,9 @@ bun run dev                                     # :4321
 GitHub Actions (`.github/workflows/deploy-web.yml`) builds `web/` and deploys to Cloudflare Workers
 on every push to `main`.
 
-Repo secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `PORTFOLIO_GITHUB_TOKEN`.
-Repo variables: `PORTFOLIO_GITHUB_USERNAME`, `PORTFOLIO_TOPIC`.
-
-GitHub reserves the `GITHUB_` prefix for its own secrets and variables, hence the `PORTFOLIO_` names.
+Repo secrets: `CLOUDFLARE_API_TOKEN` (must be **Workers**-scoped — an R2-only token authenticates
+but fails with an opaque `code: 10000`), `CLOUDFLARE_ACCOUNT_ID`.
+Repo variables: `PUBLIC_WEB3FORMS_KEY`.
 
 ---
 
@@ -48,26 +47,29 @@ template as unused) and the generated `web/.astro/` types.
 
 ---
 
-## How Projects Work
+## Adding a case study
 
-`web/src/lib/projects.ts` runs during `astro build`:
+Two files — `web/src/content/projects/en/<slug>.md` and `es/<slug>.md`, same slug:
 
-1. Lists public repos for `GITHUB_USERNAME`, keeps those tagged `PORTFOLIO_TOPIC`
-2. Fetches each repo's `README.md`
-3. `gray-matter` parses frontmatter; `marked` + `sanitize-html` render the body to safe HTML
-4. Sorts by `order`, then stars
-5. Memoized per build — one pass over the GitHub API no matter how many pages import it
-
-**README frontmatter fields** (in your portfolio repos):
 ```yaml
 ---
-tagline: "Short one-liner"
-stack: ["TypeScript", "Hono", "Bun"]
-screenshot: "https://..."
-featured: true
+name: Project Name
+client: Who it was for
+year: 2026
+tagline: One line a client understands without reading further.
+summary: Card blurb — longer than the tagline, shorter than the case study.
+stack: ["Next.js", "PostgreSQL"]
+liveUrl: https://example.com     # optional
+repoUrl: https://github.com/...  # optional
+screenshot: ../../../assets/shots/name.png   # optional
 order: 1
 ---
 ```
+
+Body is three sections: **The problem**, **What I built**, **Result**. Screenshots go in
+`web/src/assets/shots/` — never `public/`, so Astro can convert them to webp at build.
+
+Add a `testimonial: { quote, author, role }` block only when a real quote exists.
 
 ---
 
@@ -80,7 +82,12 @@ adding both. About content lives in `web/src/content/about/en.md` + `es.md`.
 
 ## History
 
-This repo used to ship a Hono + Bun API on Cloudflare Workers that proxied GitHub for the site.
-Since the site is `output: 'static'`, that API only ever served the build — so it was removed and
-the fetch moved into the build. It's in git history if a real backend is ever needed (a contact
-form, a newsletter, an LLM-backed tool).
+Two deletions, both recorded in `DECISIONS.md`:
+
+1. A Hono + Bun API on Cloudflare Workers that proxied GitHub. The site is `output: 'static'`, so it
+   only ever served our own CI — never a visitor.
+2. The build-time GitHub fetch that replaced it. Once the audience was settled as freelance clients,
+   repo metadata was the wrong source: two of the four projects are private repos, and their value
+   isn't described by stars or a README.
+
+Both are in git history if a real backend is ever needed.

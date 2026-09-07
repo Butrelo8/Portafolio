@@ -1,39 +1,43 @@
 ---
-export const prerender = true
-import BaseLayout from '../layouts/BaseLayout.astro'
-import ProjectCard from '../components/ProjectCard.astro'
-import { fetchProjects } from '../lib/projects'
+export const prerender = true;
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContactForm from '../components/ContactForm.astro';
+import ProjectCard from '../components/ProjectCard.astro';
 
-const projects = await fetchProjects()
-const featured = projects.filter(p => p.featured)
-const rest = projects.filter(p => !p.featured)
+const projects = (await getCollection('projects', (p) => p.id.startsWith('en/'))).sort(
+  (a, b) => a.data.order - b.data.order,
+);
 ---
 
-<BaseLayout title="Portfolio" description="My open-source projects" lang="en">
+<BaseLayout
+  title="Ivan — Web developer in Veracruz"
+  description="I build booking platforms, event sites and internal tools for businesses in Veracruz."
+  lang="en"
+>
   <section class="hero container">
-    <p class="hero__label mono">hello world</p>
+    <p class="hero__label mono">Veracruz, México</p>
     <h1 class="hero__title">
-      I build things<br />
-      <span class="hero__accent">for the web.</span>
+      I build websites<br />
+      <span class="hero__accent">that do the work.</span>
     </h1>
-    <p class="hero__sub">Full-stack developer. Open source contributor. TypeScript enthusiast.</p>
-  </section>
-
-  {featured.length > 0 && (
-    <section class="section container">
-      <h2 class="section__title mono">// featured</h2>
-      <div class="grid grid--featured">
-        {featured.map(p => <ProjectCard project={p} lang="en" />)}
-      </div>
-    </section>
-  )}
-
-  <section class="section container">
-    <h2 class="section__title mono">// all projects</h2>
-    <div class="grid">
-      {rest.map(p => <ProjectCard project={p} lang="en" />)}
+    <p class="hero__sub">
+      Booking platforms, event sites and internal tools for real businesses — not brochures. Four
+      shipped and running.
+    </p>
+    <div class="hero__cta">
+      <a href="#contact" class="brut-btn">Start a project</a>
     </div>
   </section>
+
+  <section class="section container">
+    <h2 class="section__title mono">// selected work</h2>
+    <div class="grid">
+      {projects.map((p) => <ProjectCard project={p} lang="en" />)}
+    </div>
+  </section>
+
+  <ContactForm lang="en" />
 </BaseLayout>
 
 <style>
@@ -41,9 +45,9 @@ const rest = projects.filter(p => !p.featured)
   .hero__label { font-size: var(--text-sm); color: var(--color-accent); font-weight: 700; margin-bottom: var(--space-4); text-transform: uppercase; letter-spacing: 0.1em; }
   .hero__title { font-family: var(--font-mono); font-size: var(--text-hero); font-weight: 700; line-height: 1.05; margin-bottom: var(--space-6); }
   .hero__accent { color: var(--color-accent); -webkit-text-stroke: 2px var(--color-fg); }
-  .hero__sub { font-size: var(--text-lg); color: var(--color-muted); max-width: 48ch; }
+  .hero__sub { font-size: var(--text-lg); color: var(--color-muted); max-width: 52ch; }
+  .hero__cta { margin-top: var(--space-8); }
   .section { padding-block: var(--space-16); }
   .section__title { font-size: var(--text-xl); font-weight: 700; margin-bottom: var(--space-8); color: var(--color-muted); }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--space-6); }
-  .grid--featured { grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: var(--space-6); }
 </style>

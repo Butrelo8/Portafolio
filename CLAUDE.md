@@ -7,8 +7,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | Layer      | Choice                                              |
 | ---------- | --------------------------------------------------- |
 | Web        | Astro 4.16, `output: 'static'` (no adapter)          |
-| Data       | GitHub repos by topic, `gray-matter` README parsing  |
-| Rendering  | `marked` → `sanitize-html` for README bodies         |
+| Content    | Astro content collections — markdown case studies    |
+| Images     | `astro:assets` (build-time webp + responsive widths) |
 | Lint       | Biome (single config at root, covers `web/`)         |
 | Deploy     | Cloudflare Workers (static assets) via GitHub Actions |
 
@@ -28,8 +28,7 @@ bun run typecheck        # astro check + tsc
 bun run lint / lint:fix  # biome check web
 ```
 
-Web deps install separately: `cd web && bun install`. Needs `web/.env` with `GITHUB_TOKEN` +
-`GITHUB_USERNAME` (see `web/.env.example`).
+Web deps install separately: `cd web && bun install`. The build needs no credentials.
 
 CI (`.github/workflows/ci.yml`) = lint → typecheck. Deploy (`deploy-web.yml`) builds and ships to
 Cloudflare on push to `main`.
@@ -39,17 +38,18 @@ Cloudflare on push to `main`.
 **One package that matters:** `web/` (Astro). The root `package.json` holds Biome and script
 delegation, nothing else.
 
-**Data flow.** `web/src/lib/projects.ts` is the whole backend. During `astro build` it lists public
-repos for `GITHUB_USERNAME` filtered by `PORTFOLIO_TOPIC`, fetches each README, parses frontmatter
-with `gray-matter`, renders the body through `marked` + `sanitize-html`, sorts by `order` then
-stars. The result is memoized in a module-level promise so a build hits GitHub once.
+**Content.** Case studies are markdown in `web/src/content/projects/{en,es}/<slug>.md`, one file per
+project per language, schema in `web/src/content/config.ts`. Pages filter by `p.id.startsWith('en/')`
+and sort on `order`. There is no fetch and no token — the build reads the repo and nothing else.
 
-**Env.** Read via `ENV` in `projects.ts` — `{ ...process.env, ...import.meta.env }`, because `.env`
-values arrive through Vite's `import.meta.env` while CI secrets arrive through `process.env`.
-Never `PUBLIC_`-prefix the token: that would ship it to the browser.
+**Audience.** The site targets prospective **freelance clients**, not employers or OSS peers. Copy is
+about what a business got, not what the code does. See `DECISIONS.md`.
 
-**Sanitization.** README HTML is rendered with `set:html`, so it MUST stay sanitized. Never pass
-raw markdown or unsanitized HTML to `set:html`.
+**Screenshots.** Live in `web/src/assets/shots/`, referenced from front-matter and optimised by
+`astro:assets` at build time. Never put them in `public/` — that ships the raw multi-MB PNG.
+
+**Contact.** `ContactForm.astro` posts to Web3Forms. `PUBLIC_WEB3FORMS_KEY` is public by design; the
+form degrades to an email link when it's unset.
 
 **i18n.** English at `web/src/pages/*`, Spanish mirrored under `web/src/pages/es/*`. Adding a page
 means adding both.
@@ -65,8 +65,8 @@ unused) and the generated `web/.astro/`. Astro files are checked by `astro check
 
 ## Environment
 
-`web/.env`: `GITHUB_TOKEN` (public_repo scope), `GITHUB_USERNAME`, optional `PORTFOLIO_TOPIC`
-(default `portfolio`).
+`web/.env`: `PUBLIC_WEB3FORMS_KEY` (contact form).
 
-Actions secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `PORTFOLIO_GITHUB_TOKEN`
-(Actions reserves the name `GITHUB_TOKEN`). Variables: `PORTFOLIO_GITHUB_USERNAME`, `PORTFOLIO_TOPIC` (GitHub reserves the `GITHUB_` prefix).
+Actions secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`. Variables: `PUBLIC_WEB3FORMS_KEY`.
+The Cloudflare token must be **Workers**-scoped — an R2-only token authenticates but fails deploy
+with an opaque `code: 10000`.

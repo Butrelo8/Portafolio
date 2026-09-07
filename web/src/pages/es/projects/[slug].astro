@@ -1,44 +1,68 @@
 ---
 export const prerender = true;
-
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { fetchProject, fetchProjects } from '../../../lib/projects';
 
 export async function getStaticPaths() {
-  const projects = await fetchProjects();
-  return projects.map((p) => ({ params: { slug: p.slug } }));
+  const projects = await getCollection('projects', (p) => p.id.startsWith('es/'));
+  return projects.map((project) => ({
+    params: { slug: project.slug.replace(/^es\//, '') },
+    props: { project },
+  }));
 }
 
-const { slug } = Astro.params;
-const project = await fetchProject(slug);
-if (!project) return Astro.redirect('/404');
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const { name, client, year, tagline, summary, stack, liveUrl, repoUrl, screenshot, testimonial } =
+  project.data;
+const { Content } = await project.render();
 ---
 
-<BaseLayout title={project.name} description={project.description} lang="es">
+<BaseLayout title={`${name} — ${client}`} description={summary} lang="es">
   <article class="project container">
     <header>
       <p class="mono project__back"><a href="/es/">← Volver</a></p>
-      <h1 class="project__name mono">{project.name}</h1>
-      {project.tagline && <p class="project__tagline">{project.tagline}</p>}
+      <h1 class="project__name mono">{name}</h1>
+      <p class="project__tagline">{tagline}</p>
       <div class="project__meta mono">
-        <span>★ {project.stars}</span>
-        {project.language && <span>{project.language}</span>}
-        <span>{new Date(project.updatedAt).toLocaleDateString('es-ES', { year: 'numeric', month: 'short' })}</span>
+        <span>{client}</span>
+        <span>{year}</span>
       </div>
       <ul class="project__stack" aria-label="Stack">
-        {project.stack.map(t => <li class="mono">{t}</li>)}
+        {stack.map((t) => <li class="mono">{t}</li>)}
       </ul>
       <div class="project__links">
-        <a href={project.repoUrl} target="_blank" rel="noopener noreferrer" class="brut-btn">GitHub ↗</a>
-        {project.homepage && <a href={project.homepage} target="_blank" rel="noopener noreferrer" class="brut-btn">Demo ↗</a>}
+        {liveUrl && (
+          <a href={liveUrl} target="_blank" rel="noopener noreferrer" class="brut-btn">Sitio en vivo ↗</a>
+        )}
+        {repoUrl && (
+          <a href={repoUrl} target="_blank" rel="noopener noreferrer" class="brut-btn brut-btn--secondary">Código ↗</a>
+        )}
       </div>
     </header>
-    {project.screenshot && (
+
+    {screenshot && (
       <div class="project__screenshot brut-card">
-        <img src={project.screenshot} alt={`${project.name} captura`} />
+        <Image src={screenshot} alt={`${name} — ${tagline}`} widths={[800, 1440]} sizes="(max-width: 900px) 100vw, 900px" />
       </div>
     )}
-    <div class="project__readme prose" set:html={project.readmeHtml} />
+
+    <div class="project__body prose">
+      <Content />
+    </div>
+
+    {testimonial && (
+      <figure class="project__quote brut-card">
+        <blockquote>{testimonial.quote}</blockquote>
+        <figcaption class="mono">
+          {testimonial.author} — <span>{testimonial.role}</span>
+        </figcaption>
+      </figure>
+    )}
   </article>
 </BaseLayout>
 
@@ -47,17 +71,19 @@ if (!project) return Astro.redirect('/404');
   .project__back { margin-bottom: var(--space-6); font-size: var(--text-sm); }
   .project__back a:hover { color: var(--color-accent); }
   .project__name { font-size: var(--text-2xl); font-weight: 700; margin-bottom: var(--space-3); }
-  .project__tagline { font-size: var(--text-lg); color: var(--color-accent); font-weight: 600; margin-bottom: var(--space-4); }
+  .project__tagline { font-size: var(--text-lg); color: var(--color-accent); font-weight: 600; margin-bottom: var(--space-4); max-width: 40ch; }
   .project__meta { display: flex; gap: var(--space-6); font-size: var(--text-sm); color: var(--color-muted); margin-bottom: var(--space-4); }
   .project__stack { display: flex; flex-wrap: wrap; gap: var(--space-2); list-style: none; margin-bottom: var(--space-6); }
   .project__stack li { padding: var(--space-1) var(--space-3); border: var(--border-width) solid var(--color-border); font-size: var(--text-xs); }
   .project__links { display: flex; gap: var(--space-4); flex-wrap: wrap; margin-bottom: var(--space-8); }
   .project__screenshot { margin-bottom: var(--space-8); overflow: hidden; }
-  .project__readme { max-width: 70ch; }
-  .prose :global(h1), .prose :global(h2), .prose :global(h3) { font-family: var(--font-mono); margin-block: var(--space-6) var(--space-3); }
+  .project__screenshot :global(img) { display: block; width: 100%; height: auto; }
+  .project__body { max-width: 70ch; }
+  .project__quote { margin-top: var(--space-12); padding: var(--space-8); max-width: 70ch; }
+  .project__quote blockquote { font-size: var(--text-lg); line-height: 1.6; margin-bottom: var(--space-4); }
+  .project__quote figcaption { font-size: var(--text-sm); color: var(--color-muted); }
+  .brut-btn--secondary { background: var(--color-surface); color: var(--color-fg); }
+  .prose :global(h2) { font-family: var(--font-mono); margin-block: var(--space-8) var(--space-3); font-size: var(--text-xl); }
   .prose :global(p) { margin-bottom: var(--space-4); line-height: 1.7; }
-  .prose :global(code) { font-family: var(--font-mono); font-size: 0.9em; background: var(--color-fg); color: var(--color-bg); padding: 0.1em 0.3em; }
-  .prose :global(pre) { background: var(--color-fg); color: var(--color-bg); padding: var(--space-6); overflow-x: auto; margin-bottom: var(--space-4); border: var(--border-width) solid var(--color-border); }
-  .prose :global(ul), .prose :global(ol) { margin-left: var(--space-6); margin-bottom: var(--space-4); }
   .prose :global(a) { color: var(--color-accent); text-decoration: underline; }
 </style>

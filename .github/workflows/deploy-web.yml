@@ -33,9 +33,7 @@ jobs:
         run: bun run build
         working-directory: web
         env:
-          GITHUB_TOKEN: ${{ secrets.PORTFOLIO_GITHUB_TOKEN }}
-          GITHUB_USERNAME: ${{ vars.PORTFOLIO_GITHUB_USERNAME }}
-          PORTFOLIO_TOPIC: ${{ vars.PORTFOLIO_TOPIC }}
+          PUBLIC_WEB3FORMS_KEY: ${{ vars.PUBLIC_WEB3FORMS_KEY }}
 
       - name: Deploy
         uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65 # v3.14.1

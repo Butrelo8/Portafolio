@@ -1,39 +1,43 @@
 ---
-import type { Project } from '../lib/projects'
+import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
 
 interface Props {
-  project: Project
-  lang: 'en' | 'es'
+  project: CollectionEntry<'projects'>;
+  lang: 'en' | 'es';
 }
 
-const { project, lang } = Astro.props
-const href = lang === 'es' ? `/es/projects/${project.slug}` : `/projects/${project.slug}`
+const { project, lang } = Astro.props;
+const { name, client, year, tagline, summary, stack, liveUrl, screenshot } = project.data;
+// Collection ids are "en/slug.md" / "es/slug.md"; the URL wants just the slug.
+const slug = project.slug.replace(/^(en|es)\//, '');
+const href = lang === 'es' ? `/es/projects/${slug}` : `/projects/${slug}`;
 ---
 
 <article class="brut-card project-card">
-  {project.screenshot && (
-    <div class="project-card__image">
-      <img src={project.screenshot} alt={`${project.name} screenshot`} loading="lazy" />
-    </div>
+  {screenshot && (
+    <a href={href} class="project-card__image">
+      <Image src={screenshot} alt={`${name} — ${tagline}`} widths={[400, 800]} sizes="(max-width: 700px) 100vw, 400px" loading="lazy" />
+    </a>
   )}
   <div class="project-card__body">
     <div class="project-card__meta mono">
-      <span>★ {project.stars}</span>
-      {project.language && <span>{project.language}</span>}
+      <span>{client}</span>
+      <span>{year}</span>
     </div>
-    <h3 class="project-card__name mono">{project.name}</h3>
-    {project.tagline && <p class="project-card__tagline">{project.tagline}</p>}
-    <p class="project-card__desc">{project.description}</p>
-    <ul class="project-card__stack" aria-label="Tech stack">
-      {project.stack.map(t => <li class="mono">{t}</li>)}
+    <h3 class="project-card__name mono">{name}</h3>
+    <p class="project-card__tagline">{tagline}</p>
+    <p class="project-card__desc">{summary}</p>
+    <ul class="project-card__stack" aria-label={lang === 'es' ? 'Tecnologías' : 'Tech stack'}>
+      {stack.map((t) => <li class="mono">{t}</li>)}
     </ul>
     <div class="project-card__links">
       <a href={href} class="brut-btn">
-        {lang === 'es' ? 'Ver proyecto' : 'View project'}
+        {lang === 'es' ? 'Ver caso' : 'Read case study'}
       </a>
-      {project.homepage && (
-        <a href={project.homepage} target="_blank" rel="noopener noreferrer" class="brut-btn brut-btn--secondary">
-          {lang === 'es' ? 'Demo en vivo' : 'Live demo'}
+      {liveUrl && (
+        <a href={liveUrl} target="_blank" rel="noopener noreferrer" class="brut-btn brut-btn--secondary">
+          {lang === 'es' ? 'Sitio en vivo ↗' : 'Live site ↗'}
         </a>
       )}
     </div>
@@ -42,7 +46,8 @@ const href = lang === 'es' ? `/es/projects/${project.slug}` : `/projects/${proje
 
 <style>
   .project-card { display: flex; flex-direction: column; }
-  .project-card__image img { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-bottom: var(--border-width-thick) solid var(--color-border); }
+  .project-card__image { display: block; }
+  .project-card__image :global(img) { display: block; width: 100%; height: 220px; object-fit: cover; object-position: top center; border-bottom: var(--border-width-thick) solid var(--color-border); }
   .project-card__body { padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-3); flex: 1; }
   .project-card__meta { display: flex; gap: var(--space-4); font-size: var(--text-xs); color: var(--color-muted); }
   .project-card__name { font-size: var(--text-lg); font-weight: 700; }

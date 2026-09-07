@@ -11,8 +11,16 @@ const otherPath = lang === 'en'
   : currentPath.replace(/^\/es/, '') || '/'
 
 const links = lang === 'en'
-  ? [{ href: '/', label: 'Projects' }, { href: '/about', label: 'About' }]
-  : [{ href: '/es/', label: 'Proyectos' }, { href: '/es/about', label: 'Sobre mí' }]
+  ? [
+      { href: '/', label: 'Work' },
+      { href: '/about', label: 'About' },
+      { href: '/#contact', label: 'Contact' },
+    ]
+  : [
+      { href: '/es/', label: 'Trabajo' },
+      { href: '/es/about', label: 'Sobre mí' },
+      { href: '/es/#contact', label: 'Contacto' },
+    ]
 ---
 
 <nav class="nav" aria-label="Main navigation">

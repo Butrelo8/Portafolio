@@ -5,6 +5,21 @@ Updated automatically by the AI agent when decisions are made.
 
 ---
 
+## 2026-09-07 — Audience: freelance clients, not employers or OSS peers
+
+**Context:** The site had no stated audience, so project selection was accidental — whatever happened to carry the `portfolio` topic. That surfaced a forked template and the portfolio itself while real shipped work stayed invisible.
+**Decision:** The portfolio targets **prospective freelance clients**. Every content decision resolves in favor of "would a business owner deciding whether to hire Ivan care about this?"
+**Alternatives considered:** Employers/recruiters; OSS peers; an unweighted mix.
+**Why not the others:** A mix produces a flat grid that serves nobody. Employer-focus would foreground code quality and breadth; OSS-focus would foreground tooling. Both bury the four pieces of paid/shipped work that actually close freelance deals.
+
+## 2026-09-07 — Project content lives in local markdown, not GitHub metadata
+
+**Context:** `web/src/lib/projects.ts` builds the site from public repos tagged `portfolio`. Two of the four real projects are **private** repos (`coastcompetition`, `carwash-omaverick`), and `Inv.-Lite-A`'s selling point — running in production at a real company — exists nowhere in GitHub metadata.
+**Decision:** Move to an Astro content collection: one markdown case study per project under `web/src/content/projects/`, EN + ES. Delete the GitHub fetch, `PORTFOLIO_GITHUB_TOKEN`, and the topic convention.
+**Alternatives considered:** Enrich README front-matter and keep the fetch; a hybrid (local case studies + a GitHub-fed OSS strip).
+**Why not the others:** README front-matter cannot describe private work at all — it structurally excludes the two strongest pieces. It also puts client-facing prose in a file edited for a different audience. The hybrid keeps a token, a secret, and a network dependency alive to render one small strip that a hand-written list covers.
+**Consequence:** This reverses part of the same-day API collapse. The build-time fetch was the right answer for a repo-driven site; the audience decision changed what the site is. Case studies are hand-written, so they go stale unless edited deliberately — accepted, because client-facing copy should never auto-update.
+
 ## 2026-04-24 — Cursor rules: global profile + repo-local remainder
 
 **Context:** Daily implementation runs in Cursor; generic rules duplicated per repo and mixed with Hono-template specifics.
