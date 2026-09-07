@@ -69,4 +69,4 @@ unused) and the generated `web/.astro/`. Astro files are checked by `astro check
 (default `portfolio`).
 
 Actions secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `PORTFOLIO_GITHUB_TOKEN`
-(Actions reserves the name `GITHUB_TOKEN`). Variables: `GITHUB_USERNAME`, `PORTFOLIO_TOPIC`.
+(Actions reserves the name `GITHUB_TOKEN`). Variables: `PORTFOLIO_GITHUB_USERNAME`, `PORTFOLIO_TOPIC` (GitHub reserves the `GITHUB_` prefix).

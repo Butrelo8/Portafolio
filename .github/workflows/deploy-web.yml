@@ -34,7 +34,7 @@ jobs:
         working-directory: web
         env:
           GITHUB_TOKEN: ${{ secrets.PORTFOLIO_GITHUB_TOKEN }}
-          GITHUB_USERNAME: ${{ vars.GITHUB_USERNAME }}
+          GITHUB_USERNAME: ${{ vars.PORTFOLIO_GITHUB_USERNAME }}
           PORTFOLIO_TOPIC: ${{ vars.PORTFOLIO_TOPIC }}
 
       - name: Deploy

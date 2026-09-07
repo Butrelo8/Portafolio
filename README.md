@@ -28,9 +28,9 @@ GitHub Actions (`.github/workflows/deploy-web.yml`) builds `web/` and deploys to
 on every push to `main`.
 
 Repo secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `PORTFOLIO_GITHUB_TOKEN`.
-Repo variables: `GITHUB_USERNAME`, `PORTFOLIO_TOPIC`.
+Repo variables: `PORTFOLIO_GITHUB_USERNAME`, `PORTFOLIO_TOPIC`.
 
-`PORTFOLIO_GITHUB_TOKEN` is a separate secret because Actions reserves the name `GITHUB_TOKEN`.
+GitHub reserves the `GITHUB_` prefix for its own secrets and variables, hence the `PORTFOLIO_` names.
 
 ---
 
