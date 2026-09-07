@@ -21,6 +21,8 @@ export class GitHubClient {
       Authorization: `Bearer ${token}`,
       Accept: 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28',
+      // GitHub rejects requests without a User-Agent (403). Workers' fetch sends none.
+      'User-Agent': 'mi-portafolio-api',
     }
   }
 

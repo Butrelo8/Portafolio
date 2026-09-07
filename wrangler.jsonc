@@ -1,0 +1,15 @@
+{
+  "name": "mi-portafolio-api",
+  "main": "src/worker.ts",
+  "compatibility_date": "2025-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "observability": { "enabled": true },
+  "vars": {
+    "NODE_ENV": "production",
+    "GITHUB_USERNAME": "Butrelo8",
+    "PORTFOLIO_TOPIC": "portfolio",
+    "CACHE_TTL_MS": "600000",
+    "ALLOWED_ORIGINS": "https://mi-portafolio.bube-ncio8.workers.dev"
+  }
+}
