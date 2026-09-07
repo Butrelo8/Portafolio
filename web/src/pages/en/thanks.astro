@@ -1,0 +1,30 @@
+---
+export const prerender = true;
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Thanks" description="Message received." lang="en">
+  <section class="thanks container">
+    <p class="thanks__label mono">// message received</p>
+    <h1 class="thanks__title mono">Thanks.</h1>
+    <p class="thanks__body">
+      I've got your message. I'll reply within 24 hours, usually sooner.
+    </p>
+    <p class="thanks__body">
+      Forgot something? Email me directly at
+      <a href="mailto:av.ivan.8@gmail.com">av.ivan.8@gmail.com</a>.
+    </p>
+    <div class="thanks__cta">
+      <a href="/en/" class="brut-btn">Back to work</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .thanks { padding-block: var(--space-section); max-width: 60ch; }
+  .thanks__label { font-size: var(--text-sm); color: var(--color-accent); font-weight: 700; margin-bottom: var(--space-4); text-transform: uppercase; letter-spacing: 0.1em; }
+  .thanks__title { font-size: var(--text-hero); font-weight: 700; margin-bottom: var(--space-6); }
+  .thanks__body { font-size: var(--text-lg); color: var(--color-muted); margin-bottom: var(--space-4); line-height: 1.6; }
+  .thanks__body a { color: var(--color-accent); text-decoration: underline; }
+  .thanks__cta { margin-top: var(--space-8); }
+</style>

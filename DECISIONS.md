@@ -5,6 +5,20 @@ Updated automatically by the AI agent when decisions are made.
 
 ---
 
+## 2026-09-07 — Anonymise NDA client work at every layer, including the URL
+
+**Context:** The inventory case study named the client, showed their logo, and published exact figures (181 assets, 13 categories, 9 staff). Its slug was `ecooceano-inventario` and it linked to a public repo containing the client's name and logo.
+**Decision:** Anonymise across copy, front-matter, alt text, screenshot, and slug; round figures and drop per-category breakdowns; make the source repo private; and let the old slug 404 rather than redirect.
+**Alternatives considered:** Redact only the screenshot; keep the slug and redirect it; scrub the public repo instead of privatising it.
+**Why not the others:** A slug is a public URL, so redirecting it preserves the leak in the very place it is most visible. Exact counts fingerprint an organisation even without a name. Scrubbing the repo leaves the branding in git history, so only a rewrite would work — privatising is one command and reversible.
+
+## 2026-09-07 — Personal tooling gets a strip, without links
+
+**Context:** Sonus, Sotto, ApuestasWrapper and MPAF show range a client site otherwise hides, but none are published and the audience is clients, not developers.
+**Decision:** A low-priority strip below the case studies, four entries with no links, framed as "someone who automates their own job knows what automating yours is worth". `code-review-graph` excluded as a fork.
+**Alternatives considered:** Cut them entirely; full case studies; link to GitHub.
+**Why not the others:** Cutting hides real range. Case-study treatment would compete with paid work for attention. Links would be dead — nothing is published.
+
 ## 2026-09-07 — Spanish is the default language
 
 **Context:** The site opened in English with Spanish behind a toggle. Every client so far is in Veracruz or Xalapa, and the audience decision above targets local freelance clients.

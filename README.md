@@ -4,8 +4,10 @@ Freelance portfolio — bilingual (EN/ES) case studies of shipped client work.
 
 **Stack:** Astro 4.16 (static) · content collections · astro:assets · Biome
 **Deploy:** Cloudflare Workers (static assets), built in GitHub Actions
+**Live:** https://mi-portafolio.bube-ncio8.workers.dev
 
 No server, no database, no API, no credentials to build. Case studies are markdown in the repo.
+Spanish is the default language; English mirrors under `/en/`.
 
 ---
 
@@ -30,6 +32,9 @@ on every push to `main`.
 Repo secrets: `CLOUDFLARE_API_TOKEN` (must be **Workers**-scoped — an R2-only token authenticates
 but fails with an opaque `code: 10000`), `CLOUDFLARE_ACCOUNT_ID`.
 Repo variables: `PUBLIC_WEB3FORMS_KEY`.
+
+GitHub reserves the `GITHUB_` prefix for both secrets and variables; names starting with it are
+rejected with HTTP 422.
 
 ---
 
@@ -66,10 +71,30 @@ order: 1
 ---
 ```
 
-Body is three sections: **The problem**, **What I built**, **Result**. Screenshots go in
-`web/src/assets/shots/` — never `public/`, so Astro can convert them to webp at build.
+Body is three sections: **The problem**, **What I built**, **Result** — written for a business
+owner, not a developer. Screenshots go in `web/src/assets/shots/` — never `public/`, so Astro can
+convert them to webp at build.
 
 Add a `testimonial: { quote, author, role }` block only when a real quote exists.
+
+### Client confidentiality
+
+Some work is under NDA. When a client can't be named, the anonymisation has to cover **all** of:
+copy, front-matter, image alt text, the screenshot itself, **and the slug** — a slug is a public
+URL. Round the figures (`180+`, not `181`) and drop fine-grained breakdowns; exact counts identify
+an organisation even with the name removed. Don't redirect the old slug to the new one: the old
+URL is the thing you're hiding. And keep the source repo private if it carries their branding.
+
+## Contact form
+
+`ContactForm.astro` POSTs straight to Web3Forms — no server. The access key is public by design
+(it's in the page HTML), so it's a repo **variable**, not a secret.
+
+A hidden `redirect` field sends visitors to `/gracias/` or `/en/thanks/` on this domain instead of
+Web3Forms' branded confirmation page. That URL is absolute, built from `site` in
+`astro.config.mjs` — **update `site` when the domain changes**.
+
+Enquiries arrive at whichever inbox registered the key.
 
 ---
 

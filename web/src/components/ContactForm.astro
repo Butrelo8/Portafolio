@@ -9,6 +9,10 @@ const { lang } = Astro.props;
 // Set PUBLIC_WEB3FORMS_KEY in web/.env and as a CI variable.
 const accessKey = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
 
+// Land the visitor back on our own thank-you page instead of Web3Forms' branded one.
+// Needs an absolute URL, hence `site` in astro.config.mjs.
+const redirectTo = new URL(lang === 'es' ? '/gracias/' : '/en/thanks/', Astro.site).href;
+
 const t =
   lang === 'es'
     ? {
@@ -53,6 +57,8 @@ const t =
       <form action="https://api.web3forms.com/submit" method="POST" class="contact__form">
         <input type="hidden" name="access_key" value={accessKey} />
         <input type="hidden" name="subject" value="New project enquiry from your portfolio" />
+        <input type="hidden" name="redirect" value={redirectTo} />
+        <input type="hidden" name="from_name" value="Portafolio — Ivan" />
         <input type="checkbox" name="botcheck" class="contact__honeypot" tabindex="-1" autocomplete="off" />
 
         <label class="contact__field">

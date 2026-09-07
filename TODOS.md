@@ -9,16 +9,31 @@ _Context pass:_ `CLAUDE.md` ~73 lines — OK. No in-repo MCP. Stale rule + MCP +
 ## Open
 
 
-### Rewrite about bio — EN + ES (P1)
+### Custom domain (P1)
 
-- **What:** Replace placeholder bio in `web/src/content/about/en.md` and `web/src/content/about/es.md` with authentic, personal content reflecting Ivan's actual identity, voice, and stack.
-- **Why:** Current copy is generic subagent-generated placeholder. Doesn't reflect real personality, design aesthetic (neo-brutalism, #ff4500, JetBrains Mono), or actual focus areas.
-- **Context:** Ivan (Trelo), full-stack developer, México (UTC-6), email `av.ivan.8@gmail.com`, GitHub `Butrelo8`. Builds opinionated frontends and APIs with TypeScript, Bun, Astro, Hono. Deploys to Cloudflare Workers. Cares about design quality (neo-brutalism, no generic templates). Heavy Claude Code user with custom tooling (engram, Cursor rules, superpowers). Accurate stack for *this* site: Astro (static), TypeScript strict, Biome, Cloudflare Workers. Hono/Bun/Zod are real skills but no longer in this repo — see README History.
-- **Solution:** Rewrite both files. EN first, ES translation second (same voice, not literal). Keep contact block (`av.ivan.8@gmail.com`, `Butrelo8`). Keep `## What I work with` section or equivalent. Add personality — direct, technical, no corpo filler. No "passionate developer" or "love solving problems".
-- **Done When:** Both files sound like Ivan wrote them, not a template. Stack list accurate to current repo. EN + ES committed and pushed.
-- **Effort:** S (human: ~30m / CC: ~5 min)
+- **What:** Point a real domain at the Cloudflare Worker, replacing `mi-portafolio.bube-ncio8.workers.dev`.
+- **Why:** A `workers.dev` subdomain on a card or a proposal undercuts everything else on the page. This is the cheapest credibility gain left.
+- **Solution:** Buy the domain, add it to Cloudflare, add a custom domain to the `mi-portafolio` Worker. **Then update `site` in `web/astro.config.mjs`** — the contact form's redirect is built from it and will otherwise point at the old host.
+- **Done When:** The site serves from the new domain and the contact form still lands on `/gracias/`.
+- **Effort:** S (human: ~30m / CC: ~10 min)
 - **Priority:** P1
-- **Depends on:** Nothing.
+
+### Testimonials — one quote per case study (P1)
+
+- **What:** A real quote from Omar (Maco), the Mafia Tumbada manager, the Coast organisers, and the marine monitoring client.
+- **Why:** Strongest trust signal per unit of effort, and the schema + rendering already exist — this is pure content.
+- **Solution:** Add `testimonial: { quote, author, role }` to the case study front-matter, both languages. Ask in Spanish, ask for one sentence, ask what changed for them rather than whether you were nice to work with.
+- **Done When:** At least two case studies carry a real quote. Never invent one.
+- **Effort:** S (CC: ~5 min once quotes exist)
+- **Priority:** P1
+- **Depends on:** The clients replying.
+
+### Nav brand still says `<portfolio />` (P2)
+
+- **What:** Replace the placeholder brand in `web/src/components/Nav.astro` with Ivan's name.
+- **Why:** A code joke aimed at developers, on a site selling to business owners.
+- **Effort:** XS
+- **Priority:** P2
 
 ### Proposal generator page — /tools/proposal (P2)
 
@@ -37,6 +52,17 @@ _Context pass:_ `CLAUDE.md` ~73 lines — OK. No in-repo MCP. Stale rule + MCP +
 - **Depends on:** Anthropic API key. A decision on island vs `output: 'server'`.
 
 ## Completed
+
+### Client case studies, Spanish default, contact form, tooling strip (2026-09-07)
+
+- **Outcome:** The site was an English grid of four GitHub repos — a forked template, itself, and two undescribed projects — with a mailto buried in About. It is now a Spanish-first freelance portfolio with four case studies of shipped work.
+- **Content:** `web/src/content/projects/{en,es}/` — Coast Competition, Maco a Domicilio, Inventario Lite, Mafia Tumbada. Problem → what I built → result, written for business owners.
+- **Screenshots:** Captured from the four running apps via chrome-devtools MCP, optimised by `astro:assets` (4.7MB PNG → 111kB webp at the largest width).
+- **i18n flipped:** Spanish at `/`, English at `/en/`, legacy `/es/*` redirected. Clients are in Veracruz and Xalapa.
+- **Contact:** Web3Forms with a honeypot and a redirect to `/gracias/` or `/en/thanks/`. Verified end-to-end — a test submission arrived in the inbox.
+- **Tooling strip:** Sonus, Sotto, ApuestasWrapper, MPAF. Link-free by design.
+- **Confidentiality:** The inventory case study anonymised at every layer including the slug, and `Inv.-Lite-A` made private — it carried the client's name and logo publicly.
+- **Also fixed:** the EN project detail page was an unstyled stub with no layout; the About page still claimed Vercel/Render/Fly.
 
 ### Collapse the API into the build (2026-09-07)
 
