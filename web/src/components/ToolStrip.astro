@@ -1,0 +1,74 @@
+---
+interface Props {
+  lang: 'en' | 'es';
+}
+
+const { lang } = Astro.props;
+
+// Personal tooling. None of it is published, so these are deliberately link-free —
+// they're here as evidence of range, not as products.
+const tools = [
+  {
+    name: 'Sonus',
+    stack: 'Rust · whisper.cpp · edge-tts',
+    en: 'System-tray dictation and text-to-speech. Hotkey, speak, the text lands at the cursor. Transcribes voice notes offline.',
+    es: 'Dictado y lectura por voz desde la bandeja del sistema. Atajo, hablas, el texto aparece en el cursor. Transcribe notas de voz sin internet.',
+  },
+  {
+    name: 'Sotto',
+    stack: 'Swift · SwiftUI · whisper.cpp',
+    en: 'The same idea as Sonus, native on macOS. A menu-bar app that turns speech into text on a hotkey, transcribed locally — no cloud, no account, no per-minute cost.',
+    es: 'La misma idea que Sonus, nativa en macOS. Una app de barra de menú que convierte voz en texto con un atajo, transcrita en la misma máquina: sin nube, sin cuenta, sin costo por minuto.',
+  },
+  {
+    name: 'ApuestasWrapper',
+    stack: 'Python · MCP',
+    en: 'An MCP server that puts football, MLB, NBA and LoL schedules, stats and historical odds behind one interface an AI agent can query.',
+    es: 'Un servidor MCP que deja calendarios, estadísticas y momios históricos de fútbol, MLB, NBA y LoL detrás de una sola interfaz que un agente de IA puede consultar.',
+  },
+  {
+    name: 'MPAF',
+    stack: 'TypeScript · Node',
+    en: 'A registry of rules, skills and agents I install into every project so my AI tooling behaves the same way everywhere — including this site.',
+    es: 'Un registro de reglas, habilidades y agentes que instalo en cada proyecto para que mis herramientas de IA se comporten igual en todos lados — incluido este sitio.',
+  },
+];
+
+const t =
+  lang === 'es'
+    ? {
+        heading: '// herramientas propias',
+        blurb:
+          'Cosas que construí para mi propio trabajo. No están a la venta; están aquí porque quien automatiza lo suyo sabe cuánto vale automatizar lo tuyo.',
+      }
+    : {
+        heading: '// my own tools',
+        blurb:
+          'Things I built for my own work. Not for sale — here because someone who automates their own job knows what automating yours is worth.',
+      };
+---
+
+<section class="section container">
+  <h2 class="section__title mono">{t.heading}</h2>
+  <p class="tools__blurb">{t.blurb}</p>
+  <ul class="tools" role="list">
+    {tools.map((tool) => (
+      <li class="tools__item">
+        <h3 class="tools__name mono">{tool.name}</h3>
+        <p class="tools__stack mono">{tool.stack}</p>
+        <p class="tools__desc">{lang === 'es' ? tool.es : tool.en}</p>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .section { padding-block: var(--space-16); }
+  .section__title { font-size: var(--text-xl); font-weight: 700; margin-bottom: var(--space-4); color: var(--color-muted); }
+  .tools__blurb { color: var(--color-muted); max-width: 60ch; margin-bottom: var(--space-8); font-size: var(--text-sm); }
+  .tools { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--space-6); list-style: none; }
+  .tools__item { border-left: var(--border-width-thick) solid var(--color-border); padding-left: var(--space-4); }
+  .tools__name { font-size: var(--text-lg); font-weight: 700; margin-bottom: var(--space-1); }
+  .tools__stack { font-size: var(--text-xs); color: var(--color-accent); margin-bottom: var(--space-3); }
+  .tools__desc { font-size: var(--text-sm); color: var(--color-muted); line-height: 1.6; }
+</style>
