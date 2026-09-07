@@ -27,7 +27,7 @@ const links = lang === 'en'
 
 <nav class="nav" aria-label="Main navigation">
   <div class="container nav__inner">
-    <a href={lang === 'en' ? '/en/' : '/'} class="nav__brand mono">{'<portfolio />'}</a>
+    <a href={lang === 'en' ? '/en/' : '/'} class="nav__brand mono">Ivan Aguirre</a>
     <ul class="nav__links" role="list">
       {links.map(l => <li><a href={l.href} class="nav__link mono">{l.label}</a></li>)}
     </ul>
