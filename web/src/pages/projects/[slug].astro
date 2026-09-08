@@ -1,7 +1,7 @@
 ---
 export const prerender = true;
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
 export async function getStaticPaths() {
@@ -17,8 +17,12 @@ interface Props {
 }
 
 const { project } = Astro.props;
-const { name, client, year, tagline, summary, liveUrl, repoUrl, screenshot, testimonial } =
+const { name, client, year, tagline, summary, liveUrl, repoUrl, screenshot, demo, demoCaption, testimonial } =
   project.data;
+
+// The poster frame reuses the case study screenshot, run through astro:assets so the video does
+// not pull a multi-MB PNG before anyone presses play.
+const poster = demo && screenshot ? await getImage({ src: screenshot, width: 1440, format: 'webp' }) : undefined;
 const { Content } = await project.render();
 ---
 
@@ -42,11 +46,25 @@ const { Content } = await project.render();
       </div>
     </header>
 
-    {screenshot && (
+    {demo ? (
+      <figure class="project__demo brut-card">
+        <video
+          src={demo}
+          poster={poster?.src}
+          controls
+          muted
+          loop
+          playsinline
+          preload="none"
+          aria-label={`${name} — ${tagline}`}
+        ></video>
+        {demoCaption && <figcaption class="mono">{demoCaption}</figcaption>}
+      </figure>
+    ) : screenshot ? (
       <div class="project__screenshot brut-card">
         <Image src={screenshot} alt={`${name} — ${tagline}`} widths={[800, 1440]} sizes="(max-width: 900px) 100vw, 900px" />
       </div>
-    )}
+    ) : null}
 
     <div class="project__body prose">
       <Content />
@@ -78,6 +96,9 @@ const { Content } = await project.render();
   .project__links { display: flex; gap: var(--space-4); flex-wrap: wrap; margin-bottom: var(--space-8); }
   .project__screenshot { margin-bottom: var(--space-8); overflow: hidden; }
   .project__screenshot :global(img) { display: block; width: 100%; height: auto; }
+  .project__demo { margin-bottom: var(--space-8); overflow: hidden; }
+  .project__demo video { display: block; width: 100%; height: auto; background: var(--color-fg); }
+  .project__demo figcaption { padding: var(--space-3) var(--space-4); font-size: var(--text-xs); color: var(--color-muted); border-top: var(--border-width) solid var(--color-border); }
   .project__cta { margin-top: var(--space-12); padding: var(--space-8); text-align: center; }
   .project__cta p { font-size: var(--text-lg); margin-bottom: var(--space-6); }
   .project__body { max-width: 70ch; }
