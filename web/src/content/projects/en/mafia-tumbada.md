@@ -2,8 +2,8 @@
 name: Mafia Tumbada
 client: La Mafia Tumbada — Xalapa
 year: 2026
-tagline: A band's booking desk, not a link tree.
-summary: Official site for a corridos tumbados group from Xalapa — the project, the platforms, and a booking request flow for live shows, festivals and private events.
+tagline: Where the band gets booked, not just heard.
+summary: Official site for a corridos tumbados group from Xalapa — the project, the platforms, and a booking request form for live shows, festivals and private events.
 stack: ["Astro", "Hono", "TypeScript", "Drizzle ORM", "Zod", "Resend"]
 liveUrl: https://mafiatumbada.com
 screenshot: ../../../assets/shots/mafia.png
@@ -17,7 +17,7 @@ La Mafia Tumbada is a corridos tumbados and regional mexicano group from Xalapa,
 since 2021. Their music is on Spotify, Apple Music and YouTube; their audience is on Instagram and
 TikTok.
 
-None of that books a show. Someone who wants the band at a festival, a bar or a private party lands
+None of those platforms is built to take a booking. Someone who wants the band at a festival, a bar or a private party lands
 on a profile and has to guess who to message.
 
 ## What I built

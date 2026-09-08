@@ -2,8 +2,8 @@
 name: Mafia Tumbada
 client: La Mafia Tumbada — Xalapa
 year: 2026
-tagline: La oficina de contrataciones de un grupo, no un link tree.
-summary: Sitio oficial de un grupo de corridos tumbados de Xalapa — el proyecto, las plataformas y un flujo de solicitud de contratación para tocadas, festivales y eventos privados.
+tagline: Donde se contrata al grupo, no solo donde se escucha.
+summary: Sitio oficial de un grupo de corridos tumbados de Xalapa — el proyecto, las plataformas y un formulario para solicitar contrataciones de tocadas, festivales y eventos privados.
 stack: ["Astro", "Hono", "TypeScript", "Drizzle ORM", "Zod", "Resend"]
 liveUrl: https://mafiatumbada.com
 screenshot: ../../../assets/shots/mafia.png
@@ -16,7 +16,7 @@ order: 4
 La Mafia Tumbada es un grupo de corridos tumbados y regional mexicano de Xalapa, Veracruz, activo
 desde 2021. Su música está en Spotify, Apple Music y YouTube; su público está en Instagram y TikTok.
 
-Nada de eso contrata una tocada. Quien quiere al grupo en un festival, una barra o un evento privado
+Ninguna de esas plataformas está hecha para recibir una contratación. Quien quiere al grupo en un festival, una barra o un evento privado
 llega a un perfil y tiene que adivinar a quién escribirle.
 
 ## Qué construí

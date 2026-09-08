@@ -2,8 +2,8 @@
 name: Coast Competition
 client: Coast Competition — Veracruz
 year: 2026
-tagline: Una competencia de baile urbano que se le salió de las manos a Instagram.
-summary: Sitio completo para dos días de competencia y workshops de baile urbano en Foro Boca — line-up, clases, agenda, precios, sede y preguntas frecuentes, en lugar de un perfil de Instagram.
+tagline: Una competencia de baile urbano que ya no cabía en un perfil de Instagram.
+summary: Sitio completo para dos días de competencia y workshops de baile urbano en Foro Boca — maestros, clases, agenda, precios, sede y preguntas frecuentes, todo en un solo lugar.
 stack: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Cloudflare"]
 liveUrl: https://coastveracruz.com
 screenshot: ../../../assets/shots/coast.png
@@ -13,8 +13,8 @@ order: 1
 
 ## El problema
 
-Coast son dos días de competencia y workshops de baile urbano en Foro Boca, Veracruz. Todo vivía en
-Instagram: el line-up, la agenda, los precios, la sede y cada duda que tenía un bailarín antes de
+Coast son dos días de competencia y workshops de baile urbano en Foro Boca, Veracruz. Toda la información vivía en
+Instagram: los maestros, la agenda, los precios, la sede y cada duda que tenía un bailarín antes de
 inscribirse.
 
 Instagram sirve para anunciar y no para consultar. Quien está decidiendo si viaja necesita el precio,

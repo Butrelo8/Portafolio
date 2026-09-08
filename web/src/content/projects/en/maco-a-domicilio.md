@@ -3,7 +3,7 @@ name: Maco a Domicilio
 client: Maco — Veracruz
 year: 2026
 tagline: A 1982 lubrication shop launching an at-home service.
-summary: Booking platform and operations panel for a mobile car wash and roadside assistance service — customer booking, service zones, job photos and an admin panel for the crew.
+summary: Booking platform and crew panel for a mobile car wash and roadside assistance service — customer booking, service zones, job photos and an admin panel for the crew.
 stack: ["Next.js", "React", "PostgreSQL", "Docker", "Cloudflare R2"]
 liveUrl: https://macoadomicilio.com
 screenshot: ../../../assets/shots/maco.png
@@ -18,8 +18,8 @@ established name. The new idea was to bring the service to the customer's home �
 business, with different problems.
 
 At-home service is coordination, not counter work. Where is the car, when, which service, which
-technician, and did the customer see the state it was in before and after. Run that over WhatsApp
-and jobs get lost between messages.
+technician, and did the customer see the state it was in before and after. Over WhatsApp that detail
+ends up spread through the conversation and is hard to follow.
 
 ## What I built
 

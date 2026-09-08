@@ -2,8 +2,8 @@
 name: Inventario Lite
 client: Empresa de monitoreo marino (confidencial)
 year: 2026
-tagline: Me pidieron llevar el control del equipo en una hoja de cálculo. Hice software.
-summary: Control de activos para una empresa de monitoreo ambiental — unos cientos de artículos en una docena de categorías, asignados por responsable, con cumplimiento, informes e historial completo.
+tagline: Saber quién tiene cada equipo y cuándo vuelve, sin preguntarle a nadie.
+summary: Control de activos para una empresa de monitoreo ambiental — unos cientos de artículos en una docena de categorías, asignados por responsable, con revisiones, informes e historial completo.
 stack: ["React", "Vite", "TypeScript", "Express", "PostgreSQL", "Drizzle ORM", "Tailwind CSS"]
 screenshot: ../../../assets/shots/inv.png
 featured: false
@@ -13,11 +13,11 @@ order: 3
 ## El problema
 
 La empresa hace ecología y monitoreo marino: equipo de buceo, instrumentos científicos, cámaras,
-drones, muestreo de agua, equipo de seguridad. Cosas caras que salen de la oficina, se suben a una
-lancha y regresan. O no.
+drones, muestreo de agua, equipo de seguridad. Equipo caro que sale de la oficina, se sube a una
+lancha y tiene que volver completo.
 
-Me pidieron llevar el control en una hoja de cálculo. Una hoja no responde lo que de verdad importa:
-quién tiene esto ahora, desde cuándo, si ya volvió y quién lo tuvo las últimas tres veces. Una
+El control se llevaba en una hoja de cálculo. Sirve para listar, pero no para responder lo que de
+verdad importa: quién tiene esto ahora, desde cuándo, si ya volvió y quién lo tuvo las últimas tres veces. Una
 persona la edita y el resto trabaja sobre una copia que ya está mal.
 
 ## Qué construí
@@ -26,8 +26,8 @@ Un sistema de activos. Unos cientos de artículos en una docena de categorías �
 seguridad, monitoreo científico, cámaras, herramientas de campo— cada uno asignable a un
 responsable, para que en cualquier momento se sepa qué está fuera y con quién.
 
-Además del inventario: cumplimiento, informes, soporte para varias empresas, una vista de operación e
-historial completo, para que el registro de un activo sobreviva a quien lo tocó al final.
+Además del inventario: revisiones, informes, soporte para varias empresas, una vista de operación e
+historial completo, para que el historial de un activo no dependa de quién lo anotó.
 
 React y Vite al frente, Express con PostgreSQL y Drizzle atrás.
 

@@ -2,8 +2,8 @@
 name: Coast Competition
 client: Coast Competition — Veracruz
 year: 2026
-tagline: An urban dance competition that outgrew Instagram DMs.
-summary: A full event site for a two-day urban dance competition at Foro Boca — lineup, workshops, schedule, pricing, venue and FAQ, replacing an Instagram profile as the event's home.
+tagline: An urban dance competition that had outgrown an Instagram profile.
+summary: A full event site for a two-day urban dance competition at Foro Boca — instructors, workshops, schedule, pricing, venue and FAQ, all in one place.
 stack: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Cloudflare"]
 liveUrl: https://coastveracruz.com
 screenshot: ../../../assets/shots/coast.png
@@ -13,8 +13,8 @@ order: 1
 
 ## The problem
 
-Coast is a two-day urban dance competition and workshop series at Foro Boca, Veracruz. Everything
-lived on Instagram: the lineup, the schedule, ticket prices, the venue, and every question a dancer
+Coast is a two-day urban dance competition and workshop series at Foro Boca, Veracruz. All of it
+lived on Instagram: the instructors, the schedule, ticket prices, the venue, and every question a dancer
 had before signing up.
 
 Instagram is good at announcements and bad at reference. A dancer deciding whether to travel needs
