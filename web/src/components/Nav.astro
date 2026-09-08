@@ -6,11 +6,20 @@ interface Props {
 
 const { lang, currentPath } = Astro.props
 const otherLang = lang === 'en' ? 'es' : 'en'
-// Spanish lives at the root; English is prefixed with /en.
+// Spanish lives at the root; English is prefixed with /en. Most paths are identical either side of
+// that prefix; these are the ones whose slug differs and would 404 on a plain prefix swap.
+const slugPairs: Record<string, string> = { '/gracias': '/thanks' }
+const swapSlug = (path: string, pairs: Record<string, string>) => {
+  const trimmed = path.replace(/\/$/, '')
+  const match = pairs[trimmed]
+  return match ? `${match}/` : path
+}
 const otherPath =
   lang === 'es'
-    ? `/en${currentPath}`
-    : currentPath.replace(/^\/en/, '') || '/'
+    ? `/en${swapSlug(currentPath, slugPairs)}`
+    : swapSlug(currentPath.replace(/^\/en/, '') || '/', Object.fromEntries(
+        Object.entries(slugPairs).map(([es, en]) => [en, es]),
+      ))
 
 const links = lang === 'en'
   ? [
@@ -39,7 +48,8 @@ const links = lang === 'en'
 
 <style>
   .nav { border-bottom: var(--border-width-thick) solid var(--color-border); background: var(--color-bg); position: sticky; top: 0; z-index: 100; }
-  .nav__inner { display: flex; align-items: center; gap: var(--space-8); padding-block: var(--space-4); }
+  /* wrap, or the brand + links + lang chip overflow the viewport below ~430px */
+  .nav__inner { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-8); padding-block: var(--space-4); }
   .nav__brand { font-size: var(--text-lg); font-weight: 700; color: var(--color-accent); margin-right: auto; }
   .nav__links { display: flex; gap: var(--space-6); list-style: none; }
   .nav__link { font-size: var(--text-sm); font-weight: 600; transition: color var(--duration-fast); }
