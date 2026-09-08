@@ -22,11 +22,10 @@ without you answering a message, a record that outlives whoever stopped maintain
 
 ## What I work with
 
-- **Sites and platforms:** Astro, Next.js, React, TypeScript
-- **Server and data:** Node, Hono, Express, PostgreSQL, Drizzle
-- **Infra:** Cloudflare, Docker
-
-I pick the tool for the problem, not the other way around.
+I pick the tool for the problem, not the other way around. Getting it online and keeping it there
+is my job too: an informational site costs next to nothing a month to host, and a platform with an
+admin panel and a database runs about 150 pesos a month in server costs. That cost is the
+hosting provider's, not mine: pricing and available plans can change.
 
 ## Let's talk
 

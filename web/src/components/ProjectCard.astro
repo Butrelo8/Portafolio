@@ -8,7 +8,7 @@ interface Props {
 }
 
 const { project, lang } = Astro.props;
-const { name, client, year, tagline, summary, stack, liveUrl, screenshot } = project.data;
+const { name, client, year, tagline, summary, liveUrl, screenshot } = project.data;
 // Collection ids are "en/slug.md" / "es/slug.md"; the URL wants just the slug.
 const slug = project.slug.replace(/^(en|es)\//, '');
 const href = lang === 'en' ? `/en/projects/${slug}` : `/projects/${slug}`;
@@ -28,16 +28,13 @@ const href = lang === 'en' ? `/en/projects/${slug}` : `/projects/${slug}`;
     <h3 class="project-card__name mono">{name}</h3>
     <p class="project-card__tagline">{tagline}</p>
     <p class="project-card__desc">{summary}</p>
-    <ul class="project-card__stack" aria-label={lang === 'es' ? 'Tecnologías' : 'Tech stack'}>
-      {stack.map((t) => <li class="mono">{t}</li>)}
-    </ul>
     <div class="project-card__links">
       <a href={href} class="brut-btn">
         {lang === 'es' ? 'Ver caso' : 'Read case study'}
       </a>
       {liveUrl && (
         <a href={liveUrl} target="_blank" rel="noopener noreferrer" class="brut-btn brut-btn--secondary">
-          {lang === 'es' ? 'Sitio en vivo ↗' : 'Live site ↗'}
+          {lang === 'es' ? 'Visitar sitio ↗' : 'Live site ↗'}
         </a>
       )}
     </div>
@@ -53,8 +50,6 @@ const href = lang === 'en' ? `/en/projects/${slug}` : `/projects/${slug}`;
   .project-card__name { font-size: var(--text-lg); font-weight: 700; }
   .project-card__tagline { font-size: var(--text-sm); color: var(--color-accent); font-weight: 600; }
   .project-card__desc { font-size: var(--text-sm); color: var(--color-muted); flex: 1; }
-  .project-card__stack { display: flex; flex-wrap: wrap; gap: var(--space-2); list-style: none; font-size: var(--text-xs); }
-  .project-card__stack li { padding: var(--space-1) var(--space-2); border: var(--border-width) solid var(--color-border); background: var(--color-bg); }
   .project-card__links { display: flex; gap: var(--space-3); flex-wrap: wrap; margin-top: var(--space-2); }
   .brut-btn--secondary { background: var(--color-surface); color: var(--color-fg); }
 </style>

@@ -22,11 +22,10 @@ contestes un mensaje, un registro que sobrevive a quien lo dejó de mantener.
 
 ## Con qué trabajo
 
-- **Sitios y plataformas:** Astro, Next.js, React, TypeScript
-- **Servidor y datos:** Node, Hono, Express, PostgreSQL, Drizzle
-- **Infra:** Cloudflare, Docker
-
-La herramienta la elijo según el problema, no al revés.
+Elijo la herramienta según el problema, no al revés. Yo me encargo de dejarlo en línea y de que
+siga ahí: un sitio informativo cuesta prácticamente nada de hosting al mes, y una plataforma con
+panel y base de datos ronda los $150 pesos mensuales de servidor. Ese costo es del proveedor
+de hosting, no mío: el precio y los planes disponibles pueden cambiar.
 
 ## Hablemos
 

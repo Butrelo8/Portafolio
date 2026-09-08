@@ -17,7 +17,7 @@ interface Props {
 }
 
 const { project } = Astro.props;
-const { name, client, year, tagline, summary, stack, liveUrl, repoUrl, screenshot, testimonial } =
+const { name, client, year, tagline, summary, liveUrl, repoUrl, screenshot, testimonial } =
   project.data;
 const { Content } = await project.render();
 ---
@@ -32,9 +32,6 @@ const { Content } = await project.render();
         <span>{client}</span>
         <span>{year}</span>
       </div>
-      <ul class="project__stack" aria-label="Stack">
-        {stack.map((t) => <li class="mono">{t}</li>)}
-      </ul>
       <div class="project__links">
         {liveUrl && (
           <a href={liveUrl} target="_blank" rel="noopener noreferrer" class="brut-btn">Live site ↗</a>
@@ -63,6 +60,11 @@ const { Content } = await project.render();
         </figcaption>
       </figure>
     )}
+
+    <aside class="project__cta brut-card">
+      <p>Need something like this for your business?</p>
+      <a href="/en/#contact" class="brut-btn">Tell me what you need</a>
+    </aside>
   </article>
 </BaseLayout>
 
@@ -73,11 +75,11 @@ const { Content } = await project.render();
   .project__name { font-size: var(--text-2xl); font-weight: 700; margin-bottom: var(--space-3); }
   .project__tagline { font-size: var(--text-lg); color: var(--color-accent); font-weight: 600; margin-bottom: var(--space-4); max-width: 40ch; }
   .project__meta { display: flex; gap: var(--space-6); font-size: var(--text-sm); color: var(--color-muted); margin-bottom: var(--space-4); }
-  .project__stack { display: flex; flex-wrap: wrap; gap: var(--space-2); list-style: none; margin-bottom: var(--space-6); }
-  .project__stack li { padding: var(--space-1) var(--space-3); border: var(--border-width) solid var(--color-border); font-size: var(--text-xs); }
   .project__links { display: flex; gap: var(--space-4); flex-wrap: wrap; margin-bottom: var(--space-8); }
   .project__screenshot { margin-bottom: var(--space-8); overflow: hidden; }
   .project__screenshot :global(img) { display: block; width: 100%; height: auto; }
+  .project__cta { margin-top: var(--space-12); padding: var(--space-8); text-align: center; }
+  .project__cta p { font-size: var(--text-lg); margin-bottom: var(--space-6); }
   .project__body { max-width: 70ch; }
   .project__quote { margin-top: var(--space-12); padding: var(--space-8); max-width: 70ch; }
   .project__quote blockquote { font-size: var(--text-lg); line-height: 1.6; margin-bottom: var(--space-4); }
