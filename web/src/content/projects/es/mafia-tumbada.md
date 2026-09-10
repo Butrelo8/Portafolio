@@ -3,8 +3,8 @@ name: Mafia Tumbada
 client: La Mafia Tumbada — Xalapa
 year: 2026
 tagline: Donde se contrata al grupo, no solo donde se escucha.
-summary: Sitio oficial de un grupo de corridos tumbados de Xalapa — el proyecto, las plataformas y un formulario para solicitar contrataciones de tocadas, festivales y eventos privados.
-stack: ["Astro", "Hono", "TypeScript", "Drizzle ORM", "Zod", "Resend"]
+summary: Sitio oficial de un grupo de corridos tumbados de Xalapa — música, videos, la banda y un botón de WhatsApp para contratarlos.
+stack: ["Astro", "TypeScript"]
 liveUrl: https://mafiatumbada.com
 screenshot: ../../../assets/shots/mafia.png
 featured: false
@@ -16,19 +16,20 @@ order: 4
 La Mafia Tumbada es un grupo de corridos tumbados y regional mexicano de Xalapa, Veracruz, activo
 desde 2021. Su música está en Spotify, Apple Music y YouTube; su público está en Instagram y TikTok.
 
-Ninguna de esas plataformas está hecha para recibir una contratación. Quien quiere al grupo en un festival, una barra o un evento privado
-llega a un perfil y tiene que adivinar a quién escribirle.
+Ninguna de esas plataformas está hecha para recibir una contratación. Quien quiere al grupo en un
+festival, una barra o un evento privado llega a un perfil y tiene que adivinar a quién escribirle.
 
 ## Qué construí
 
-Un sitio oficial que hace lo único que las plataformas no hacen: recibir una solicitud de
-contratación. El visitante encuentra el proyecto y todas las plataformas en un lugar, y un camino
-directo para pedir cotización de presentaciones, festivales y eventos privados, que llega por correo
-con Resend.
+Un sitio oficial que junta todo lo que alguien necesita para decidir y contratar: el catálogo de
+sencillos con enlace directo a la plataforma donde está cada uno, los videos, las fotos de tarima,
+quién es cada integrante y de qué va el proyecto. Todo termina en el mismo lugar: un botón de
+WhatsApp con el mensaje ya escrito y el teléfono del grupo.
 
-Astro para el sitio, Hono para el endpoint de contrataciones y Zod validando lo que entra.
+Sin formulario y sin servidor: el sitio es estático, la conversación pasa donde el manager ya
+responde. Hecho con Astro.
 
 ## Resultado
 
-El manager tiene un solo link que repartir, y las solicitudes llegan como correo en lugar de un DM
-enterrado bajo respuestas de fans.
+El grupo tiene un solo link que repartir, y la solicitud de contratación llega como mensaje directo
+al teléfono en lugar de un DM enterrado bajo respuestas de fans.
