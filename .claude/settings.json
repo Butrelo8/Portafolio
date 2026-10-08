@@ -1,0 +1,40 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "timeout": 5,
+            "command": "node -e \"let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{try{if(/figma/i.test(JSON.parse(d).prompt||''))console.log('Carga la skill figma primero (antes de cualquier figma:* o herramienta de Figma).')}catch{}})\""
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "deny": [
+      "mcp__plugin_figma_figma__get_design_context",
+      "mcp__plugin_figma_figma__get_metadata",
+      "mcp__plugin_figma_figma__get_screenshot",
+      "mcp__plugin_figma_figma__get_variable_defs",
+      "mcp__plugin_figma_figma__get_figjam",
+      "mcp__plugin_figma_figma__get_libraries",
+      "mcp__plugin_figma_figma__search_design_system",
+      "mcp__plugin_figma_figma__get_code_connect_map",
+      "mcp__plugin_figma_figma__get_code_connect_suggestions",
+      "mcp__plugin_figma_figma__get_context_for_code_connect",
+      "mcp__plugin_figma_figma__list_file_components_for_code_connect",
+      "mcp__plugin_figma_figma__get_motion_context",
+      "mcp__plugin_figma_figma__download_assets",
+      "mcp__plugin_figma_figma__get_shader",
+      "mcp__plugin_figma_figma__list_shaders",
+      "mcp__plugin_figma_figma__list_file_shaders",
+      "mcp__plugin_figma_figma__get_generative_plugin",
+      "mcp__plugin_figma_figma__list_generative_plugins"
+    ]
+  },
+  "enabledPlugins": {
+    "figma@claude-plugins-official": true
+  }
+}

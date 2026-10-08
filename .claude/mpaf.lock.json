@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "pristine": {
+    "CLAUDE.md": "# CLAUDE.md\n\nThis file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.\n\n## Stack\n\n| Layer      | Choice                                              |\n| ---------- | --------------------------------------------------- |\n| Web        | Astro 4.16, `output: 'static'` (no adapter)          |\n| Content    | Astro content collections — markdown case studies    |\n| Images     | `astro:assets` (build-time webp + responsive widths) |\n| Lint       | Biome (single config at root, covers `web/`)         |\n| Deploy     | Cloudflare Workers (static assets) via GitHub Actions |\n\n**No API, no server, no database.** There was a Hono API; it only ever served the build, so it was\ndeleted (see README \"History\"). Don't reintroduce one unless the task genuinely needs a runtime —\na contact form, newsletter, or an endpoint that hides a secret key.\n\nCursor rules live in `.cursor/rules/*.mdc`; CLAUDE.md wins on any conflict.\n\n## Commands\n\n```bash\nbun install              # root: Biome only\nbun run dev              # → cd web && astro dev, :4321\nbun run build            # → web/dist\nbun run typecheck        # astro check + tsc\nbun run lint / lint:fix  # biome check web\n```\n\nWeb deps install separately: `cd web && bun install`. The build needs no credentials.\n\nCI (`.github/workflows/ci.yml`) = lint → typecheck. Deploy (`deploy-web.yml`) builds and ships to\nCloudflare on push to `main`.\n\n## Architecture\n\n**One package that matters:** `web/` (Astro). The root `package.json` holds Biome and script\ndelegation, nothing else.\n\n**Content.** Case studies are markdown in `web/src/content/projects/{en,es}/<slug>.md`, one file per\nproject per language, schema in `web/src/content/config.ts`. Pages filter by `p.id.startsWith('en/')`\nand sort on `order`. There is no fetch and no token — the build reads the repo and nothing else.\n\n**Audience.** The site targets prospective **freelance clients**, not employers or OSS peers. Copy is\nabout what a business got, not what the code does. See `DECISIONS.md`.\n\n**Client confidentiality — read before touching a case study.** Some client work is under NDA. The\ninventory case study is anonymised, and the anonymisation is load-bearing:\n- No client name, logo, or brand anywhere in copy, front-matter, alt text, **or the slug** (the slug\n  is a public URL — `ecooceano-inventario` was renamed to `inventario-lite` for exactly this).\n- Figures are rounded (`180+`, not `181`) and fine-grained breakdowns are removed. Exact counts\n  fingerprint an organisation even without its name.\n- Screenshots of internal tools are re-captured with the branding hidden and the numbers rounded,\n  by editing the live DOM before the capture — see \"Screenshots\" below.\n- The private source repo must stay private. `Inv.-Lite-A` was flipped to private on 2026-09-07\n  because it contained the client's name in `index.html`/`App.tsx`/`Login.tsx` and their `logo.jpg`.\n- When anonymising, **do not add a redirect from the old slug** — the old URL is itself the leak.\n\n**Screenshots.** Live in `web/src/assets/shots/`, referenced from front-matter and optimised by\n`astro:assets` at build time. Never put them in `public/` — that ships the raw multi-MB PNG (the\nfour shots are 4.7MB as PNG and 111kB as webp at the largest width).\n\nCaptured from the live apps with the chrome-devtools MCP: navigate, `resize_page` to 1440×900,\n`take_screenshot`. For anything with client branding or real data, run `evaluate_script` first to\nhide logos, replace the client name, round the headline numbers and remove per-category\nbreakdowns — then capture. Card crops are `height: 220px; object-fit: cover; object-position: top`,\nso put the interesting part of the UI near the top of the viewport.\n\n**Contact.** `ContactForm.astro` POSTs to Web3Forms — no server involved. Notes:\n- `PUBLIC_WEB3FORMS_KEY` is public by design (it ships in the HTML). It is a **variable**, not a secret.\n- Without the key the form is replaced by an email link, so the build never breaks on a missing key.\n- A hidden `redirect` field returns the visitor to `/gracias/` (es) or `/en/thanks/` (en) instead of\n  Web3Forms' own branded page. It needs an **absolute** URL, which is why `astro.config.mjs` sets\n  `site`. **Change `site` when the domain changes or the redirect will point at the old host.**\n- A hidden `botcheck` honeypot input is the spam defence. Keep it off-screen, never `display:none`\n  in a way that breaks Web3Forms' own check.\n- Enquiries land in the inbox that registered the key — currently `av.ivan.8@gmail.com`. Verified\n  end-to-end on 2026-09-07.\n\n**Personal tooling strip.** `ToolStrip.astro` holds Sonus, Sotto, ApuestasWrapper and MPAF in a\nplain array with `en`/`es` strings — no collection, because there are no bodies and no images. None\nare published, so entries are deliberately link-free. Add a link only if a repo goes public.\n\n**i18n.** **Spanish is the default** — the clients are in Veracruz. Spanish lives at\n`web/src/pages/*` (served from `/`), English mirrors under `web/src/pages/en/*` (served from `/en/`).\nAdding a page means adding both. `astro.config.mjs` redirects the legacy `/es/*` URLs to the root.\n\n**Biome scope.** `biome.json` excludes `*.astro` (frontmatter vars used in the template read as\nunused) and the generated `web/.astro/`. Astro files are checked by `astro check` instead.\n\n## Conventions\n\n- Files kebab-case; exports camelCase, named (no default exports); Astro components PascalCase.\n- User-facing copy: **Spanish first**, English mirrored. Write Spanish as Spanish — not a literal\n  translation of the English.\n- Case study bodies are three sections: problem → what I built → result. Business outcome, not\n  architecture. Name the technology once, at the end of \"what I built\".\n- Never claim a result the client hasn't confirmed. \"Launches on this platform\" is honest when the\n  service is new; \"handling real bookings today\" is not, unless it is.\n- TS strict; single quotes, semicolons, 100-col (Biome).\n\n## Environment\n\n`web/.env`: `PUBLIC_WEB3FORMS_KEY` (contact form). Nothing else — the build needs no credentials.\n\nActions secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`. Variables: `PUBLIC_WEB3FORMS_KEY`.\n\nGotchas paid for once already:\n- The Cloudflare token must be **Workers**-scoped. An R2-only token authenticates fine and then\n  fails deploy with an opaque `Authentication error [code: 10000]`.\n- GitHub reserves the `GITHUB_` prefix for **both** secrets and variables — a name like\n  `GITHUB_USERNAME` is rejected outright (HTTP 422).\n- CI installs with `--frozen-lockfile`, so run `bun install` at the root after changing root deps.\n\n## Life-OS TODOs\n\nLife-OS project tag: portafolio\n",
+    ".claude/settings.json": null,
+    ".mcp.json": null
+  },
+  "presets": {
+    "diseno-figma": {
+      "skills": [],
+      "localSkills": [],
+      "rules": [],
+      "claudeMd": true,
+      "hooks": [
+        {
+          "event": "UserPromptSubmit",
+          "command": "node -e \"let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{try{if(/figma/i.test(JSON.parse(d).prompt||''))console.log('Carga la skill figma primero (antes de cualquier figma:* o herramienta de Figma).')}catch{}})\""
+        }
+      ],
+      "permissions": {
+        "allow": [],
+        "deny": [
+          "mcp__plugin_figma_figma__get_design_context",
+          "mcp__plugin_figma_figma__get_metadata",
+          "mcp__plugin_figma_figma__get_screenshot",
+          "mcp__plugin_figma_figma__get_variable_defs",
+          "mcp__plugin_figma_figma__get_figjam",
+          "mcp__plugin_figma_figma__get_libraries",
+          "mcp__plugin_figma_figma__search_design_system",
+          "mcp__plugin_figma_figma__get_code_connect_map",
+          "mcp__plugin_figma_figma__get_code_connect_suggestions",
+          "mcp__plugin_figma_figma__get_context_for_code_connect",
+          "mcp__plugin_figma_figma__list_file_components_for_code_connect",
+          "mcp__plugin_figma_figma__get_motion_context",
+          "mcp__plugin_figma_figma__download_assets",
+          "mcp__plugin_figma_figma__get_shader",
+          "mcp__plugin_figma_figma__list_shaders",
+          "mcp__plugin_figma_figma__list_file_shaders",
+          "mcp__plugin_figma_figma__get_generative_plugin",
+          "mcp__plugin_figma_figma__list_generative_plugins"
+        ]
+      },
+      "plugins": [
+        "figma@claude-plugins-official"
+      ],
+      "mcpServers": [
+        "figma-mcp-go"
+      ]
+    }
+  }
+}

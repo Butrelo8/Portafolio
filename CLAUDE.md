@@ -112,3 +112,11 @@ Gotchas paid for once already:
 - GitHub reserves the `GITHUB_` prefix for **both** secrets and variables — a name like
   `GITHUB_USERNAME` is rejected outright (HTTP 422).
 - CI installs with `--frozen-lockfile`, so run `bun install` at the root after changing root deps.
+
+## Life-OS TODOs
+
+Life-OS project tag: portafolio
+
+<!-- mpaf:diseno-figma:start -->
+Figma: antes de cualquier skill `figma:*` o herramienta de Figma, carga la skill `figma`.
+<!-- mpaf:diseno-figma:end -->
