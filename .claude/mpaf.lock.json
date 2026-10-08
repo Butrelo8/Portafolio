@@ -8,6 +8,19 @@
   "presets": {
     "diseno-figma": {
       "skills": [],
+      "linkedSkills": [
+        "figma",
+        "figma-anti-ui-slop",
+        "figma-better-interface",
+        "figma-component-handoff",
+        "figma-create-color",
+        "figma-crit",
+        "figma-desktop-to-mobile",
+        "figma-find-animation-opportunities",
+        "figma-ui-state-expander",
+        "visuales",
+        "diseccion"
+      ],
       "localSkills": [],
       "rules": [],
       "claudeMd": true,
