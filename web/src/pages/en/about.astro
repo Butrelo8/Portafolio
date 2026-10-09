@@ -1,10 +1,10 @@
 ---
 export const prerender = true
 import BaseLayout from '../../layouts/BaseLayout.astro'
-import { getEntry } from 'astro:content'
+import { getEntry, render } from 'astro:content'
 
 const about = await getEntry('about', 'en')
-const { Content } = await about!.render()
+const { Content } = await render(about!)
 ---
 
 <BaseLayout title="About" description="About me" lang="en">

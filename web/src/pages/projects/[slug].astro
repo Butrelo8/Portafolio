@@ -1,13 +1,13 @@
 ---
 export const prerender = true;
-import { getCollection, type CollectionEntry } from 'astro:content';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
 import { Image, getImage } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects', (p) => p.id.startsWith('es/'));
   return projects.map((project) => ({
-    params: { slug: project.slug.replace(/^es\//, '') },
+    params: { slug: project.id.replace(/^es\//, '') },
     props: { project },
   }));
 }
@@ -23,7 +23,7 @@ const { name, client, year, tagline, summary, liveUrl, repoUrl, screenshot, demo
 // The poster frame reuses the case study screenshot, run through astro:assets so the video does
 // not pull a multi-MB PNG before anyone presses play.
 const poster = demo && screenshot ? await getImage({ src: screenshot, width: 1440, format: 'webp' }) : undefined;
-const { Content } = await project.render();
+const { Content } = await render(project);
 ---
 
 <BaseLayout title={`${name} — ${client}`} description={summary} lang="es">

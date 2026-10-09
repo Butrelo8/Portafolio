@@ -10,15 +10,15 @@
     "typecheck": "astro check && tsc --noEmit"
   },
   "dependencies": {
-    "astro": "^4.16.0",
+    "astro": "^7.3.8",
     "marked": "^18.0.2",
     "sanitize-html": "^2.17.4"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.0",
+    "@astrojs/check": "^0.9.10",
     "@types/node": "^26.5.0",
     "@types/sanitize-html": "^2.16.1",
-    "typescript": "^5.0.0",
+    "typescript": "^5",
     "wrangler": "^4.129.0"
   }
 }

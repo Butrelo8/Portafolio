@@ -1,7 +1,9 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
+import { glob } from 'astro/loaders';
+import { z } from 'astro/zod';
 
 const projectsCollection = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
   // image() lets Astro optimise screenshots at build time (webp, responsive widths).
   schema: ({ image }) =>
     z.object({
@@ -39,7 +41,7 @@ const projectsCollection = defineCollection({
 });
 
 const aboutCollection = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '*.md', base: './src/content/about' }),
   schema: z.object({
     title: z.string(),
   }),

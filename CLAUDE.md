@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 | Layer      | Choice                                              |
 | ---------- | --------------------------------------------------- |
-| Web        | Astro 4.16, `output: 'static'` (no adapter)          |
+| Web        | Astro 7, `output: 'static'` (no adapter)          |
 | Content    | Astro content collections — markdown case studies    |
 | Images     | `astro:assets` (build-time webp + responsive widths) |
 | Lint       | Biome (single config at root, covers `web/`)         |

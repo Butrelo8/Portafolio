@@ -10,7 +10,7 @@ interface Props {
 const { project, lang } = Astro.props;
 const { name, client, year, tagline, summary, liveUrl, screenshot } = project.data;
 // Collection ids are "en/slug.md" / "es/slug.md"; the URL wants just the slug.
-const slug = project.slug.replace(/^(en|es)\//, '');
+const slug = project.id.replace(/^(en|es)\//, '');
 const href = lang === 'en' ? `/en/projects/${slug}` : `/projects/${slug}`;
 ---
 
