@@ -7,6 +7,7 @@
   --color-surface: #ffffff;
   --color-border: #1a1a1a;
   --color-muted: #6b6b6b;
+  --color-fg-soft: #4a4a4a; /* long-form copy on --color-bg: 7.8:1 */
 
   /* Typography */
   --font-mono: "JetBrains Mono", "Fira Mono", monospace;

@@ -46,8 +46,8 @@ const projects = (await getCollection('projects', (p) => p.id.startsWith('es/'))
   .hero { padding-top: var(--space-section); padding-bottom: var(--space-16); }
   .hero__label { font-size: var(--text-sm); color: var(--color-accent); font-weight: 700; margin-bottom: var(--space-4); text-transform: uppercase; letter-spacing: 0.1em; }
   .hero__title { font-family: var(--font-mono); font-size: var(--text-hero); font-weight: 700; line-height: 1.05; margin-bottom: var(--space-6); }
-  .hero__accent { color: var(--color-accent); -webkit-text-stroke: 2px var(--color-fg); }
-  .hero__sub { font-size: var(--text-lg); color: var(--color-muted); max-width: 52ch; }
+  .hero__accent { color: var(--color-accent); -webkit-text-stroke: 2px var(--color-accent-hover); paint-order: stroke fill; }
+  .hero__sub { font-size: var(--text-lg); color: var(--color-fg-soft); max-width: 52ch; }
   .hero__cta { margin-top: var(--space-8); }
   .section { padding-block: var(--space-16); }
   .section__title { font-size: var(--text-xl); font-weight: 700; margin-bottom: var(--space-8); color: var(--color-muted); }
