@@ -4,6 +4,7 @@
   --color-fg: #1a1a1a;
   --color-accent: #ff4500;
   --color-accent-hover: #e03d00;
+  --color-accent-strong: #c43500; /* small text + button bg: 4.8:1 on bg, 5.45:1 under white */
   --color-surface: #ffffff;
   --color-border: #1a1a1a;
   --color-muted: #6b6b6b;
