@@ -4,7 +4,7 @@ Freelance portfolio — bilingual (EN/ES) case studies of shipped client work.
 
 **Stack:** Astro 4.16 (static) · content collections · astro:assets · Biome
 **Deploy:** Cloudflare Workers (static assets), built in GitHub Actions
-**Live:** https://mi-portafolio.bube-ncio8.workers.dev
+**Live:** https://ivanaguirre.dev
 
 No server, no database, no API, no credentials to build. Case studies are markdown in the repo.
 Spanish is the default language; English mirrors under `/en/`.

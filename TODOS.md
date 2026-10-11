@@ -9,15 +9,6 @@ _Context pass:_ `CLAUDE.md` ~73 lines — OK. No in-repo MCP. Stale rule + MCP +
 ## Open
 
 
-### Custom domain (P1)
-
-- **What:** Point a real domain at the Cloudflare Worker, replacing `mi-portafolio.bube-ncio8.workers.dev`.
-- **Why:** A `workers.dev` subdomain on a card or a proposal undercuts everything else on the page. This is the cheapest credibility gain left.
-- **Solution:** Buy the domain, add it to Cloudflare, add a custom domain to the `mi-portafolio` Worker. **Then update `site` in `web/astro.config.mjs`** — the contact form's redirect is built from it and will otherwise point at the old host.
-- **Done When:** The site serves from the new domain and the contact form still lands on `/gracias/`.
-- **Effort:** S (human: ~30m / CC: ~10 min)
-- **Priority:** P1
-
 ### Testimonials — one quote per case study (P1)
 
 - **What:** A real quote from Omar (Maco), the Mafia Tumbada manager, the Coast organisers, and the marine monitoring client.
