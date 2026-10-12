@@ -1,0 +1,28 @@
+---
+export const prerender = true;
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Klaviyo demo — Ivan Aguirre"
+  description="A documented Klaviyo account on a Shopify development store. The write-up is in Spanish."
+  lang="en"
+>
+  <article class="demo container">
+    <p class="mono demo__back"><a href="/en/">← Back</a></p>
+    <h1 class="demo__title mono">Klaviyo demo</h1>
+    <p class="demo__text">
+      A Klaviyo account connected to a Shopify development store: sending domain, flows, segments
+      and email copy. It is a demo, not client work, and the write-up is in Spanish.
+    </p>
+    <a href="/demo/klaviyo/" hreflang="es" lang="es" class="brut-btn">Leer en español →</a>
+  </article>
+</BaseLayout>
+
+<style>
+  .demo { padding-block: var(--space-12) var(--space-16); }
+  .demo__back { margin-bottom: var(--space-6); font-size: var(--text-sm); }
+  .demo__back a:hover { color: var(--color-accent-strong); }
+  .demo__title { font-size: var(--text-2xl); font-weight: 700; margin-bottom: var(--space-4); }
+  .demo__text { font-size: var(--text-lg); color: var(--color-fg-soft); max-width: 52ch; margin-bottom: var(--space-8); }
+</style>

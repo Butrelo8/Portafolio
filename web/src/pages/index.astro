@@ -36,6 +36,9 @@ const projects = (await getCollection('projects', (p) => p.id.startsWith('es/'))
     <div class="grid">
       {projects.map((p) => <ProjectCard project={p} lang="es" />)}
     </div>
+    <p class="demo-link mono">
+      Demo, no es trabajo de cliente: <a href="/demo/klaviyo/">Klaviyo para e-commerce →</a>
+    </p>
   </section>
 
   <ToolStrip lang="es" />
@@ -52,4 +55,6 @@ const projects = (await getCollection('projects', (p) => p.id.startsWith('es/'))
   .section { padding-block: var(--space-16); }
   .section__title { font-size: var(--text-xl); font-weight: 700; margin-bottom: var(--space-8); color: var(--color-muted); }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(400px, 100%), 1fr)); gap: var(--space-6); }
+  .demo-link { margin-top: var(--space-8); font-size: var(--text-sm); color: var(--color-muted); }
+  .demo-link a { color: var(--color-accent-strong); font-weight: 700; text-decoration: underline; text-underline-offset: 0.2em; }
 </style>

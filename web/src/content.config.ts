@@ -47,7 +47,18 @@ const aboutCollection = defineCollection({
   }),
 });
 
+// Demos built to show a skill, not client work. Kept out of `projects` so they never render as
+// a client card.
+const demosCollection = defineCollection({
+  loader: glob({ pattern: '*.md', base: './src/content/demos' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+  }),
+});
+
 export const collections = {
   projects: projectsCollection,
   about: aboutCollection,
+  demos: demosCollection,
 };

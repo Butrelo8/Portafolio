@@ -1,0 +1,76 @@
+---
+export const prerender = true;
+import { getEntry, render } from 'astro:content';
+import { getImage } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import abTest from '../../assets/klaviyo/04-ab-test.png';
+
+const demo = await getEntry('demos', 'klaviyo');
+if (!demo) throw new Error('demos/klaviyo.md is missing');
+const { Content } = await render(demo);
+
+// Link previews: JPEG, because some unfurlers still drop WebP.
+const og = await getImage({
+  src: abTest,
+  width: 1200,
+  height: 630,
+  fit: 'cover',
+  position: 'top',
+  format: 'jpg',
+});
+const ogImage = new URL(og.src, Astro.site).href;
+---
+
+<BaseLayout title={demo.data.title} description={demo.data.description} lang="es" image={ogImage}>
+  <article class="demo container">
+    <header class="demo__header">
+      <p class="mono demo__back"><a href="/">← Volver</a></p>
+      <h1 class="demo__title mono">{demo.data.title}</h1>
+      <div class="demo__meta mono">
+        <span class="demo__tag">Demo, no es trabajo de cliente</span>
+        <span>Klaviyo · Shopify</span>
+        <span>2026</span>
+      </div>
+    </header>
+
+    <div class="demo__body">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .demo { padding-block: var(--space-12) var(--space-16); }
+  .demo__header { border-bottom: var(--border-width-thick) solid var(--color-border); padding-bottom: var(--space-8); margin-bottom: var(--space-8); }
+  .demo__back { margin-bottom: var(--space-6); font-size: var(--text-sm); }
+  .demo__back a:hover { color: var(--color-accent-strong); }
+  .demo__title { font-size: var(--text-2xl); font-weight: 700; line-height: 1.15; margin-bottom: var(--space-4); max-width: 24ch; }
+  .demo__meta { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-6); align-items: center; font-size: var(--text-sm); color: var(--color-muted); }
+  .demo__tag { padding: var(--space-1) var(--space-3); border: var(--border-width) solid var(--color-border); background: var(--color-surface); color: var(--color-accent-strong); font-weight: 700; }
+
+  /* Section headings sit in a left gutter on wide screens; everything else reads in the right column. */
+  .demo__body { display: grid; grid-template-columns: minmax(0, 1fr); column-gap: var(--space-8); }
+  .demo__body > :global(*) { max-width: 68ch; }
+  .demo__body :global(h2) { font-family: var(--font-mono); font-size: var(--text-xl); line-height: 1.2; margin-block: var(--space-12) var(--space-4); padding-top: var(--space-3); border-top: var(--border-width-thick) solid var(--color-border); }
+  .demo__body :global(h3) { font-family: var(--font-mono); font-size: var(--text-lg); margin-block: var(--space-8) var(--space-3); }
+  .demo__body :global(p) { margin-bottom: var(--space-4); line-height: 1.7; }
+  .demo__body > :global(p:first-child) { font-size: var(--text-lg); line-height: 1.6; color: var(--color-fg-soft); }
+  .demo__body :global(ul) { padding-left: var(--space-6); margin-bottom: var(--space-4); }
+  .demo__body :global(li) { margin-bottom: var(--space-3); line-height: 1.7; }
+  .demo__body :global(li::marker) { color: var(--color-accent-strong); }
+  .demo__body :global(strong) { font-weight: 700; }
+  .demo__body :global(code) { font-family: var(--font-mono); font-size: 0.88em; padding: 0.05em 0.35em; background: var(--color-surface); border: 1px solid var(--color-border); overflow-wrap: anywhere; }
+
+  /* Screenshots: brut frame, never wider than the column, never upscaled. */
+  .demo__body > :global(p:has(> img)) { max-width: none; margin-block: var(--space-6) var(--space-8); }
+  .demo__body :global(img) { width: auto; max-width: 100%; height: auto; background: var(--color-surface); border: var(--border-width-thick) solid var(--color-border); box-shadow: var(--shadow-brut-sm); }
+  .demo__body > :global(p:has(> img + img)) { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: var(--space-6); align-items: start; }
+
+  @media (min-width: 960px) {
+    .demo__body { grid-template-columns: 13rem minmax(0, 1fr); }
+    .demo__body > :global(*) { grid-column: 2; }
+    .demo__body > :global(h2) { grid-column: 1; margin-block: var(--space-12) 0; font-size: var(--text-lg); }
+    /* the first block of each section shares the heading's row, so drop its own top margin */
+    .demo__body > :global(h2 + *) { margin-top: var(--space-12); padding-top: var(--space-3); border-top: var(--border-width-thick) solid var(--color-border); }
+  }
+</style>
