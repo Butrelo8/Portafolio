@@ -6,10 +6,13 @@ interface Props {
   title: string
   description?: string
   lang?: 'en' | 'es'
+  // Absolute URL of the link-preview image. Without it the page shares as text only.
+  image?: string
 }
 
-const { title, description = '', lang = 'es' } = Astro.props
+const { title, description = '', lang = 'es', image } = Astro.props
 const currentPath = Astro.url.pathname
+const pageUrl = new URL(currentPath, Astro.site).href
 ---
 
 <!doctype html>
@@ -19,6 +22,13 @@ const currentPath = Astro.url.pathname
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <title>{title}</title>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:locale" content={lang === 'en' ? 'en_US' : 'es_MX'} />
+    {image && <meta property="og:image" content={image} />}
+    <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
   <body>
