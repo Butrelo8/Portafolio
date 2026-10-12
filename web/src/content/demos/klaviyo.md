@@ -7,13 +7,13 @@ description: "Cuenta de Klaviyo conectada a una tienda de desarrollo de Shopify:
 ## 1. Entregabilidad
 
 - **Dominio propio:** `ivanaguirre.dev` (Cloudflare).
-- **Dominio de envío en Klaviyo:** `send.ivanaguirre.dev`, delegado a Klaviyo por NS; Klaviyo firma SPF y DKIM con mi dominio, no con el suyo. Estado: verificado y activo.
+- **Dominio de envío en Klaviyo:** `send.ivanaguirre.dev`, delegado a Klaviyo por NS; el SPF y el DKIM de Klaviyo quedan en mi dominio, no en el suyo. Estado: verificado y activo.
 
 ![Configuración de Klaviyo, sección Dominios: send.ivanaguirre.dev como dominio de envío, con estado Activo y tipo Marketing.](../../assets/klaviyo/02-sending-domain.png)
 
 - **DMARC:** `p=none` publicado para empezar a recibir reportes; con reportes limpios, el siguiente paso es `p=quarantine`.
 
-![Registros DNS de ivanaguirre.dev en Cloudflare: cuatro registros NS que delegan send.ivanaguirre.dev a Klaviyo, más DKIM, DMARC con p=none y SPF.](../../assets/klaviyo/01-dns.png)
+![Registros DNS de ivanaguirre.dev en Cloudflare: cuatro registros NS que delegan send.ivanaguirre.dev a Klaviyo (el SPF y el DKIM de Klaviyo viven en esa zona), más el SPF/DKIM del buzón de Cloudflare y DMARC con p=none.](../../assets/klaviyo/01-dns.png)
 
 - **Remitente:** Altitud Snowboards `<hola@ivanaguirre.dev>`, un buzón real (Cloudflare Email Routing): si el cliente responde, alguien lo lee.
 
@@ -38,7 +38,7 @@ description: "Cuenta de Klaviyo conectada a una tienda de desarrollo de Shopify:
 - Quité la rama de SMS de la plantilla: la tienda no tiene consentimiento de SMS configurado. Quité también el banner "envío gratis en compras de $50": la tienda no tiene esa política.
 
 ![Flujo de carrito abandonado en Klaviyo: activador por página de pago iniciada, espera de 4 horas, Carrito 1 con 3 en espera, espera de 1 día y Carrito 2.](../../assets/klaviyo/06-cart-flow.png)
-![Vista previa del correo C1 de carrito: titular «Tu carrito te espera», botón para volver al carrito, bloque «Lo más pedido de la temporada» con tres productos y la línea de contacto.](../../assets/klaviyo/07-cart-email.png)
+![Vista previa del correo C2 de carrito: titular «Tu carrito te espera», botón para volver al carrito, bloque «Lo más pedido de la temporada» con tres productos y la línea de contacto.](../../assets/klaviyo/07-cart-email.png)
 
 ### Poscompra (activo)
 - **Disparador:** pedido realizado. **Espera 1 día → P1:** gracias y a quién escribir si algo sale mal.
