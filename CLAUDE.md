@@ -118,5 +118,5 @@ Gotchas paid for once already:
 Life-OS project tag: portafolio
 
 <!-- mpaf:diseno-figma:start -->
-Figma: antes de cualquier skill `figma:*` o herramienta de Figma, carga la skill `figma`.
+Figma: before any `figma:*` skill or Figma tool, load the skill `figma`.
 <!-- mpaf:diseno-figma:end -->
