@@ -38,7 +38,7 @@ description: "Cuenta de Klaviyo conectada a una tienda de desarrollo de Shopify:
 - Quité la rama de SMS de la plantilla: la tienda no tiene consentimiento de SMS configurado. Quité también el banner "envío gratis en compras de $50": la tienda no tiene esa política.
 
 ![Flujo de carrito abandonado en Klaviyo: activador por página de pago iniciada, espera de 4 horas, Carrito 1 con 3 en espera, espera de 1 día y Carrito 2.](../../assets/klaviyo/06-cart-flow.png)
-![Vista previa del correo C1 de carrito: titular «Tu carrito te espera», botón para volver al carrito, bloque «Lo más pedido de la temporada» con tres productos y pie con enlace de baja.](../../assets/klaviyo/07-cart-email.png)
+![Vista previa del correo C1 de carrito: titular «Tu carrito te espera», botón para volver al carrito, bloque «Lo más pedido de la temporada» con tres productos y la línea de contacto.](../../assets/klaviyo/07-cart-email.png)
 
 ### Poscompra (activo)
 - **Disparador:** pedido realizado. **Espera 1 día → P1:** gracias y a quién escribir si algo sale mal.
