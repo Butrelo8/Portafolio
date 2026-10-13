@@ -14,7 +14,7 @@ description: "A test WooCommerce store migrated to a Shopify development store: 
 
 ## 2. What moved and how
 
-Everything through Shopify's API with my own scripts, so it can be repeated, reviewed and run again without duplicating anything.
+Everything through Shopify's API with my own scripts: they can run again without duplicating anything.
 
 | From WooCommerce | On Shopify | Detail |
 |---|---|---|

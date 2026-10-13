@@ -14,7 +14,7 @@ description: "Una tienda WooCommerce de prueba migrada a una tienda de desarroll
 
 ## 2. Qué se movió y cómo
 
-Todo por la API de Shopify con scripts propios, para poder repetirlo, revisarlo y correrlo otra vez sin duplicar nada.
+Todo por la API de Shopify con scripts propios: se puede correr otra vez sin duplicar nada.
 
 | De WooCommerce | En Shopify | Detalle |
 |---|---|---|
