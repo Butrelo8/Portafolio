@@ -1,0 +1,33 @@
+---
+import { Picture } from 'astro:assets';
+import retrato from '../assets/retrato.jpg';
+
+interface Props {
+  loading?: 'eager' | 'lazy';
+}
+
+const { loading = 'lazy' } = Astro.props;
+---
+
+<Picture
+  src={retrato}
+  alt="Ivan Aguirre"
+  width={200}
+  height={200}
+  densities={[1, 2]}
+  formats={['avif', 'webp']}
+  fallbackFormat="webp"
+  loading={loading}
+  class="portrait"
+/>
+
+<style>
+  .portrait {
+    width: var(--portrait-size, 200px);
+    height: auto;
+    aspect-ratio: 1;
+    border: var(--border-width-thick) solid var(--color-border);
+    box-shadow: var(--shadow-brut-accent);
+    transform: rotate(-2deg);
+  }
+</style>

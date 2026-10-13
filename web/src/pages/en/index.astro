@@ -5,6 +5,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import ToolStrip from '../../components/ToolStrip.astro';
 import ContactForm from '../../components/ContactForm.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
+import Portrait from '../../components/Portrait.astro';
 
 const projects = (await getCollection('projects', (p) => p.id.startsWith('en/'))).sort(
   (a, b) => a.data.order - b.data.order,
@@ -22,12 +23,17 @@ const projects = (await getCollection('projects', (p) => p.id.startsWith('en/'))
       I build websites<br />
       <span class="hero__accent">that do the work.</span>
     </h1>
-    <p class="hero__sub">
-      Booking platforms, event sites and internal tools for real businesses — not brochures. Four
-      shipped and running.
-    </p>
-    <div class="hero__cta">
-      <a href="/en/#contact" class="brut-btn">Start a project</a>
+    <div class="hero__intro">
+      <div>
+        <p class="hero__sub">
+          Booking platforms, event sites and internal tools for real businesses — not brochures. Four
+          shipped and running.
+        </p>
+        <div class="hero__cta">
+          <a href="/en/#contact" class="brut-btn">Start a project</a>
+        </div>
+      </div>
+      <Portrait loading="eager" />
     </div>
   </section>
 
@@ -52,6 +58,12 @@ const projects = (await getCollection('projects', (p) => p.id.startsWith('en/'))
   .hero__accent { color: var(--color-accent); -webkit-text-stroke: 2px var(--color-accent-hover); paint-order: stroke fill; }
   .hero__sub { font-size: var(--text-lg); color: var(--color-fg-soft); max-width: 52ch; }
   .hero__cta { margin-top: var(--space-8); }
+  .hero__intro { display: grid; gap: var(--space-8); align-items: center; --portrait-size: 128px; }
+  .hero__intro > :global(picture) { order: -1; }
+  @media (min-width: 768px) {
+    .hero__intro { grid-template-columns: minmax(0, 52ch) auto; justify-content: space-between; --portrait-size: 200px; }
+    .hero__intro > :global(picture) { order: 0; }
+  }
   .section { padding-block: var(--space-16); }
   .section__title { font-size: var(--text-xl); font-weight: 700; margin-bottom: var(--space-8); color: var(--color-muted); }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(400px, 100%), 1fr)); gap: var(--space-6); }
