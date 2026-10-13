@@ -80,6 +80,7 @@ Perfiles de prueba con alias de mi propio correo, en la tienda de desarrollo y c
 
 ## 8. Cómo es trabajar conmigo
 - **Acceso:** me invitas como usuario en Klaviyo (y, si hace falta, aceptas una solicitud de colaborador en Shopify). Nunca necesito tu contraseña.
+- **Entrega:** 5 días hábiles desde que tengo los accesos y dos o tres correos que tu marca ya haya mandado (para tomarle la voz).
 - **Agencias:** trabajo dentro de la cuenta de tu cliente, no lo contacto a menos que me lo pidas, y tú le entregas un documento como esta página con tu nombre.
 - **Respuesta:** contesto en menos de 24 horas, en español o en inglés. Mi jornada coincide con el horario de oficina de Estados Unidos.
 

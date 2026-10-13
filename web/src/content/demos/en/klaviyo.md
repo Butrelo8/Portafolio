@@ -82,6 +82,7 @@ Test profiles on aliases of my own email address, in the development store, usin
 
 ## 8. Working with me
 - **Access:** invite me as a user in Klaviyo (and, if needed, accept a Shopify collaborator request). I never need your password.
+- **Turnaround:** 5 business days from getting access and two or three emails your brand has already sent (for the voice).
 - **Agencies:** I work inside your client's account, never contact them unless you ask, and you hand them a write-up like this page under your name.
 - **Replies:** within 24 hours, in English or Spanish. My working day overlaps US business hours.
 
