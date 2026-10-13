@@ -1,10 +1,15 @@
 ---
 title: "Migración de WooCommerce a Shopify: demo documentada"
-description: "Una tienda WooCommerce de prueba migrada a una tienda de desarrollo de Shopify: catálogo, contenido, una redirección 301 por cada URL vieja, comprobación antes/después y un cambio de DNS que no toca el correo."
+description: "Una tienda WooCommerce de prueba migrada a una tienda de desarrollo de Shopify: catálogo, clientes, pedidos, una redirección 301 por cada URL vieja, comprobación antes/después y un cambio de dominio que no toca el correo."
 ---
-**Qué es:** una tienda WooCommerce de prueba ("Sotavento", con el catálogo de ejemplo que trae WooCommerce) migrada a una tienda de desarrollo de Shopify. La monté para mostrar cómo trabajo una migración: qué se mueve y cómo, qué pasa con cada URL que Google ya conoce y cómo se cambia el dominio sin que se caiga el correo. No es una tienda de cliente: no hay ventas ni tráfico que presumir, solo el proceso y sus comprobaciones.
+Soy Ivan, desarrollador web en Veracruz, México. Esta es una tienda WooCommerce de prueba ("Sotavento", con el catálogo de ejemplo que trae WooCommerce) que migré a una tienda de desarrollo de Shopify para mostrar cómo trabajo una migración: qué se mueve y cómo, qué pasa con cada URL que Google ya conoce y cómo se cambia el dominio sin que se caiga el correo. La tienda no tiene ventas reales; lo que se ve es el proceso y sus comprobaciones.
 
-## 1. La tienda de origen
+## 1. Para qué le sirve a una tienda
+- **Catálogo, clientes y pedidos completos en Shopify**, con imágenes, variantes y fechas originales, comparados contra la tienda vieja antes de dar la migración por terminada.
+- **Ninguna URL vieja da 404:** cada página que Google ya conoce redirige con una 301 a su equivalente y conserva su título y meta descripción. Se comprueba URL por URL y el reporte es tuyo.
+- **El dominio cambia sin tocar el correo:** los registros MX, SPF, DKIM y DMARC quedan igual, y un script lo verifica justo después del cambio.
+
+## 2. La tienda de origen
 
 - WordPress 7 + WooCommerce en Docker, con Yoast SEO y enlaces permanentes del tipo `/product/hoodie/`, como la mayoría de las tiendas reales.
 - **18 productos** (2 con variantes, uno agrupado y uno externo), **6 categorías**, **4 artículos de blog**, **4 páginas**, **8 clientes** y **10 pedidos** con estados distintos (completado, en proceso, en espera, reembolsado). Cada producto, página y artículo tiene su meta descripción.
@@ -12,7 +17,7 @@ description: "Una tienda WooCommerce de prueba migrada a una tienda de desarroll
 
 ![Página de producto «Hoodie» en la tienda WooCommerce de origen: selector de color y logo, precio de 42 a 45 US$, botón Añadir al carrito y categoría Hoodies.](../../../assets/migracion/01-woo-product.png)
 
-## 2. Qué se movió y cómo
+## 3. Qué se movió y cómo
 
 Todo por la API de Shopify con scripts propios: se puede correr otra vez sin duplicar nada.
 
@@ -35,11 +40,11 @@ Shopify numera los pedidos desde el #1001; el número de WooCommerce queda como 
 
 ![Lista de pedidos en el panel de Shopify: #1001 a #1010 con sus fechas originales, clientes, totales, estados de pago (pagado, reembolsado, pendiente) y de preparación, y la etiqueta woo-order de cada uno.](../../../assets/migracion/05-admin-orders.jpg)
 
-Para leer y crear clientes por API, Shopify exige que la app tenga aprobado el acceso a datos protegidos de clientes. Aquí lo descubrí a medio camino; con una tienda real se resuelve antes del día de la migración.
+Para leer y crear clientes por API, Shopify pide que la app tenga aprobado el acceso a datos protegidos de clientes. Con una tienda real, ese permiso se tramita antes del día de la migración.
 
 **No se mueve:** contraseñas de clientes (Shopify no importa contraseñas; cada cliente recibe una invitación para activar su cuenta), datos de pago, reseñas y cupones. Con una tienda real, cada uno de estos se acuerda antes de empezar.
 
-## 3. Redirecciones 301
+## 4. Redirecciones 301
 
 Cada URL vieja apunta a su equivalente en Shopify. Las reglas:
 
@@ -52,11 +57,11 @@ Cada URL vieja apunta a su equivalente en Shopify. Las reglas:
 | `/category/style-notes/` | `/blogs/news` |
 | `/shop/`, `/cart/`, `/checkout/`, `/my-account/` | `/collections/all`, `/cart`, `/cart`, `/account` |
 
-Las redirecciones entran a Shopify con el mismo CSV que se importa a mano desde el panel (*URL redirects › Importar*), generado a partir de lo que Shopify asignó de verdad, no de lo que se esperaba: [descargar `redirects.csv`](/demo/migracion/redirects.csv).
+Las redirecciones entran a Shopify con el mismo CSV que se importa a mano desde el panel (*Redireccionamientos de URL › Importar*), generado con los handles que Shopify asignó de verdad: [descargar `redirects.csv`](/demo/migracion/redirects.csv).
 
-<!-- CAPTURA_REDIRECTS -->
+![Redireccionamientos de URL en el panel de Shopify: 36 redirecciones importadas, de /category/style-notes a /blogs/news, de /product/hoodie a /products/hoodie y de /product-category/tshirts a /collections/tshirts, entre otras.](../../../assets/migracion/06-admin-redirects.jpg)
 
-## 4. Comprobación antes y después
+## 5. Comprobación antes y después
 
 Un script pide cada una de las 38 URLs viejas a la tienda de Shopify, sigue cada redirección y compara título y meta descripción con lo que tenía WooCommerce.
 
@@ -71,9 +76,9 @@ Un script pide cada una de las 38 URLs viejas a la tienda de Shopify, sigue cada
 
 Reporte completo, URL por URL: [descargar `reporte-migracion.csv`](/demo/migracion/reporte-migracion.csv).
 
-Lo que salió de la comprobación y no del plan: Shopify no deja redirigir `/cart/` (la ruta ya es suya) y responde `/shop` con la página de inicio aunque la redirección exista. Ninguna de las dos da 404, pero en una tienda real lo digo antes del cambio de dominio, no después.
+Lo que salió de la comprobación y no del plan: Shopify no deja redirigir `/cart/` (la ruta ya es suya) y responde `/shop` con la página de inicio aunque la redirección exista. Ninguna de las dos da 404, y en una tienda real lo aviso antes del cambio de dominio.
 
-## 5. Cambio de dominio sin romper el correo
+## 6. Cambio de dominio sin romper el correo
 
 El cambio de DNS es donde una migración suele tumbar el correo: se borra la zona, se pega la de Shopify y los MX desaparecen. Aquí es un simulacro sobre la zona real de `ivanaguirre.dev`, leída sin modificar nada:
 
@@ -88,13 +93,15 @@ El cambio de DNS es donde una migración suele tumbar el correo: se borra la zon
 
 Antes del cambio guardo una foto de la zona; justo después, un script la vuelve a leer y falla si cualquier registro de correo cambió. Hoy, contra la zona real: `mail records unchanged`.
 
-## 6. Precio
-
-Precio fijo por migración, **de 250 a 300 US$** según el tamaño del catálogo, acordado por escrito antes de empezar. Incluye catálogo, clientes, pedidos históricos, páginas, blog, todas las redirecciones con su reporte y el cambio de dominio.
-
 ## 7. Con una tienda real, lo siguiente sería
-
 - Sacar las URLs con tráfico de Search Console, no solo del sitemap: las que tienen visitas o enlaces externos se revisan una por una.
 - Redirigir las imágenes viejas de `/wp-content/uploads/` que tengan enlaces externos.
 - Bajar el TTL del DNS un día antes y hacer el cambio en el horario de menos ventas.
 - Si la tienda ya manda correos a sus clientes, conectar Klaviyo encima: [así lo monto](/demo/klaviyo/).
+
+## 8. Cómo es trabajar conmigo
+- **Acceso:** me das un usuario administrador en WordPress y aceptas una solicitud de colaborador en Shopify. Para el DNS, me das acceso a tu proveedor o te paso la lista exacta de registros y tú la aplicas. Nunca necesito tu contraseña.
+- **Agencias:** trabajo dentro de la cuenta de tu cliente, no lo contacto a menos que me lo pidas, y tú le entregas un documento como esta página con tu nombre.
+- **Respuesta:** contesto en menos de 24 horas, en español o en inglés. Mi jornada coincide con el horario de oficina de Estados Unidos.
+
+Migro tu tienda de WooCommerce a Shopify por 300 US$, precio fijo, con catálogos de hasta 200 productos: productos, clientes, pedidos históricos, páginas, blog, todas las redirecciones con su reporte y el cambio de dominio. Escríbeme a [hola@ivanaguirre.dev](mailto:hola@ivanaguirre.dev?subject=Migración) con "Migración" en el asunto y el link de tu tienda.
