@@ -1,0 +1,11 @@
+woo_order,woo_date,woo_status,woo_total,shopify_order,shopify_date,financial,fulfillment,shopify_total,customer,match
+57,2026-06-15,completed,63.00,#1001,2026-06-15,PAID,FULFILLED,63.0,ana.ruiz@example.com,yes
+58,2026-07-10,completed,40.00,#1002,2026-07-10,PAID,FULFILLED,40.0,ben.carter@example.com,yes
+59,2026-07-25,completed,45.00,#1003,2026-07-25,PAID,FULFILLED,45.0,chloe.nguyen@example.com,yes
+60,2026-08-14,completed,106.00,#1004,2026-08-14,PAID,FULFILLED,106.0,ana.ruiz@example.com,yes
+61,2026-08-29,completed,54.00,#1005,2026-08-29,PAID,FULFILLED,54.0,diego.marin@example.com,yes
+62,2026-10-01,processing,100.00,#1006,2026-10-01,PAID,UNFULFILLED,100.0,emma.walsh@example.com,yes
+63,2026-09-13,completed,50.00,#1007,2026-09-13,PAID,FULFILLED,50.0,farah.khan@example.com,yes
+64,2026-09-18,refunded,20.00,#1008,2026-09-18,REFUNDED,UNFULFILLED,20.0,gus.olsen@example.com,yes
+66,2026-09-23,completed,17.00,#1009,2026-09-23,PAID,FULFILLED,17.0,hana.sato@example.com,yes
+67,2026-10-08,on-hold,45.00,#1010,2026-10-08,PENDING,UNFULFILLED,45.0,chloe.nguyen@example.com,yes
