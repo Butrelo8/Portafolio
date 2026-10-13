@@ -68,7 +68,7 @@ Test profiles on aliases of my own email address, in the development store, usin
 ![Klaviyo post-purchase flow: triggered by Placed Order, a 1-day wait, post-purchase email 1 (thank you) with 3 waiting, a 10-day wait and post-purchase email 2 (review).](../../../assets/klaviyo/08-postpurchase-flow.png)
 
 ## 6. Next steps on a real store
-- Measuring clicks and attributed orders, not just opens (Apple Mail inflates opens).
+- Measure clicks and attributed orders, not just opens (Apple Mail inflates opens).
 - Browse-abandonment flows (viewed a product, didn't buy), win-back for lapsed customers, and list cleanup.
 - SMS or WhatsApp only with explicit consent.
-- Moving DMARC to `p=quarantine` once the reports are clean.
+- Move DMARC to `p=quarantine` once the reports are clean.
