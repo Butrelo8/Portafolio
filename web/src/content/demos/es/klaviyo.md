@@ -70,3 +70,10 @@ Perfiles de prueba con alias de mi propio correo, en la tienda de desarrollo y c
 - Flujos de producto visto sin compra, recuperación de clientes inactivos y limpieza de la lista.
 - SMS o WhatsApp solo con consentimiento explícito.
 - DMARC a `p=quarantine` cuando los reportes estén limpios.
+
+## 7. Lo que se lleva tu tienda
+- **Correos desde tu propio dominio**, firmados con SPF y DKIM, en lugar de un remitente compartido. Eso ayuda a que lleguen a la bandeja de entrada y no a spam.
+- **Bienvenida, carrito abandonado y poscompra funcionando solos**, con la voz de tu marca, y quien compra deja de recibir recordatorios. Las confirmaciones de pedido y de envío siguen saliendo de Shopify.
+- **Segmentos listos para campañas:** compradores recurrentes, suscritos que nunca han comprado y clientes de alto valor.
+
+Lo armo en la cuenta de Klaviyo de tu tienda por 150 US$, precio fijo: los tres flujos, los segmentos y la revisión del dominio de envío. Si eres agencia, lo hago en la cuenta de tu cliente y con tu nombre. [Escríbeme](/#contact) y cuéntame qué tienes funcionando hoy.

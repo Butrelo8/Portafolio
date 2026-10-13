@@ -72,3 +72,10 @@ Test profiles on aliases of my own email address, in the development store, usin
 - Browse-abandonment flows (viewed a product, didn't buy), win-back for lapsed customers, and list cleanup.
 - SMS or WhatsApp only with explicit consent.
 - Move DMARC to `p=quarantine` once the reports are clean.
+
+## 7. What your store gets
+- **Email sent from your own domain**, signed with SPF and DKIM instead of a shared sender, which helps it reach the inbox rather than spam.
+- **Welcome, abandoned-cart and post-purchase flows that run on their own**, in your brand's voice, and stop reminding people once they buy. Shopify still sends the order and shipping notifications.
+- **Segments ready for campaigns:** repeat buyers, subscribers who never bought, and high-value customers.
+
+I'll set it up in your store's Klaviyo account for a flat $150 USD: all three flows, the segments, and a sending-domain check. Agencies: I can build it white-label in your client's account. [Get in touch](/en/#contact) and tell me what's running today.
