@@ -28,7 +28,12 @@ Everything through Shopify's API with my own scripts: they can run again without
 | 8 customers | 8 customers | Name, email, phone and address |
 | 10 orders | 10 historical orders | Original date, payment and fulfillment status, total and customer, with no confirmation emails sent and no inventory touched. Compared one by one with WooCommerce: 0 differences |
 
+![The Shopify admin product list: the 17 migrated products, all active, vendor Sotavento.](../../../assets/migracion/03-admin-products.jpg)
+![The Hoodie product in the Shopify admin: 7 migrated images, the Hoodies collection and the Color (Blue, Red, Green) and Logo (Yes, No) options.](../../../assets/migracion/04-admin-hoodie.jpg)
+
 Shopify numbers orders from #1001; the WooCommerce number stays as a tag (`woo-order-57`) so it can be searched. One order for the "any size" tee matches none of the new variants, so it stays as a line with its original title, SKU and price: order history doesn't get rewritten.
+
+![The Shopify admin order list: #1001 to #1010 with their original dates, customers, totals, payment status (paid, refunded, pending), fulfillment status and each one's woo-order tag.](../../../assets/migracion/05-admin-orders.jpg)
 
 To read and create customers through the API, Shopify requires the app to have approved access to protected customer data. Here I found that out halfway through; on a real store it's sorted before migration day.
 
@@ -61,6 +66,8 @@ A script requests each of the 38 old URLs from the Shopify store, follows every 
 | Shopify's own route (`/shop/`, `/cart/`, `/checkout/`): Shopify serves the page, the redirect doesn't apply | 3 |
 | Correct 301, title changed on purpose: WordPress appends "Archives" to categories ("Hoodies Archives"); on Shopify it's "Hoodies" | 6 |
 | **404** | **0** |
+
+![The same page on Shopify, where the old URL /product/hoodie/ lands through a 301: "Hoodie", $45, Blue, Red and Green color buttons, Yes and No logo buttons, and the migrated image gallery.](../../../assets/migracion/02-shopify-product.png)
 
 Full report, URL by URL: [download `reporte-migracion.csv`](/demo/migracion/reporte-migracion.csv).
 

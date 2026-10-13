@@ -28,7 +28,12 @@ Todo por la API de Shopify con scripts propios: se puede correr otra vez sin dup
 | 8 clientes | 8 clientes | Nombre, correo, teléfono y dirección |
 | 10 pedidos | 10 pedidos históricos | Fecha, estado de pago y de envío, total y cliente originales, sin mandar correos de confirmación ni tocar inventario. Comparados uno por uno con WooCommerce: 0 diferencias |
 
+![Lista de productos en el panel de Shopify: los 17 productos migrados, todos activos, proveedor Sotavento.](../../../assets/migracion/03-admin-products.jpg)
+![El producto Hoodie en el panel de Shopify: 7 imágenes migradas, colección Hoodies y las opciones Color (Blue, Red, Green) y Logo (Yes, No).](../../../assets/migracion/04-admin-hoodie.jpg)
+
 Shopify numera los pedidos desde el #1001; el número de WooCommerce queda como etiqueta (`woo-order-57`) para buscarlo. Un pedido de la camiseta "cualquier talla" no corresponde a ninguna de las variantes nuevas, así que queda como línea con su título, SKU y precio originales: el historial no se reescribe.
+
+![Lista de pedidos en el panel de Shopify: #1001 a #1010 con sus fechas originales, clientes, totales, estados de pago (pagado, reembolsado, pendiente) y de preparación, y la etiqueta woo-order de cada uno.](../../../assets/migracion/05-admin-orders.jpg)
 
 Para leer y crear clientes por API, Shopify exige que la app tenga aprobado el acceso a datos protegidos de clientes. Aquí lo descubrí a medio camino; con una tienda real se resuelve antes del día de la migración.
 
@@ -61,6 +66,8 @@ Un script pide cada una de las 38 URLs viejas a la tienda de Shopify, sigue cada
 | Ruta propia de Shopify (`/shop/`, `/cart/`, `/checkout/`): Shopify responde la página, la redirección no aplica | 3 |
 | 301 correcta, título cambiado a propósito: WordPress agrega "Archives" a las categorías ("Hoodies Archives"); en Shopify queda "Hoodies" | 6 |
 | **404** | **0** |
+
+![La misma página en Shopify, a la que llega la URL vieja /product/hoodie/ con una 301: «Hoodie», 45 US$, botones de color Blue, Red y Green y de logo Yes y No, y la galería de imágenes migrada.](../../../assets/migracion/02-shopify-product.png)
 
 Reporte completo, URL por URL: [descargar `reporte-migracion.csv`](/demo/migracion/reporte-migracion.csv).
 
