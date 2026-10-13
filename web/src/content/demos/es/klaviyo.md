@@ -83,4 +83,4 @@ Perfiles de prueba con alias de mi propio correo, en la tienda de desarrollo y c
 - **Agencias:** trabajo dentro de la cuenta de tu cliente, no lo contacto a menos que me lo pidas, y tú le entregas un documento como esta página con tu nombre.
 - **Respuesta:** contesto en menos de 24 horas, en español o en inglés. Mi jornada coincide con el horario de oficina de Estados Unidos.
 
-Lo armo en la cuenta de Klaviyo de tu tienda por 150 US$, precio fijo: los tres flujos, los segmentos y la revisión del dominio de envío. Si eres agencia, lo hago en la cuenta de tu cliente y con tu nombre. Escríbeme a [hola@ivanaguirre.dev](mailto:hola@ivanaguirre.dev?subject=Klaviyo) con "Klaviyo" en el asunto y cuéntame qué tienes funcionando hoy; te contesto en menos de 24 horas.
+Lo armo en la cuenta de Klaviyo de tu tienda por 150 US$, precio fijo: los tres flujos, los segmentos y la revisión del dominio de envío. Escríbeme a [hola@ivanaguirre.dev](mailto:hola@ivanaguirre.dev?subject=Klaviyo) con "Klaviyo" en el asunto y cuéntame qué tienes funcionando hoy.

@@ -85,4 +85,4 @@ Test profiles on aliases of my own email address, in the development store, usin
 - **Agencies:** I work inside your client's account, never contact them unless you ask, and you hand them a write-up like this page under your name.
 - **Replies:** within 24 hours, in English or Spanish. My working day overlaps US business hours.
 
-I'll set it up in your store's Klaviyo account for a flat $150 USD: all three flows, the segments, and a sending-domain check. If you're an agency, I build it in your client's account, under your name. Email me at [hola@ivanaguirre.dev](mailto:hola@ivanaguirre.dev?subject=Klaviyo) with "Klaviyo" in the subject and tell me what's running today. I reply within 24 hours.
+I'll set it up in your store's Klaviyo account for a flat $150 USD: all three flows, the segments, and a sending-domain check. Email me at [hola@ivanaguirre.dev](mailto:hola@ivanaguirre.dev?subject=Klaviyo) with "Klaviyo" in the subject and tell me what's running today.
