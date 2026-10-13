@@ -11,7 +11,7 @@ The store and its emails are in Spanish, so names and subject lines are quoted t
 - **Own domain:** `ivanaguirre.dev` (Cloudflare).
 - **Klaviyo sending domain:** `send.ivanaguirre.dev`, delegated to Klaviyo via NS records; Klaviyo's SPF and DKIM sit on my domain, not on theirs. Status: verified and active.
 
-![Klaviyo settings, Domains section: send.ivanaguirre.dev as the sending domain, status Active, type Marketing.](../../../assets/klaviyo/02-sending-domain.png)
+![Klaviyo settings, Domains section: send.ivanaguirre.dev as the sending domain, status Active, type Marketing.](../../../assets/klaviyo/en/02-sending-domain.png)
 
 - **DMARC:** `p=none` published to start collecting reports; once the reports come back clean, the next step is `p=quarantine`.
 
@@ -25,12 +25,12 @@ The store and its emails are in Spanish, so names and subject lines are quoted t
 - **Trigger:** subscribes to "Lista de email" (the email list). **Filter:** has placed no order since entering the flow. Anyone who buys drops out of the series.
 - **Email 1 · day 0:** a welcome and what the store offers. **Subject-line A/B test:** A "Bienvenido a Altitud 🏂 Tu temporada empieza aquí" ("Welcome to Altitud 🏂 Your season starts here", brand-led) vs. B "Tu primera bajada empieza con Altitud 🏂" ("Your first run starts with Altitud 🏂", the rider's benefit); open rate picks the winner.
 
-![Klaviyo A/B test results for welcome email 1: variants A and B with their subject lines, each at about 50% of sends, test in progress.](../../../assets/klaviyo/04-ab-test.png)
+![Klaviyo A/B test results for welcome email 1: variants A and B with their subject lines, each at about 50% of sends, test in progress.](../../../assets/klaviyo/en/04-ab-test.png)
 
 - **Wait 3 days → Email 2:** "Cómo elegir tu tabla" ("How to choose your board"): three criteria (size, flex, terrain) right in the email, instead of linking out to content the store doesn't have.
 - **Wait 4 days → Email 3:** best sellers from the last 90 days, in a dynamic product block pulled from the Shopify catalog.
 
-![Klaviyo welcome flow: triggered by subscribing to Lista de email, welcome email 1 on day 0 with 2 delivered, a 3-day wait, welcome email 2 with 2 waiting, a 4-day wait and welcome email 3.](../../../assets/klaviyo/03-welcome-flow.png)
+![Klaviyo welcome flow, last 30 days: triggered by subscribing to Lista de email, welcome email 1 on day 0 with 2 delivered, a 3-day wait, then welcome email 2 with 2 waiting.](../../../assets/klaviyo/en/03-welcome-flow.png)
 ![Preview of welcome email 3: the headline "Los favoritos de la comunidad" (community favorites) and three boards from the catalog, each with a price and a Comprar (Buy) button.](../../../assets/klaviyo/05-email3.png)
 
 ### Abandoned cart (live)
@@ -39,7 +39,7 @@ The store and its emails are in Spanish, so names and subject lines are quoted t
 - **Wait 1 day → C2:** the cart again and, below it, the season's most-ordered products. (In the preview the cart block is empty because there's no real event behind it; in a real send the products show up between the two buttons.)
 - I removed the template's SMS branch: the store has no SMS consent set up. I also removed the "free shipping on orders over $50" banner: the store has no such policy.
 
-![Klaviyo abandoned-cart flow: triggered by Started Checkout, a 4-hour wait, cart email 1 with 3 waiting, a 1-day wait and cart email 2.](../../../assets/klaviyo/06-cart-flow.png)
+![Klaviyo abandoned-cart flow, last 30 days: triggered by Started Checkout, a 4-hour wait, cart email 1 with 1 delivered and 2 skipped, a 1-day wait, then cart email 2.](../../../assets/klaviyo/en/06-cart-flow.png)
 ![Preview of cart email C2: the headline "Tu carrito te espera" (your cart is waiting), a button back to the cart, a "Lo más pedido de la temporada" (most ordered this season) block with three products, and the contact line.](../../../assets/klaviyo/07-cart-email.png)
 
 ### Post-purchase (live)
@@ -51,7 +51,7 @@ The store and its emails are in Spanish, so names and subject lines are quoted t
 - **Subscribed, never purchased:** on the list with no orders. Right now: 6 (my two test profiles, my own address and 3 sample customers that Shopify creates in development stores).
 - **High-value customers:** $800 or more spent in total (the sum of everything they've ordered). In this account Klaviyo doesn't allow filtering on an order's total and doesn't offer customer lifetime value, so the segment uses the sum of ordered products. Right now: 2 profiles ($1,299.95 and $1,025).
 
-![Klaviyo lists and segments: S3 Clientes de alto valor (high-value customers) with 2 members, S2 Suscritos sin compra (subscribed, no purchase) with 6 and S1 Compradores recurrentes (repeat buyers) with 1, above the default segments.](../../../assets/klaviyo/09-segments.png)
+![Klaviyo lists and segments: S3 Clientes de alto valor (high-value customers) with 2 members, S2 Suscritos sin compra (subscribed, no purchase) with 6 and S1 Compradores recurrentes (repeat buyers) with 1, above the default segments.](../../../assets/klaviyo/en/09-segments.png)
 
 ## 4. How I wrote the emails
 - Nothing the store can't deliver on: no discounts, no free shipping, no content that doesn't exist.
@@ -65,7 +65,7 @@ Test profiles on aliases of my own email address, in the development store, usin
 - **cliente2** starts checkout on a board and abandons it, which puts them in the cart flow.
 - **cliente3** places 2 orders and **cliente4** one for $1,025. They enter post-purchase (3 waiting for day 1) and the repeat-buyer and high-value segments. Their checkouts also entered the cart flow; the "no orders" filter is there to pull them out before anything sends, because they already bought.
 
-![Klaviyo post-purchase flow: triggered by Placed Order, a 1-day wait, post-purchase email 1 (thank you) with 3 waiting, a 10-day wait and post-purchase email 2 (review).](../../../assets/klaviyo/08-postpurchase-flow.png)
+![Klaviyo post-purchase flow, last 30 days: triggered by Placed Order, a 1-day wait, post-purchase email 1 (thank you) with 2 delivered and 1 skipped, a 10-day wait, then post-purchase email 2 (review).](../../../assets/klaviyo/en/08-postpurchase-flow.png)
 
 ## 6. Next steps on a real store
 - Measure clicks and attributed orders, not just opens (Apple Mail inflates opens).

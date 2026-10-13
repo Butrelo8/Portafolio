@@ -3,7 +3,7 @@ export const prerender = true;
 import { getEntry, render } from 'astro:content';
 import { getImage } from 'astro:assets';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import abTest from '../../../assets/klaviyo/04-ab-test.png';
+import abTest from '../../../assets/klaviyo/en/04-ab-test.png';
 
 const demo = await getEntry('demos', 'en/klaviyo');
 if (!demo) throw new Error('demos/en/klaviyo.md is missing');
