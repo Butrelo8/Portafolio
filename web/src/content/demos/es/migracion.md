@@ -15,7 +15,7 @@ Soy Ivan, desarrollador web en Veracruz, México. Esta es una tienda WooCommerce
 - **18 productos** (2 con variantes, uno agrupado y uno externo), **6 categorías**, **4 artículos de blog**, **4 páginas**, **8 clientes** y **10 pedidos** con estados distintos (completado, en proceso, en espera, reembolsado). Cada producto, página y artículo tiene su meta descripción.
 - El sitemap de Yoast lista **38 URLs**. Esa es la lista que se tiene que conservar.
 
-![Página de producto «Hoodie» en la tienda WooCommerce de origen: selector de color y logo, precio de 42 a 45 US$, botón Añadir al carrito y categoría Hoodies.](../../../assets/migracion/01-woo-product.png)
+![Página de producto «Hoodie» en la tienda WooCommerce de origen: selector de color y logo, precio de 42 a 45 US$, botón Add to cart y categoría Hoodies.](../../../assets/migracion/01-woo-product.png)
 
 ## 3. Qué se movió y cómo
 
@@ -34,13 +34,14 @@ Todo por la API de Shopify con scripts propios: se puede correr otra vez sin dup
 | 10 pedidos | 10 pedidos históricos | Fecha, estado de pago y de envío, total y cliente originales, sin mandar correos de confirmación ni tocar inventario. Comparados uno por uno con WooCommerce: 0 diferencias |
 
 ![Lista de productos en el panel de Shopify: los 17 productos migrados, todos activos, proveedor Sotavento.](../../../assets/migracion/03-admin-products.jpg)
+
 ![El producto Hoodie en el panel de Shopify: 7 imágenes migradas, colección Hoodies y las opciones Color (Blue, Red, Green) y Logo (Yes, No).](../../../assets/migracion/04-admin-hoodie.jpg)
 
 Shopify numera los pedidos desde el #1001; el número de WooCommerce queda como etiqueta (`woo-order-57`) para buscarlo. Un pedido de la camiseta "cualquier talla" no corresponde a ninguna de las variantes nuevas, así que queda como línea con su título, SKU y precio originales: el historial no se reescribe.
 
 ![Lista de pedidos en el panel de Shopify: #1001 a #1010 con sus fechas originales, clientes, totales, estados de pago (pagado, reembolsado, pendiente) y de preparación, y la etiqueta woo-order de cada uno.](../../../assets/migracion/05-admin-orders.jpg)
 
-Para leer y crear clientes por API, Shopify pide que la app tenga aprobado el acceso a datos protegidos de clientes. Con una tienda real, ese permiso se tramita antes del día de la migración.
+Shopify solo deja leer y crear clientes por API a una app instalada como app personalizada de la tienda. Con una tienda real, eso queda listo antes del día de la migración.
 
 **No se mueve:** contraseñas de clientes (Shopify no importa contraseñas; cada cliente recibe una invitación para activar su cuenta), datos de pago, reseñas y cupones. Con una tienda real, cada uno de estos se acuerda antes de empezar.
 
