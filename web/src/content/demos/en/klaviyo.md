@@ -63,7 +63,7 @@ The store and its emails are in Spanish, so names and subject lines are quoted t
 Test profiles on aliases of my own email address, in the development store, using Shopify's test payment gateway:
 - **cliente1 and cliente2** subscribe to the list (the store's theme has no signup form, so I added them from Klaviyo with consent checked). They got welcome email 1; email 2 is waiting for their day 3.
 - **cliente2** starts checkout on a board and abandons it, which puts them in the cart flow.
-- **cliente3** places 2 orders and **cliente4** one for $1,025. They enter post-purchase (3 waiting for day 1) and the repeat-buyer and high-value segments. Their checkouts also entered the cart flow; the "no orders" filter is there to pull them out before anything sends, because they already bought.
+- **cliente3** places 2 orders and **cliente4** one for $1,025. They enter post-purchase (2 thank-you emails delivered, 1 skipped) and the repeat-buyer and high-value segments. Their checkouts also entered the cart flow; the "no orders" filter is there to pull them out before anything sends, because they already bought.
 
 ![Klaviyo post-purchase flow, last 30 days: triggered by Placed Order, a 1-day wait, post-purchase email 1 (thank you) with 2 delivered and 1 skipped, a 10-day wait, then post-purchase email 2 (review).](../../../assets/klaviyo/en/08-postpurchase-flow.png)
 
