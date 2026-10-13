@@ -2,11 +2,16 @@
 title: "Klaviyo: a documented demo · Altitud Snowboards"
 description: "A Klaviyo account connected to a Shopify development store: deliverability, flows, segments and copy."
 ---
-**What this is:** a Klaviyo account connected to a Shopify development store ("Altitud Snowboards", stocked with 17 test snowboards). I set it up to show how I work: deliverability, flows, segments and copy. There are no real customers, so there are no metrics to show off; what you see is how it's built and why.
+I'm Ivan, a web developer in Veracruz, Mexico. This is a Klaviyo account connected to a Shopify development store ("Altitud Snowboards", stocked with 17 test snowboards) that I set up to show how I work: deliverability, flows, segments and copy. The store has no real customers; what you see is how it's built and why.
 
-The store and its emails are in Spanish, so names and subject lines are quoted the way they appear in the account, with an English gloss.
+I write emails in English or Spanish. This store happens to be Spanish, so names and subject lines are quoted the way they appear in the account, with an English gloss.
 
-## 1. Deliverability
+## 1. What this does for a store
+- **Email sent from your own domain**, signed with SPF and DKIM instead of a shared sender, which helps it reach the inbox rather than spam.
+- **Welcome, abandoned-cart and post-purchase flows that run on their own**, in your brand's voice, and stop reminding people once they buy. Shopify still sends the order and shipping notifications.
+- **Segments ready for campaigns:** repeat buyers, subscribers who never bought, and high-value customers.
+
+## 2. Deliverability
 
 - **Own domain:** `ivanaguirre.dev` (Cloudflare).
 - **Klaviyo sending domain:** `send.ivanaguirre.dev`, delegated to Klaviyo via NS records; Klaviyo's SPF and DKIM sit on my domain, not on theirs. Status: verified and active.
@@ -19,7 +24,7 @@ The store and its emails are in Spanish, so names and subject lines are quoted t
 
 - **Sender:** Altitud Snowboards `<hola@ivanaguirre.dev>`, a real mailbox (Cloudflare Email Routing): if a customer replies, someone reads it.
 
-## 2. Flows
+## 3. Flows
 
 ### Welcome series (live)
 - **Trigger:** subscribes to "Lista de email" (the email list). **Filter:** has placed no order since entering the flow. Anyone who buys drops out of the series.
@@ -46,20 +51,22 @@ The store and its emails are in Spanish, so names and subject lines are quoted t
 - **Trigger:** Placed Order. **Wait 1 day → P1:** a thank-you and who to write to if something goes wrong.
 - **Wait 10 days → P2:** asks for their feedback, as a reply to the email (enough time to receive the board and ride it).
 
-## 3. Segments
+## 4. Segments
+Three segments any store uses in its first campaign:
+
 - **Repeat buyers:** 2 or more orders, all time. Right now: 1 test profile.
 - **Subscribed, never purchased:** on the list with no orders. Right now: 6 (my two test profiles, my own address and 3 sample customers that Shopify creates in development stores).
 - **High-value customers:** $800 or more spent in total (the sum of everything they've ordered). In this account Klaviyo doesn't allow filtering on an order's total and doesn't offer customer lifetime value, so the segment uses the sum of ordered products. Right now: 2 profiles ($1,299.95 and $1,025).
 
 ![Klaviyo lists and segments: S3 Clientes de alto valor (high-value customers) with 2 members, S2 Suscritos sin compra (subscribed, no purchase) with 6 and S1 Compradores recurrentes (repeat buyers) with 1, above the default segments.](../../../assets/klaviyo/en/09-segments.png)
 
-## 4. How I wrote the emails
+## 5. How I wrote the emails
 - Nothing the store can't deliver on: no discounts, no free shipping, no content that doesn't exist.
 - Personalization with a fallback: `{{ first_name|default:'rider' }}`, so nobody gets a "Hola ," with no name after it.
 - One emoji per subject line at most. Every email invites a reply: the sender is a real mailbox.
 - A footer with the contact line, plus the unsubscribe and postal-address block the law requires. I translated it in the welcome and cart emails; in post-purchase the template uses fixed Klaviyo labels that stay in English.
 
-## 5. Testing
+## 6. Testing
 Test profiles on aliases of my own email address, in the development store, using Shopify's test payment gateway:
 - **cliente1 and cliente2** subscribe to the list (the store's theme has no signup form, so I added them from Klaviyo with consent checked). They got welcome email 1; email 2 is waiting for their day 3.
 - **cliente2** starts checkout on a board and abandons it, which puts them in the cart flow.
@@ -67,15 +74,15 @@ Test profiles on aliases of my own email address, in the development store, usin
 
 ![Klaviyo post-purchase flow, last 30 days: triggered by Placed Order, a 1-day wait, post-purchase email 1 (thank you) with 2 delivered and 1 skipped, a 10-day wait, then post-purchase email 2 (review).](../../../assets/klaviyo/en/08-postpurchase-flow.png)
 
-## 6. Next steps on a real store
+## 7. Next steps on a real store
 - Measure clicks and attributed orders, not just opens (Apple Mail inflates opens).
 - Browse-abandonment flows (viewed a product, didn't buy), win-back for lapsed customers, and list cleanup.
 - SMS or WhatsApp only with explicit consent.
 - Move DMARC to `p=quarantine` once the reports are clean.
 
-## 7. What your store gets
-- **Email sent from your own domain**, signed with SPF and DKIM instead of a shared sender, which helps it reach the inbox rather than spam.
-- **Welcome, abandoned-cart and post-purchase flows that run on their own**, in your brand's voice, and stop reminding people once they buy. Shopify still sends the order and shipping notifications.
-- **Segments ready for campaigns:** repeat buyers, subscribers who never bought, and high-value customers.
+## 8. Working with me
+- **Access:** invite me as a user in Klaviyo (and, if needed, accept a Shopify collaborator request). I never need your password.
+- **Agencies:** I work inside your client's account, never contact them unless you ask, and you hand them a write-up like this page under your name.
+- **Replies:** within 24 hours, in English or Spanish. My working day overlaps US business hours.
 
-I'll set it up in your store's Klaviyo account for a flat $150 USD: all three flows, the segments, and a sending-domain check. Agencies: I can build it white-label in your client's account. [Get in touch](/en/#contact) and tell me what's running today.
+I'll set it up in your store's Klaviyo account for a flat $150 USD: all three flows, the segments, and a sending-domain check. If you're an agency, I build it in your client's account, under your name. Email me at [hola@ivanaguirre.dev](mailto:hola@ivanaguirre.dev?subject=Klaviyo) with "Klaviyo" in the subject and tell me what's running today. I reply within 24 hours.

@@ -2,9 +2,14 @@
 title: "Klaviyo: demo documentada · Altitud Snowboards"
 description: "Cuenta de Klaviyo conectada a una tienda de desarrollo de Shopify: entregabilidad, flujos, segmentos y copy."
 ---
-**Qué es:** una cuenta de Klaviyo conectada a una tienda de desarrollo de Shopify ("Altitud Snowboards", 17 tablas de datos de prueba). La monté para mostrar cómo trabajo: entregabilidad, flujos, segmentos y copy. No hay clientes reales, así que no hay métricas que presumir; lo que se ve es cómo está armado y por qué.
+Soy Ivan, desarrollador web en Veracruz, México. Esta es una cuenta de Klaviyo conectada a una tienda de desarrollo de Shopify ("Altitud Snowboards", 17 tablas de datos de prueba) que monté para mostrar cómo trabajo: entregabilidad, flujos, segmentos y copy. La tienda no tiene clientes reales; lo que se ve es cómo está armado y por qué.
 
-## 1. Entregabilidad
+## 1. Para qué le sirve a una tienda
+- **Correos desde tu propio dominio**, firmados con SPF y DKIM, en lugar de un remitente compartido. Eso ayuda a que lleguen a la bandeja de entrada y no a spam.
+- **Bienvenida, carrito abandonado y poscompra funcionando solos**, con la voz de tu marca, y quien compra deja de recibir recordatorios. Las confirmaciones de pedido y de envío siguen saliendo de Shopify.
+- **Segmentos listos para campañas:** compradores recurrentes, suscritos que nunca han comprado y clientes de alto valor.
+
+## 2. Entregabilidad
 
 - **Dominio propio:** `ivanaguirre.dev` (Cloudflare).
 - **Dominio de envío en Klaviyo:** `send.ivanaguirre.dev`, delegado a Klaviyo por NS; el SPF y el DKIM de Klaviyo quedan en mi dominio, no en el suyo. Estado: verificado y activo.
@@ -17,7 +22,7 @@ description: "Cuenta de Klaviyo conectada a una tienda de desarrollo de Shopify:
 
 - **Remitente:** Altitud Snowboards `<hola@ivanaguirre.dev>`, un buzón real (Cloudflare Email Routing): si el cliente responde, alguien lo lee.
 
-## 2. Flujos
+## 3. Flujos
 
 ### Serie de bienvenida (activo)
 - **Disparador:** se suscribe a "Lista de email". **Filtro:** no ha hecho ningún pedido desde que entró al flujo. Quien compra sale de la serie.
@@ -44,20 +49,22 @@ description: "Cuenta de Klaviyo conectada a una tienda de desarrollo de Shopify:
 - **Disparador:** pedido realizado. **Espera 1 día → P1:** gracias y a quién escribir si algo sale mal.
 - **Espera 10 días → P2:** pide su opinión respondiendo el correo (tiempo para recibir la tabla y usarla).
 
-## 3. Segmentos
+## 4. Segmentos
+Tres segmentos que cualquier tienda usa en su primera campaña:
+
 - **Compradores recurrentes:** 2 o más pedidos, en todo el historial. Hoy: 1 perfil de prueba.
 - **Suscritos sin compra:** en la lista y sin ningún pedido. Hoy: 6 (mis dos perfiles de prueba, mi correo y 3 clientes de ejemplo que crea Shopify en tiendas de desarrollo).
 - **Clientes de alto valor:** han gastado 800 US$ o más en total (suma de lo que han pedido). En esta cuenta Klaviyo no deja filtrar por el total de un pedido ni ofrece valor de vida del cliente, así que el segmento usa la suma de productos pedidos. Hoy: 2 perfiles (1,299.95 y 1,025 US$).
 
 ![Listas y segmentos en Klaviyo: S3 Clientes de alto valor con 2 miembros, S2 Suscritos sin compra con 6 y S1 Compradores recurrentes con 1, sobre los segmentos predeterminados.](../../../assets/klaviyo/09-segments.png)
 
-## 4. Cómo escribí los correos
+## 5. Cómo escribí los correos
 - Nada que la tienda no cumpla: ni descuentos, ni envío gratis, ni contenido inexistente.
 - Personalización con respaldo: `{{ first_name|default:'rider' }}`, así nadie recibe "Hola ,".
 - Máximo un emoji por asunto. Cada correo invita a responder: el remitente es un buzón real.
 - Pie con la línea de contacto y el bloque de baja y dirección que exige la ley. En bienvenida y carrito lo traduje; en poscompra la plantilla usa etiquetas fijas de Klaviyo que quedan en inglés.
 
-## 5. Pruebas
+## 6. Pruebas
 Perfiles de prueba con alias de mi propio correo, en la tienda de desarrollo y con la pasarela de prueba de Shopify:
 - **cliente1 y cliente2** se suscriben a la lista (el tema de la tienda no trae formulario de suscripción, así que los agregué desde Klaviyo con el consentimiento marcado). Recibieron el email 1 de bienvenida; el email 2 está en espera de su día 3.
 - **cliente2** inicia el pago de una tabla y lo deja. Entra al flujo de carrito.
@@ -65,15 +72,15 @@ Perfiles de prueba con alias de mi propio correo, en la tienda de desarrollo y c
 
 ![Flujo poscompra en Klaviyo: activador por pedido realizado, espera de 1 día, Poscompra 1 · Gracias con 3 en espera, espera de 10 días y Poscompra 2 · Reseña.](../../../assets/klaviyo/08-postpurchase-flow.png)
 
-## 6. Con una tienda real, lo siguiente sería
+## 7. Con una tienda real, lo siguiente sería
 - Medir clics y pedidos atribuidos, no solo aperturas (Apple Mail infla las aperturas).
 - Flujos de producto visto sin compra, recuperación de clientes inactivos y limpieza de la lista.
 - SMS o WhatsApp solo con consentimiento explícito.
 - DMARC a `p=quarantine` cuando los reportes estén limpios.
 
-## 7. Lo que se lleva tu tienda
-- **Correos desde tu propio dominio**, firmados con SPF y DKIM, en lugar de un remitente compartido. Eso ayuda a que lleguen a la bandeja de entrada y no a spam.
-- **Bienvenida, carrito abandonado y poscompra funcionando solos**, con la voz de tu marca, y quien compra deja de recibir recordatorios. Las confirmaciones de pedido y de envío siguen saliendo de Shopify.
-- **Segmentos listos para campañas:** compradores recurrentes, suscritos que nunca han comprado y clientes de alto valor.
+## 8. Cómo es trabajar conmigo
+- **Acceso:** me invitas como usuario en Klaviyo (y, si hace falta, aceptas una solicitud de colaborador en Shopify). Nunca necesito tu contraseña.
+- **Agencias:** trabajo dentro de la cuenta de tu cliente, no lo contacto a menos que me lo pidas, y tú le entregas un documento como esta página con tu nombre.
+- **Respuesta:** contesto en menos de 24 horas, en español o en inglés. Mi jornada coincide con el horario de oficina de Estados Unidos.
 
-Lo armo en la cuenta de Klaviyo de tu tienda por 150 US$, precio fijo: los tres flujos, los segmentos y la revisión del dominio de envío. Si eres agencia, lo hago en la cuenta de tu cliente y con tu nombre. [Escríbeme](/#contact) y cuéntame qué tienes funcionando hoy.
+Lo armo en la cuenta de Klaviyo de tu tienda por 150 US$, precio fijo: los tres flujos, los segmentos y la revisión del dominio de envío. Si eres agencia, lo hago en la cuenta de tu cliente y con tu nombre. Escríbeme a [hola@ivanaguirre.dev](mailto:hola@ivanaguirre.dev?subject=Klaviyo) con "Klaviyo" en el asunto y cuéntame qué tienes funcionando hoy; te contesto en menos de 24 horas.
