@@ -25,8 +25,12 @@ Everything through Shopify's API with my own scripts, so it can be repeated, rev
 | 6 categories | 6 collections | With their meta descriptions |
 | 22 images | Uploaded to Shopify | Never hot-linked to `wp-content`: the old server gets switched off |
 | 4 pages, 4 posts | Pages and a "News" blog | Original date and meta description |
+| 8 customers | 8 customers | Name, email, phone and address |
+| 10 orders | 10 historical orders | Original date, payment and fulfillment status, total and customer, with no confirmation emails sent and no inventory touched. Compared one by one with WooCommerce: 0 differences |
 
-<!-- CLIENTES_PEDIDOS -->
+Shopify numbers orders from #1001; the WooCommerce number stays as a tag (`woo-order-57`) so it can be searched. One order for the "any size" tee matches none of the new variants, so it stays as a line with its original title, SKU and price: order history doesn't get rewritten.
+
+To read and create customers through the API, Shopify requires the app to have approved access to protected customer data. Here I found that out halfway through; on a real store it's sorted before migration day.
 
 **Doesn't move:** customer passwords (Shopify can't import them; each customer gets an invite to activate their account), payment data, reviews and coupons. With a real store, each of these is agreed before work starts.
 

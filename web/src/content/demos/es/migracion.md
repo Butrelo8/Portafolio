@@ -25,8 +25,12 @@ Todo por la API de Shopify con scripts propios, para poder repetirlo, revisarlo 
 | 6 categorías | 6 colecciones | Con su meta descripción |
 | 22 imágenes | Subidas a Shopify | Nunca enlazadas a `wp-content`: el servidor viejo se apaga |
 | 4 páginas, 4 artículos | Páginas y blog "News" | Fecha original y meta descripción |
+| 8 clientes | 8 clientes | Nombre, correo, teléfono y dirección |
+| 10 pedidos | 10 pedidos históricos | Fecha, estado de pago y de envío, total y cliente originales, sin mandar correos de confirmación ni tocar inventario. Comparados uno por uno con WooCommerce: 0 diferencias |
 
-<!-- CLIENTES_PEDIDOS -->
+Shopify numera los pedidos desde el #1001; el número de WooCommerce queda como etiqueta (`woo-order-57`) para buscarlo. Un pedido de la camiseta "cualquier talla" no corresponde a ninguna de las variantes nuevas, así que queda como línea con su título, SKU y precio originales: el historial no se reescribe.
+
+Para leer y crear clientes por API, Shopify exige que la app tenga aprobado el acceso a datos protegidos de clientes. Aquí lo descubrí a medio camino; con una tienda real se resuelve antes del día de la migración.
 
 **No se mueve:** contraseñas de clientes (Shopify no importa contraseñas; cada cliente recibe una invitación para activar su cuenta), datos de pago, reseñas y cupones. Con una tienda real, cada uno de estos se acuerda antes de empezar.
 
