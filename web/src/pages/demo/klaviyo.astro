@@ -5,8 +5,8 @@ import { getImage } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import abTest from '../../assets/klaviyo/04-ab-test.png';
 
-const demo = await getEntry('demos', 'klaviyo');
-if (!demo) throw new Error('demos/klaviyo.md is missing');
+const demo = await getEntry('demos', 'es/klaviyo');
+if (!demo) throw new Error('demos/es/klaviyo.md is missing');
 const { Content } = await render(demo);
 
 // Link previews: JPEG, because some unfurlers still drop WebP.
