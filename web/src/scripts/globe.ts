@@ -27,9 +27,21 @@ const TURN_SECONDS = 60;
 const PITCH_MIN = -0.7;
 const PITCH_MAX = 0.9;
 const EASE_MS = 900;
+// Camera distance at rest and dollied in to a pin. 4 keeps the whole sphere inside the canvas
+// (silhouette half-angle asin(1/4) = 14.5° under the 15° half fov).
+const REST_Z = 5;
+const NEAR_Z = 4;
+// Quality tiers after GitHub's globe: below 55.5 FPS over a 2 s window, step down one tier.
+const MIN_FPS = 55.5;
+const TIERS = [
+  { dpr: 2, seg: 96 },
+  { dpr: 1.5, seg: 64 },
+  { dpr: 1, seg: 40 },
+];
 
 interface Pin {
   button: HTMLButtonElement;
+  item: HTMLButtonElement;
   local: Vector3;
   lat: number;
   lon: number;
@@ -86,38 +98,67 @@ export function mountGlobe(root: HTMLElement): void {
   const closeBtn = panel.querySelector('[data-close]') as HTMLButtonElement;
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
 
+  const list = document.querySelector('[data-places]') as HTMLElement;
   const pins: Pin[] = [...root.querySelectorAll<HTMLButtonElement>('[data-pin]')].map((button) => {
     const lat = Number(button.dataset.lat);
     const lon = Number(button.dataset.lon);
-    return { button, local: toLocal(lat, lon, 1.004), lat, lon };
+    const item = list.querySelector(`[data-place="${button.dataset.pin}"]`) as HTMLButtonElement;
+    return { button, item, local: toLocal(lat, lon, 1.004), lat, lon };
   });
 
-  // Start on the Americas, tilted a little north, like the drawing.
-  const start = facing(10, -80);
+  // Start facing the visitor's longitude, read from the timezone offset (after GitHub's globe):
+  // UTC-6 faces 90°W, the Americas, as drawn.
+  const start = facing(10, -new Date().getTimezoneOffset() / 4);
   let yaw = start.yaw;
   let pitch = 0.2;
+  let camZ = REST_Z;
   let yawVel = 0;
   let pitchVel = 0;
   let dragging = false;
-  let held = false; // a pin hovered or focused, or the panel open: no idle spin
-  let tween: { from: [number, number]; to: [number, number]; t0: number } | null = null;
+  let held = false; // a pin or place hovered or focused, or the panel open: no idle spin
+  let tween: { from: number[]; to: number[]; t0: number } | null = null;
 
-  function easeTo(lat: number, lon: number): void {
-    const target = facing(lat, lon);
-    const to: [number, number] = [yaw + wrap(target.yaw - yaw), target.pitch];
+  // Turn and dolly in one tween, like globe.gl's pointOfView({ lat, lng, altitude }, ms).
+  // pin null keeps the current turn and only moves the camera.
+  function flyTo(pin: Pin | null, z: number): void {
+    const target = pin ? facing(pin.lat, pin.lon) : { yaw, pitch };
+    const to = [yaw + wrap(target.yaw - yaw), target.pitch, z];
     yawVel = 0;
     pitchVel = 0;
     if (reduced.matches) {
-      [yaw, pitch] = to;
+      [yaw, pitch, camZ] = to;
       tween = null;
       return;
     }
-    tween = { from: [yaw, pitch], to, t0: performance.now() };
+    tween = { from: [yaw, pitch, camZ], to, t0: performance.now() };
+  }
+
+  // One place lit in both the globe and the list.
+  function mark(pin: Pin | null): void {
+    for (const p of pins) {
+      p.button.classList.toggle('is-active', p === pin);
+      p.item.classList.toggle('is-active', p === pin);
+    }
+  }
+  let previewing: Pin | null = null;
+  function preview(pin: Pin): void {
+    previewing = pin;
+    mark(pin);
+    if (!openPin) flyTo(pin, NEAR_Z);
+  }
+  function unpreview(pin: Pin): void {
+    if (previewing !== pin) return;
+    previewing = null;
+    mark(openPin);
+    if (!openPin) flyTo(null, REST_Z);
   }
 
   let openPin: Pin | null = null;
-  function open(pin: Pin): void {
+  let opener: HTMLElement | null = null;
+  function open(pin: Pin, from: HTMLElement): void {
     openPin = pin;
+    opener = from;
+    mark(pin);
     const b = pin.button.dataset;
     panelImg.src = b.img ?? '';
     panelImg.alt = b.alt ?? '';
@@ -125,20 +166,29 @@ export function mountGlobe(root: HTMLElement): void {
     panelLine.textContent = b.line ?? '';
     panel.hidden = false;
     root.parentElement?.classList.add('is-open');
-    for (const p of pins) p.button.setAttribute('aria-expanded', String(p === pin));
-    easeTo(pin.lat, pin.lon);
+    for (const p of pins) {
+      p.button.setAttribute('aria-expanded', String(p === pin));
+      p.item.setAttribute('aria-expanded', String(p === pin));
+    }
+    flyTo(pin, NEAR_Z);
     // Move focus into the panel so a screen reader reads the new content; Close returns it.
     panelTitle.focus({ preventScroll: true });
     // At 390 the panel sits below the globe, often under the fold.
-    panel.scrollIntoView({ block: 'nearest', behavior: reduced.matches ? 'auto' : 'smooth' });
+    panel.scrollIntoView({ block: 'nearest', behavior: reduced.matches ? 'instant' : 'smooth' });
   }
   function close(): void {
     if (!openPin) return;
     panel.hidden = true;
     root.parentElement?.classList.remove('is-open');
-    for (const p of pins) p.button.setAttribute('aria-expanded', 'false');
-    openPin.button.focus();
+    for (const p of pins) {
+      p.button.setAttribute('aria-expanded', 'false');
+      p.item.setAttribute('aria-expanded', 'false');
+    }
     openPin = null;
+    previewing = null;
+    mark(null);
+    flyTo(null, REST_Z);
+    opener?.focus();
   }
   closeBtn.addEventListener('click', close);
   document.addEventListener('keydown', (e) => {
@@ -147,12 +197,34 @@ export function mountGlobe(root: HTMLElement): void {
 
   let hovered = 0;
   for (const pin of pins) {
-    pin.button.addEventListener('click', () => open(pin));
-    pin.button.addEventListener('pointerenter', () => hovered++);
-    pin.button.addEventListener('pointerleave', () => hovered--);
-    pin.button.addEventListener('focus', () => {
-      if (pin.button.matches(':focus-visible')) easeTo(pin.lat, pin.lon);
+    // Pins: hover lights the list entry; keyboard focus also flies there.
+    pin.button.addEventListener('click', () => open(pin, pin.button));
+    pin.button.addEventListener('pointerenter', () => {
+      hovered++;
+      mark(pin);
     });
+    pin.button.addEventListener('pointerleave', () => {
+      hovered--;
+      mark(previewing ?? openPin);
+    });
+    pin.button.addEventListener('focus', () => {
+      if (pin.button.matches(':focus-visible')) preview(pin);
+    });
+    pin.button.addEventListener('blur', () => unpreview(pin));
+    // List (after Discovery Builders' "Choose a destination"): hover or focus flies to the pin.
+    pin.item.addEventListener('click', () => open(pin, pin.item));
+    pin.item.addEventListener('pointerenter', () => {
+      hovered++;
+      preview(pin);
+    });
+    pin.item.addEventListener('pointerleave', () => {
+      hovered--;
+      unpreview(pin);
+    });
+    pin.item.addEventListener('focus', () => {
+      if (pin.item.matches(':focus-visible')) preview(pin);
+    });
+    pin.item.addEventListener('blur', () => unpreview(pin));
   }
 
   let renderer: WebGLRenderer;
@@ -162,11 +234,9 @@ export function mountGlobe(root: HTMLElement): void {
     document.documentElement.classList.add('no-gl');
     return;
   }
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
   const scene = new Scene();
   const camera = new PerspectiveCamera(30, 1, 0.1, 20);
-  camera.position.set(0, 0, 4.6);
 
   // Soft key from the upper left, as drawn; low fill so the rim falls off without going black.
   const key = new DirectionalLight(0xffffff, 2.4);
@@ -176,12 +246,11 @@ export function mountGlobe(root: HTMLElement): void {
   const globe = new Group();
   globe.rotation.order = 'XYZ';
   scene.add(globe);
-  globe.add(
-    new Mesh(
-      new SphereGeometry(1, 96, 64),
-      new MeshStandardMaterial({ map: mapTexture(), roughness: 1, metalness: 0 }),
-    ),
+  const sphere = new Mesh(
+    new SphereGeometry(1, TIERS[0].seg, (TIERS[0].seg * 2) / 3),
+    new MeshStandardMaterial({ map: mapTexture(), roughness: 1, metalness: 0 }),
   );
+  globe.add(sphere);
   const dotGeo = new SphereGeometry(0.016, 16, 12);
   const dotMat = new MeshBasicMaterial({ color: DOT });
   for (const pin of pins) {
@@ -225,7 +294,7 @@ export function mountGlobe(root: HTMLElement): void {
     if (e.timeStamp - lastT > 80 || reduced.matches) yawVel = pitchVel = 0;
     if (Math.hypot(e.clientX - downX, e.clientY - downY) < 5) {
       const hit = nearestPin(e.clientX, e.clientY);
-      if (hit) open(hit);
+      if (hit) open(hit, hit.button);
     }
   };
   canvas.addEventListener('pointerup', release);
@@ -247,10 +316,41 @@ export function mountGlobe(root: HTMLElement): void {
   }
 
   let size = 0;
+  let tier = 0;
+  function applyTier(): void {
+    const t = TIERS[tier];
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, t.dpr));
+    renderer.setSize(size, size, false);
+    if (sphere.geometry.parameters.widthSegments !== t.seg) {
+      sphere.geometry.dispose();
+      sphere.geometry = new SphereGeometry(1, t.seg, (t.seg * 2) / 3);
+    }
+    root.dataset.tier = String(tier);
+  }
   new ResizeObserver(() => {
     size = root.clientWidth;
-    renderer.setSize(size, size, false);
+    applyTier();
   }).observe(root);
+
+  // FPS window; skipped while the tab is hidden and for the first second (shader compile).
+  let winStart = performance.now() + 1000;
+  let winFrames = 0;
+  document.addEventListener('visibilitychange', () => {
+    winStart = performance.now() + 1000;
+    winFrames = 0;
+  });
+  function measure(now: number): void {
+    if (document.hidden || now < winStart) return;
+    winFrames++;
+    if (now - winStart < 2000) return;
+    const fps = (winFrames * 1000) / (now - winStart);
+    if (fps < MIN_FPS && tier < TIERS.length - 1) {
+      tier++;
+      applyTier();
+    }
+    winStart = now + 1000;
+    winFrames = 0;
+  }
 
   const world = new Vector3();
   const toCam = new Vector3();
@@ -258,14 +358,18 @@ export function mountGlobe(root: HTMLElement): void {
   renderer.setAnimationLoop((now: number) => {
     const dt = Math.min((now - prev) / 1000, 0.05);
     prev = now;
+    measure(now);
     // :focus-visible, not any focus: after Close returns focus to a pin by mouse, the spin resumes.
-    held = hovered > 0 || openPin !== null || root.querySelector(':focus-visible') !== null;
+    held =
+      hovered > 0 ||
+      openPin !== null ||
+      root.querySelector(':focus-visible') !== null ||
+      list.querySelector(':focus-visible') !== null;
 
     if (tween) {
       const t = Math.min((now - tween.t0) / EASE_MS, 1);
       const e = t === 1 ? 1 : 1 - 2 ** (-10 * t); // close to --ease-out
-      yaw = tween.from[0] + (tween.to[0] - tween.from[0]) * e;
-      pitch = tween.from[1] + (tween.to[1] - tween.from[1]) * e;
+      [yaw, pitch, camZ] = tween.from.map((f, i) => f + ((tween?.to[i] ?? f) - f) * e);
       if (t === 1) tween = null;
     } else if (!dragging) {
       const decay = Math.exp(-3 * dt);
@@ -276,6 +380,7 @@ export function mountGlobe(root: HTMLElement): void {
       if (!held && !reduced.matches) yaw += ((2 * Math.PI) / TURN_SECONDS) * dt;
     }
     globe.rotation.set(pitch, yaw, 0);
+    camera.position.z = camZ;
     globe.updateMatrixWorld();
 
     for (const pin of pins) {

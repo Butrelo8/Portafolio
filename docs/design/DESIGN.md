@@ -19,11 +19,16 @@ B = the brief. References and the refs-check gate: `references.md`.
 | focus ring | 2 px `--color-accent-strong` outline on the label | T |
 | idle spin | one turn per 60 s, paused while a pin is hovered or focused or the panel is open | B |
 | drag | yaw + clamped pitch, inertia decays `exp(-3t)` | B |
-| ease to pin | 900 ms, `1 - 2^(-10t)` (close to `--ease-out`) | B, T |
-| reduced motion | no idle spin, no inertia, jump to the pin on click | B |
+| ease to pin | 900 ms, `1 - 2^(-10t)` (close to `--ease-out`), turn and camera distance in one tween | B, T; dolly after globe.gl `pointOfView` (route b) |
+| camera dolly | z 5 at rest, 4 on a pin (whole sphere stays in the canvas: asin(1/4) = 14.5° < 15° half fov); globe box `min(100%, 84svh, 730px)` so the resting globe keeps about its old size | route b |
+| start angle | facing the timezone longitude (`-getTimezoneOffset() / 4`), 10°N; UTC-6 gives the drawn Americas view | route b (GitHub) |
+| quality tiers | DPR cap 2 / 1.5 / 1 and sphere segments 96 / 64 / 40; one step down per 2 s window under 55.5 FPS, first second and hidden tabs skipped; `data-tier` on the globe | route b (GitHub) |
+| places list | `<nav aria-label="Places">`, a button per place: label `--text-lg`, city mono `--text-xs` `--color-fg-soft`; active = 2 px underline, no transition; column left of the globe ≥ 900 px, wrapped row under it below | route b (Discovery Builders), T for type |
+| list ↔ pin | hover or keyboard focus on an entry flies to its pin; hover on a pin lights its entry; click on either opens the panel; Close flies back out and returns focus to whichever opened it | route b |
+| reduced motion | no idle spin, no inertia, jump (turn and dolly) to the pin on click, panel scrolls into view with `behavior: 'instant'` (the site's `html { scroll-behavior: smooth }` would animate `'auto'`) | B |
 | panel | `.brut-card` (3 px border, 6 px brut shadow, no hover lift), image 4:3, h2 `--text-xl` 700, line `--text-sm` `--color-fg-soft`, Close in mono 44 px tall | B (image + title + line), T (card, type) |
 | panel position | flex row ≥ 900 px (beside), column below (under the globe; scrolls into view on open) | B |
 | panel copy | title = pin label; line = "<city>. Placeholder image until this page has its own tile." | B; labelled placeholder (slop tell 6) |
 | panel images | #3 street corner aerial 3/4, #32 port top-down, #17 gallery aerial 3/4 from `tiles-batch3-2026-10-25`, 720 px webp q72 in `web/public/globe/` | B (the brief names `public/globe/`, overriding the repo's no-images-in-public rule for this prototype; #25 in the brief is the workshop, #32 is the port) |
 | pin places | Mexico City (19.43, -99.13), Callao (-12.05, -77.15), Recife (-8.05, -34.9) | B |
-| no WebGL | `.no-gl`: canvas hidden, pins become a row of buttons that still open the panel | library row (references.md) |
+| no WebGL | `.no-gl`: the globe hides; the places list still opens the panel | library row (references.md) |
