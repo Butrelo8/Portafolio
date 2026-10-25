@@ -1,0 +1,282 @@
+---
+import '../styles/global.css'
+
+// Prototype of the landing page from the owner's drawing (uploads/drawings/3.webp).
+// Labels are the drawing's; the owner renames them later. Panel images are placeholders.
+const pins = [
+  {
+    id: 'about-me',
+    label: 'about me',
+    lat: 19.43,
+    lon: -99.13,
+    city: 'Mexico City',
+    img: '/globe/about-me.webp',
+    alt: 'Aerial view of a painted street corner with a corner shop',
+  },
+  {
+    id: 'page-2',
+    label: 'page 2',
+    lat: -12.05,
+    lon: -77.15,
+    city: 'Callao',
+    img: '/globe/page-2.webp',
+    alt: 'Container port seen from above, cranes over a docked ship',
+  },
+  {
+    id: 'page-3',
+    label: 'page 3',
+    lat: -8.05,
+    lon: -34.9,
+    city: 'Recife',
+    img: '/globe/page-3.webp',
+    alt: 'White gallery room with large abstract paintings',
+  },
+]
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Globe prototype</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body class="globe-page">
+    <main class="stage">
+      <h1 class="sr-only">Pick a place on the globe</h1>
+      <div class="globe" data-globe>
+        <canvas aria-hidden="true"></canvas>
+        <ul class="pins">
+          {
+            pins.map((p) => (
+              <li>
+                <button
+                  type="button"
+                  class="pin"
+                  data-pin={p.id}
+                  data-lat={p.lat}
+                  data-lon={p.lon}
+                  data-img={p.img}
+                  data-alt={p.alt}
+                  data-title={p.label}
+                  data-line={`${p.city}. Placeholder image until this page has its own tile.`}
+                  aria-expanded="false"
+                >
+                  <span class="pin__label">{p.label}</span>
+                  <span class="pin__stem" aria-hidden="true" />
+                </button>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <aside id="globe-panel" class="panel brut-card" hidden aria-live="polite">
+        <img src="" alt="" width="720" height="720" />
+        <div class="panel__body">
+          <h2 tabindex="-1"></h2>
+          <p></p>
+          <button type="button" class="panel__close mono" data-close>Close</button>
+        </div>
+      </aside>
+    </main>
+
+    <script>
+      import { mountGlobe } from '../scripts/globe'
+
+      const root = document.querySelector<HTMLElement>('[data-globe]')
+      if (root) mountGlobe(root)
+    </script>
+  </body>
+</html>
+
+<style>
+  /* The drawing: a plain white page. White and type come from the site's tokens. */
+  .globe-page {
+    background: var(--color-surface);
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .stage {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-8);
+    padding: var(--space-4);
+  }
+  .globe {
+    position: relative;
+    width: min(100%, 78svh, 680px);
+    aspect-ratio: 1;
+    touch-action: none;
+  }
+  .globe canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: grab;
+  }
+  .globe canvas:active {
+    cursor: grabbing;
+  }
+  .pins {
+    list-style: none;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  /* Pin: the dot is drawn on the sphere; the button is the stem and the label above it. */
+  .pin {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    translate: -50% -100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    pointer-events: auto;
+    will-change: transform, opacity;
+  }
+  .pin.is-back {
+    pointer-events: none;
+  }
+  .pin__label {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: var(--text-lg);
+    line-height: 1.2;
+    white-space: nowrap;
+    /* White as drawn, with a charcoal halo so it reads on the bone sea as well as on land. */
+    color: var(--color-surface);
+    text-shadow:
+      1px 0 0 var(--color-fg),
+      -1px 0 0 var(--color-fg),
+      0 1px 0 var(--color-fg),
+      0 -1px 0 var(--color-fg),
+      1px 1px 1px var(--color-fg),
+      -1px -1px 1px var(--color-fg),
+      1px -1px 1px var(--color-fg),
+      -1px 1px 1px var(--color-fg);
+    padding: var(--space-1) var(--space-2);
+    transition: translate var(--duration-normal) var(--ease-out);
+  }
+  .pin__stem {
+    width: 1px;
+    height: 28px;
+    background: var(--color-fg);
+    transform-origin: bottom;
+    transition: scale var(--duration-normal) var(--ease-out);
+  }
+  .pin:hover .pin__label,
+  .pin:focus-visible .pin__label,
+  .pin[aria-expanded='true'] .pin__label {
+    translate: 0 -6px;
+  }
+  .pin:hover .pin__stem,
+  .pin:focus-visible .pin__stem,
+  .pin[aria-expanded='true'] .pin__stem {
+    scale: 1 1.22;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pin__label,
+    .pin__stem {
+      transition: none;
+    }
+  }
+  .pin:focus-visible {
+    outline: none;
+  }
+  .pin:focus-visible .pin__label {
+    outline: var(--border-width) solid var(--color-accent-strong);
+    outline-offset: 2px;
+  }
+  .panel {
+    width: min(100%, 360px);
+    background: var(--color-surface);
+  }
+  .panel img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-bottom: var(--border-width-thick) solid var(--color-border);
+  }
+  .panel__body {
+    padding: var(--space-4);
+    display: grid;
+    gap: var(--space-2);
+  }
+  .panel h2 {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    line-height: 1.1;
+  }
+  .panel h2:focus {
+    outline: none;
+  }
+  .panel p {
+    color: var(--color-fg-soft);
+    font-size: var(--text-sm);
+  }
+  .panel__close {
+    justify-self: start;
+    margin-top: var(--space-2);
+    min-height: 44px;
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-surface);
+    border: var(--border-width) solid var(--color-border);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .panel__close:hover {
+    background: var(--color-fg);
+    color: var(--color-surface);
+  }
+  .panel.brut-card:hover {
+    transform: none;
+    box-shadow: var(--shadow-brut);
+  }
+  /* 1440: panel beside the globe. 390: below it. */
+  @media (min-width: 900px) {
+    .stage {
+      flex-direction: row;
+    }
+  }
+  /* No WebGL: the pins become a plain list of buttons, still opening the panel. */
+  :global(.no-gl) .globe {
+    aspect-ratio: auto;
+  }
+  :global(.no-gl) .globe canvas {
+    display: none;
+  }
+  :global(.no-gl) .pins {
+    position: static;
+    display: flex;
+    gap: var(--space-4);
+    pointer-events: auto;
+  }
+  :global(.no-gl) .pin {
+    position: static;
+    translate: none;
+  }
+  :global(.no-gl) .pin__label {
+    color: var(--color-fg);
+    text-shadow: none;
+  }
+</style>
