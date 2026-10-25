@@ -172,9 +172,8 @@ export function mountGlobe(root: HTMLElement): void {
     }
     flyTo(pin, NEAR_Z);
     // Move focus into the panel so a screen reader reads the new content; Close returns it.
+    // preventScroll: picking a place never moves the page.
     panelTitle.focus({ preventScroll: true });
-    // At 390 the panel sits below the globe, often under the fold.
-    panel.scrollIntoView({ block: 'nearest', behavior: reduced.matches ? 'instant' : 'smooth' });
   }
   function close(): void {
     if (!openPin) return;
