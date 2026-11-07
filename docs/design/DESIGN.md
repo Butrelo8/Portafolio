@@ -50,6 +50,7 @@ Rows in `references.md` (ids `pricing`, `pricing-modules`, `pricing-copy`).
 | price | "6,500 MXN" mono `--text-2xl` 700, `nowrap` | R; type from T |
 | payment line | "Pago: 50% para empezar y 50% al entregar." `--text-sm` `--color-fg-soft` | R (ee432c3), owner 2026-11-06 21:53, verbatim |
 | includes | five plain list lines (visual, Google, Mes de ajustes, Año 1 de cuidado, uptime and expiry alerts; the adjustment and care lines are verbatim from the owner via uncdrone, R ee432c3), 3 px `--color-accent-strong` left rule (same device as `ToolStrip` items) | R (what the base holds); T |
+| pages + extra page | two include lines after the visual line: "5 páginas que tú eliges, por ejemplo Inicio, Nosotros, Servicios, Preguntas frecuentes y Contacto. Las páginas de servicio cuentan dentro de las 5." and "Página extra: 1,500 MXN cada una, mismo precio durante la obra y después de entregar."; "una página por servicio" removed from the Google line | owner 2026-11-07 14:07 (`mothership/docs/queue/2026-11-07-portafolio-pricing-pages.md`), R `research/paginas-incluidas-2026-11-07.md` (median 5 pages; extra page ~1,230 MXN) |
 | renewal | "Del año 2 en adelante son 2,800 MXN al año. Es opcional." 600 | R |
 | guarantee | label "Garantía." mono + sentence: online 14 days after the material, or year 2 is free | R (keeps the "after the material" condition) |
 | CTA | `.brut-btn` "Quiero mi sitio" → `#contact` (es), `/en/#contact` (en); 181×53 at 390 | T (button), B (existing contact path) |
