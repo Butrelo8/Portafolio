@@ -48,8 +48,8 @@ Rows in `references.md` (ids `pricing`, `pricing-modules`, `pricing-copy`).
 | base card | `.brut-card` (3 px border, 6 px brut shadow, `--space-8` padding); hover lift switched off because it is information, not a link | T (card), same choice as the globe panel; shadow is the site's neobrutalist world (tell 19 does not apply) |
 | package name | "Sitio en 14 días", mono `--text-xl` 700 | R |
 | price | "6,500 MXN" mono `--text-2xl` 700, `nowrap` | R; type from T |
-| payment line | "Se paga en dos partes iguales" `--text-sm` `--color-fg-soft` | R ("50/50") |
-| includes | three plain list lines, 3 px `--color-accent-strong` left rule (same device as `ToolStrip` items) | R (what the base holds); T |
+| payment line | "Pago: 50% para empezar y 50% al entregar." `--text-sm` `--color-fg-soft` | R (ee432c3), owner 2026-11-06 21:53, verbatim |
+| includes | five plain list lines (visual, Google, Mes de ajustes, Año 1 de cuidado, uptime and expiry alerts; the adjustment and care lines are verbatim from the owner via uncdrone, R ee432c3), 3 px `--color-accent-strong` left rule (same device as `ToolStrip` items) | R (what the base holds); T |
 | renewal | "Del año 2 en adelante son 2,800 MXN al año. Es opcional." 600 | R |
 | guarantee | label "Garantía." mono + sentence: online 14 days after the material, or year 2 is free | R (keeps the "after the material" condition) |
 | CTA | `.brut-btn` "Quiero mi sitio" → `#contact` (es), `/en/#contact` (en); 181×53 at 390 | T (button), B (existing contact path) |
