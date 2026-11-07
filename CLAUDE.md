@@ -78,9 +78,12 @@ so put the interesting part of the UI near the top of the viewport.
 - Enquiries land in the inbox that registered the key — currently `av.ivan.8@gmail.com`. Verified
   end-to-end on 2026-09-07.
 
-**Personal tooling strip.** `ToolStrip.astro` holds Sonus, Sotto, ApuestasWrapper and MPAF in a
-plain array with `en`/`es` strings — no collection, because there are no bodies and no images. None
-are published, so entries are deliberately link-free. Add a link only if a repo goes public.
+**Tools.** The tools section (`ToolStrip.astro`) leads with mothership/cc-deck (screen-recording loop
+in a Mac-window card), then Sonus+Sotto as one entry, Life-OS and MPAF. ApuestasWrapper dropped
+2026-11-06. Entries stay link-free unless a repo goes public.
+
+**Pricing.** `Pricing.astro` prices come from ProyectoInvestigación
+`research/paquete-modulos-2026-11-06.md`; change them there first.
 
 **i18n.** **Spanish is the default** — the clients are in Veracruz. Spanish lives at
 `web/src/pages/*` (served from `/`), English mirrors under `web/src/pages/en/*` (served from `/en/`).
@@ -119,5 +122,5 @@ Life-OS project tag: portafolio
 
 <!-- mpaf:diseno-figma:start -->
 Figma: before any `figma:*` skill or Figma tool, load the skill `figma`.
-<!-- mpaf:diseno-figma:end -->
 No claim about how something looks without `revisar.sh` numbers.
+<!-- mpaf:diseno-figma:end -->
