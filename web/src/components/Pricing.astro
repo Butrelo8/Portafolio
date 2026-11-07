@@ -39,7 +39,6 @@ const t =
           },
           {
             name: 'Google al día',
-            price: '1,500 MXN al mes',
             desc: 'Cuidado mensual de tu ficha de Google.',
             soon: 'Próximamente',
           },
@@ -75,7 +74,6 @@ const t =
           },
           {
             name: 'Google up to date',
-            price: '1,500 MXN a month',
             desc: 'Monthly care of your Google listing.',
             soon: 'Coming soon',
           },
@@ -105,7 +103,7 @@ const t =
           <li class="modules__item">
             <div class="modules__head">
               <h4 class="modules__name mono">{m.name}</h4>
-              <p class="modules__price mono">{m.price}</p>
+              {m.price && <p class="modules__price mono">{m.price}</p>}
             </div>
             {m.soon && <p class="modules__soon mono">{m.soon}</p>}
             <p class="modules__desc">{m.desc}</p>

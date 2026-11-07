@@ -54,6 +54,6 @@ Rows in `references.md` (ids `pricing`, `pricing-modules`, `pricing-copy`).
 | guarantee | label "Garantía." mono + sentence: online 14 days after the material, or year 2 is free | R (keeps the "after the material" condition) |
 | CTA | `.brut-btn` "Quiero mi sitio" → `#contact` (es), `/en/#contact` (en); 181×53 at 390 | T (button), B (existing contact path) |
 | module list | `<ul>` rows, 3 px top rule, 2 px row rules; name mono 700 + price mono 700 `nowrap` on one flex line that wraps at 390; one `--text-sm` line below | slop tells 4, 7, 10 (list, not cards); T |
-| modules | Citas y cobros +2,500 MXN; Eventos con inscripción 3,000 MXN por evento, paid in advance; Google al día 1,500 MXN al mes | R |
-| "Próximamente" | mono `--text-xs` 700 `--color-accent-strong` over the Google al día line: it is not for sale yet | R (sheet: "Próximamente"; 1,500 applies once there is a measured case) |
+| modules | Citas y cobros +2,500 MXN; Eventos con inscripción 3,000 MXN por evento, paid in advance; Google al día with no price (owner, 2026-11-06 21:50: not for sale yet) | R, owner |
+| "Próximamente" | mono `--text-xs` 700 `--color-accent-strong` over the Google al día line: it is not for sale yet, so no price is shown | R (sheet: "Próximamente", no price) |
 | left out | Temporada, combos, Factura y pagos en partes, visual mensual, IVA wording, any ranking or client claim | R ("Fuera de la hoja"), B |
