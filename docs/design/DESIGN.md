@@ -32,3 +32,28 @@ B = the brief. References and the refs-check gate: `references.md`.
 | panel images | #3 street corner aerial 3/4, #32 port top-down, #17 gallery aerial 3/4 from `tiles-batch3-2026-10-25`, 720 px webp q72 in `web/public/globe/` | B (the brief names `public/globe/`, overriding the repo's no-images-in-public rule for this prototype; #25 in the brief is the workshop, #32 is the port) |
 | pin places | Mexico City (19.43, -99.13), Callao (-12.05, -77.15), Recife (-8.05, -34.9) | B |
 | no WebGL | `.no-gl`: the globe hides; the places list still opens the panel | library row (references.md) |
+
+# DESIGN: pricing section (`Pricing.astro`, id `precios`)
+
+On `index.astro` and `en/index.astro`, between `ToolStrip` and `ContactForm`. The owner asked for it
+directly (2026-11-06), so it goes in despite the rebrand freeze noted above; it adds no new look.
+T = site tokens (`tokens.css`, `global.css`), R = research doc
+`ProyectoInvestigación/research/paquete-modulos-2026-11-06.md` (be22c66), B = the owner's brief.
+Rows in `references.md` (ids `pricing`, `pricing-modules`, `pricing-copy`).
+
+| element | value | source |
+|---|---|---|
+| section title | `// precios` mono `--text-xl` 700 `--color-muted`, same markup and styles as every other section | T (the site's own heading idiom; slop tell 18 accepted, the site owns mono labels) |
+| layout | grid: base card left (1.1fr), module list right (1fr) ≥ 900 px; one column below, card first | B (reuse existing look), orangetheory ficha (price is the loudest thing after the name) |
+| base card | `.brut-card` (3 px border, 6 px brut shadow, `--space-8` padding); hover lift switched off because it is information, not a link | T (card), same choice as the globe panel; shadow is the site's neobrutalist world (tell 19 does not apply) |
+| package name | "Sitio en 14 días", mono `--text-xl` 700 | R |
+| price | "6,500 MXN" mono `--text-2xl` 700, `nowrap` | R; type from T |
+| payment line | "Se paga en dos partes iguales" `--text-sm` `--color-fg-soft` | R ("50/50") |
+| includes | three plain list lines, 3 px `--color-accent-strong` left rule (same device as `ToolStrip` items) | R (what the base holds); T |
+| renewal | "Del año 2 en adelante son 2,800 MXN al año. Es opcional." 600 | R |
+| guarantee | label "Garantía." mono + sentence: online 14 days after the material, or year 2 is free | R (keeps the "after the material" condition) |
+| CTA | `.brut-btn` "Quiero mi sitio" → `#contact` (es), `/en/#contact` (en); 181×53 at 390 | T (button), B (existing contact path) |
+| module list | `<ul>` rows, 3 px top rule, 2 px row rules; name mono 700 + price mono 700 `nowrap` on one flex line that wraps at 390; one `--text-sm` line below | slop tells 4, 7, 10 (list, not cards); T |
+| modules | Citas y cobros +2,500 MXN; Eventos con inscripción 3,000 MXN por evento, paid in advance; Google al día 1,500 MXN al mes | R |
+| "Próximamente" | mono `--text-xs` 700 `--color-accent-strong` over the Google al día line: it is not for sale yet | R (sheet: "Próximamente"; 1,500 applies once there is a measured case) |
+| left out | Temporada, combos, Factura y pagos en partes, visual mensual, IVA wording, any ranking or client claim | R ("Fuera de la hoja"), B |

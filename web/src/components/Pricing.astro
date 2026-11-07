@@ -1,0 +1,146 @@
+---
+interface Props {
+  lang: 'en' | 'es';
+}
+
+const { lang } = Astro.props;
+
+// Prices come from ProyectoInvestigación/research/paquete-modulos-2026-11-06.md. Same published
+// price for everyone: change them there first, then here.
+const t =
+  lang === 'es'
+    ? {
+        heading: '// precios',
+        baseTitle: 'Sitio en 14 días',
+        price: '6,500 MXN',
+        payment: 'Se paga en dos partes iguales.',
+        includes: [
+          'Tu sitio, con un visual propio hecho con tu material.',
+          'Listo para Google: ficha de Maps verificada, Search Console, una página por servicio y tu nombre, dirección y teléfono iguales en todos lados.',
+          'Un año de cuidado: te aviso si se cae o si se acerca el vencimiento de tu dominio o tu certificado, y te hago una ronda de cambios al mes.',
+        ],
+        renewal: 'Del año 2 en adelante son 2,800 MXN al año. Es opcional.',
+        guaranteeLabel: 'Garantía',
+        guarantee:
+          'Si tu sitio no está en línea 14 días después de que me mandes tu material, el año 2 corre por mi cuenta.',
+        cta: 'Quiero mi sitio',
+        ctaHref: '#contact',
+        modulesTitle: 'Se suman a tu sitio',
+        modules: [
+          {
+            name: 'Citas y cobros',
+            price: '+2,500 MXN',
+            desc: 'Tus clientes agendan y pagan su anticipo en línea con Turnito y Mercado Pago. Incluye una guía para que lo manejes tú.',
+          },
+          {
+            name: 'Eventos con inscripción',
+            price: '3,000 MXN por evento',
+            desc: 'Registro, anticipo, lista y pases. Se paga por adelantado.',
+          },
+          {
+            name: 'Google al día',
+            price: '1,500 MXN al mes',
+            desc: 'Cuidado mensual de tu ficha de Google.',
+            soon: 'Próximamente',
+          },
+        ],
+      }
+    : {
+        heading: '// pricing',
+        baseTitle: 'Site in 14 days',
+        price: '6,500 MXN',
+        payment: 'Paid in two equal parts.',
+        includes: [
+          'Your site, with a visual made from your own material.',
+          'Ready for Google: verified Maps listing, Search Console, one page per service, and your name, address and phone the same everywhere.',
+          'A year of care: I tell you if it goes down or when your domain or certificate is about to expire, and you get one round of changes a month.',
+        ],
+        renewal: 'From year 2 on it is 2,800 MXN a year. It is optional.',
+        guaranteeLabel: 'Guarantee',
+        guarantee:
+          'If your site is not live 14 days after you send me your material, year 2 is on me.',
+        cta: 'I want my site',
+        ctaHref: '/en/#contact',
+        modulesTitle: 'Add to your site',
+        modules: [
+          {
+            name: 'Bookings and payments',
+            price: '+2,500 MXN',
+            desc: 'Your customers book and pay a deposit online with Turnito and Mercado Pago. Includes a guide so you can run it yourself.',
+          },
+          {
+            name: 'Events with sign-up',
+            price: '3,000 MXN per event',
+            desc: 'Registration, deposit, attendee list and passes. Paid in advance.',
+          },
+          {
+            name: 'Google up to date',
+            price: '1,500 MXN a month',
+            desc: 'Monthly care of your Google listing.',
+            soon: 'Coming soon',
+          },
+        ],
+      };
+---
+
+<section id="precios" class="section container" aria-labelledby="precios-title">
+  <h2 id="precios-title" class="section__title mono">{t.heading}</h2>
+  <div class="pricing">
+    <article class="pricing__base brut-card">
+      <h3 class="pricing__name mono">{t.baseTitle}</h3>
+      <p class="pricing__price mono">{t.price}</p>
+      <p class="pricing__note">{t.payment}</p>
+      <ul class="pricing__includes">
+        {t.includes.map((line) => <li>{line}</li>)}
+      </ul>
+      <p class="pricing__renewal">{t.renewal}</p>
+      <p class="pricing__guarantee"><strong class="mono">{t.guaranteeLabel}.</strong> {t.guarantee}</p>
+      <a href={t.ctaHref} class="brut-btn">{t.cta}</a>
+    </article>
+
+    <div class="pricing__modules">
+      <h3 class="pricing__modules-title mono">{t.modulesTitle}</h3>
+      <ul class="modules" role="list">
+        {t.modules.map((m) => (
+          <li class="modules__item">
+            <div class="modules__head">
+              <h4 class="modules__name mono">{m.name}</h4>
+              <p class="modules__price mono">{m.price}</p>
+            </div>
+            {m.soon && <p class="modules__soon mono">{m.soon}</p>}
+            <p class="modules__desc">{m.desc}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .section { padding-block: var(--space-16); }
+  .section__title { font-size: var(--text-xl); font-weight: 700; margin-bottom: var(--space-8); color: var(--color-muted); }
+  .pricing { display: grid; gap: var(--space-12); align-items: start; }
+  @media (min-width: 900px) {
+    .pricing { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: var(--space-16); }
+  }
+  /* Information, not a link: keep the brut card still on hover. */
+  .pricing__base { padding: var(--space-8); display: grid; gap: var(--space-4); justify-items: start; }
+  .pricing__base:hover { transform: none; box-shadow: var(--shadow-brut); }
+  .pricing__name { font-size: var(--text-xl); font-weight: 700; }
+  .pricing__price { font-size: var(--text-2xl); font-weight: 700; line-height: 1; white-space: nowrap; }
+  .pricing__note { font-size: var(--text-sm); color: var(--color-fg-soft); margin-top: calc(var(--space-2) * -1); }
+  .pricing__includes { list-style: none; display: grid; gap: var(--space-3); border-top: var(--border-width) solid var(--color-border); padding-top: var(--space-4); }
+  .pricing__includes li { padding-left: var(--space-4); border-left: var(--border-width-thick) solid var(--color-accent-strong); color: var(--color-fg-soft); }
+  .pricing__renewal { font-weight: 600; }
+  .pricing__guarantee { color: var(--color-fg-soft); }
+  .pricing__guarantee strong { color: var(--color-fg); }
+  .pricing__base .brut-btn { margin-top: var(--space-4); }
+  .pricing__modules-title { font-size: var(--text-lg); font-weight: 700; margin-bottom: var(--space-4); }
+  .modules { list-style: none; border-top: var(--border-width-thick) solid var(--color-border); }
+  .modules__item { padding-block: var(--space-4); border-bottom: var(--border-width) solid var(--color-border); display: grid; gap: var(--space-2); }
+  .modules__head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; column-gap: var(--space-4); row-gap: var(--space-1); }
+  .modules__name { font-size: var(--text-base); font-weight: 700; }
+  .modules__price { font-size: var(--text-base); font-weight: 700; white-space: nowrap; }
+  .modules__soon { font-size: var(--text-xs); font-weight: 700; color: var(--color-accent-strong); }
+  .modules__desc { font-size: var(--text-sm); color: var(--color-fg-soft); max-width: 52ch; }
+</style>
