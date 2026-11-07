@@ -29,3 +29,18 @@ only source for prices and wording. Look: no new look; the section reuses `.brut
 | pricing | `web/site-reading-fichas/orangetheory-com.md` (component 1, "what it does well") | price is the loudest thing after the package name; the renewal price sits on the same card as the first price; one card shape, not a second page | B |
 | pricing-modules | `web/ai-slop-tells.md` (tells 4, 7, 10, 2a) | the add-ons are a plain list with name, price and one line each, readable at 390, not identical cards or dotted leaders; one card only, for the base | B |
 | pricing-copy | user: research doc `paquete-modulos-2026-11-06.md`, "La hoja" | package name, prices, guarantee and module names verbatim; Temporada, combos, Factura and the monthly visual stay out | B |
+
+# References: tool strip, cc-deck lead (2026-11-06)
+
+Brief: `mothership/docs/queue/2026-11-06-portfolio-tools-mothership.md`. The owner asked for the look
+himself ("macOS-style window frame, traffic-light dots, title bar, rounded corners, soft shadow", a
+muted looping screen recording at 3.5x), so this is a fixed look, not a direction pick: the rows
+say which library entries the frame and the video delivery come from. Section ids for the gate:
+`tool-window`, `tool-video`, `tool-layout`, `tool-copy`.
+
+| section | library entry | borrow | cost |
+|---|---|---|---|
+| tool-window | `web/site-reading-fichas/raycast-com.md` (component "framed desktop screenshot", the second section) | real app UI shown inside an OS window frame as the proof, one frame at the width of the content column, nothing decorative around it; traffic lights, title bar and rounded corners are the owner's brief | B |
+| tool-video | `web/site-reading-fichas/framer-com.md` (components "framed product-demo video with a play button"; Speed: the poster is the LCP element, video bytes not fetched at 390) | the demo is the proof of the product, so it sits beside the text and carries a poster; the heavy bytes load after the headline text, not before it | B |
+| tool-layout | `web/ai-slop-tells.md` (tells 7, 10, 17) | one lead entry with the window, three plain entries below in the site's existing left-rule list; not four identical cards, no muted aphorism under the heading | B |
+| tool-copy | user: brief + cc-deck `CLAUDE.md`, Life-OS (`NuevoProjectoMejor`) README, Sonus and Sotto READMEs | what each tool does in plain words, Spanish first; ApuestasWrapper dropped, Sonus and Sotto merged, Bitácora renamed Life-OS | B |

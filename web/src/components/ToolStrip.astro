@@ -1,43 +1,43 @@
 ---
+import { getImage } from 'astro:assets';
+import poster from '../assets/shots/cc-deck-poster.webp';
+
 interface Props {
   lang: 'en' | 'es';
 }
 
 const { lang } = Astro.props;
 
+// Poster at the video's own width, optimised at build like every other shot.
+const posterImg = await getImage({ src: poster, width: 1280, format: 'webp' });
+
 // Personal tooling. None of it is published, so these are deliberately link-free —
-// they're here as evidence of range, not as products.
+// they're here as evidence of range, not as products. The lead entry gets the window.
+const lead = {
+  name: 'cc-deck / mothership',
+  stack: 'Bash · tmux · Claude Code',
+  en: 'One central session hands work to several Claude Code agents at once, each with its own role and model, each in its own git branch. Every agent reports back with a verdict, and at 30% of its context it hands the work over. That is my screen, sped up 3.5x. Runs on Windows (WSL) and Mac.',
+  es: 'Una sesión central reparte trabajo a varios agentes de Claude Code a la vez, cada uno con su rol y su modelo, cada uno en su propia rama de git. Cada agente regresa con un veredicto, y al llegar al 30% de su contexto entrega el relevo. Esa es mi pantalla, a 3.5x. Funciona en Windows (WSL) y en Mac.',
+};
+
 const tools = [
   {
-    name: 'Sonus',
-    stack: 'Rust · whisper.cpp · edge-tts',
-    en: 'System-tray dictation and text-to-speech. Hotkey, speak, the text lands at the cursor. Transcribes voice notes offline.',
-    es: 'Dictado y lectura por voz desde la bandeja del sistema. Atajo, hablas, el texto aparece en el cursor. Transcribe notas de voz sin internet.',
-  },
-  {
-    name: 'Sotto',
-    stack: 'Swift · SwiftUI · whisper.cpp',
-    en: 'The same idea as Sonus, native on macOS. A menu-bar app that turns speech into text on a hotkey, transcribed locally — no cloud, no account, no per-minute cost.',
-    es: 'La misma idea que Sonus, nativa en macOS. Una app de barra de menú que convierte voz en texto con un atajo, transcrita en la misma máquina: sin nube, sin cuenta, sin costo por minuto.',
-  },
-  {
-    name: 'ApuestasWrapper',
-    stack: 'Python · MCP',
-    en: 'An MCP server that puts football, MLB, NBA and LoL schedules, stats and historical odds behind one interface an AI agent can query.',
-    es: 'Un servidor MCP que deja calendarios, estadísticas y momios históricos de fútbol, MLB, NBA y LoL detrás de una sola interfaz que un agente de IA puede consultar.',
-  },
-  {
-    // TODO: rename. The repo is still called NuevoProjectoMejor; this is the public-facing name.
-    name: 'Bitácora',
+    name: 'Life-OS',
     stack: 'React · Node · PostgreSQL · MCP',
-    en: 'The app I run my own week on: training, nutrition, recovery and todos in one place. It has its own MCP server and skills, so an AI agent can read the plan and log against it instead of me typing it twice.',
-    es: 'La app con la que llevo mi propia semana: entrenamiento, nutrición, recuperación y pendientes en un solo lugar. Tiene su propio servidor MCP y habilidades, así que un agente de IA puede leer el plan y registrar sobre él en vez de que yo lo escriba dos veces.',
+    en: 'The board where I run my work and my week: tasks, goals, weekly plan, finances, health and notes. My AI agents write to it through its MCP server; I only read.',
+    es: 'El tablero donde llevo mi trabajo y mi semana: pendientes, metas, plan semanal, finanzas, salud y notas. Mis agentes de IA escriben en él por su servidor MCP; yo solo leo.',
+  },
+  {
+    name: 'Sonus + Sotto',
+    stack: 'Rust · Swift · whisper.cpp',
+    en: 'Voice dictation that runs on the machine itself: no cloud, no account. Sonus on Windows, Sotto on macOS. Hotkey, speak, the text lands at the cursor.',
+    es: 'Dictado por voz que corre en la propia máquina: sin nube ni cuenta. Sonus en Windows, Sotto en macOS. Atajo, hablas, el texto aparece en el cursor.',
   },
   {
     name: 'MPAF',
     stack: 'TypeScript · Node',
-    en: 'A registry of rules, skills and agents I install into every project so my AI tooling behaves the same way everywhere — including this site.',
-    es: 'Un registro de reglas, habilidades y agentes que instalo en cada proyecto para que mis herramientas de IA se comporten igual en todos lados — incluido este sitio.',
+    en: 'The registry of rules and skills I install in every project, this site included.',
+    es: 'El registro de reglas y habilidades que instalo en cada proyecto, este sitio incluido.',
   },
 ];
 
@@ -46,18 +46,61 @@ const t =
     ? {
         heading: '// herramientas propias',
         blurb:
-          'Cosas que construí para mi propio trabajo. No están a la venta; están aquí porque quien automatiza lo suyo sabe cuánto vale automatizar lo tuyo.',
+          'Las armé para mi propio trabajo. No están a la venta; están aquí porque quien automatiza lo suyo sabe cuánto vale automatizar lo tuyo.',
+        winTitle: 'cc-deck — mothership',
+        videoLabel: 'Grabación de mi pantalla de trabajo con cc-deck, a 3.5x, en bucle y sin audio.',
+        play: 'Reproducir',
+        pause: 'Pausa',
       }
     : {
         heading: '// my own tools',
         blurb:
-          'Things I built for my own work. Not for sale — here because someone who automates their own job knows what automating yours is worth.',
+          'Built for my own work. Not for sale — here because someone who automates their own job knows what automating yours is worth.',
+        winTitle: 'cc-deck — mothership',
+        videoLabel: 'Recording of my work screen running cc-deck, at 3.5x, looping, no audio.',
+        play: 'Play',
+        pause: 'Pause',
       };
 ---
 
 <section class="section container">
   <h2 class="section__title mono">{t.heading}</h2>
   <p class="tools__blurb">{t.blurb}</p>
+
+  <div class="lead">
+    <div class="tools__item">
+      <h3 class="tools__name mono">{lead.name}</h3>
+      <p class="tools__stack mono">{lead.stack}</p>
+      <p class="tools__desc">{lang === 'es' ? lead.es : lead.en}</p>
+    </div>
+
+    <div class="win" data-tool-win data-state="idle" data-play={t.play} data-pause={t.pause}>
+      <div class="win__bar" aria-hidden="true">
+        <span class="win__dot win__dot--close"></span>
+        <span class="win__dot win__dot--min"></span>
+        <span class="win__dot win__dot--zoom"></span>
+        <span class="win__title mono">{t.winTitle}</span>
+      </div>
+      <div class="win__screen">
+        <video
+          muted
+          autoplay
+          loop
+          playsinline
+          preload="metadata"
+          poster={posterImg.src}
+          width="1280"
+          height="696"
+          aria-label={t.videoLabel}
+        >
+          <source data-src="/media/cc-deck-3-5x.webm" type="video/webm" />
+          <source data-src="/media/cc-deck-3-5x.mp4" type="video/mp4" />
+        </video>
+        <button class="win__toggle mono" type="button" hidden>{t.pause}</button>
+      </div>
+    </div>
+  </div>
+
   <ul class="tools" role="list">
     {tools.map((tool) => (
       <li class="tools__item">
@@ -69,13 +112,88 @@ const t =
   </ul>
 </section>
 
+<script>
+  // The clip downloads only when the window is near the viewport. Under
+  // prefers-reduced-motion it waits for the visitor to press play. The button
+  // doubles as the pause control, so the loop can always be stopped.
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  for (const win of document.querySelectorAll<HTMLElement>('[data-tool-win]')) {
+    const video = win.querySelector('video');
+    const button = win.querySelector('button');
+    if (!video || !button) continue;
+
+    let loaded = false;
+    const load = () => {
+      if (loaded) return;
+      loaded = true;
+      for (const s of video.querySelectorAll<HTMLSourceElement>('source[data-src]')) {
+        s.src = s.dataset.src ?? '';
+      }
+      video.load();
+    };
+
+    const sync = () => {
+      const playing = !video.paused;
+      win.dataset.state = playing ? 'playing' : 'paused';
+      button.textContent = playing ? win.dataset.pause ?? '' : win.dataset.play ?? '';
+    };
+
+    video.addEventListener('play', sync);
+    video.addEventListener('pause', sync);
+    button.hidden = false;
+
+    button.addEventListener('click', () => {
+      if (!loaded) load();
+      if (video.paused) void video.play();
+      else video.pause();
+    });
+
+    if (reduce) {
+      video.removeAttribute('autoplay');
+      video.pause();
+      sync();
+    } else {
+      new IntersectionObserver(
+        (entries, observer) => {
+          if (!entries.some((e) => e.isIntersecting)) return;
+          load();
+          observer.disconnect();
+        },
+        { rootMargin: '300px' },
+      ).observe(win);
+    }
+  }
+</script>
+
 <style>
   .section { padding-block: var(--space-16); }
   .section__title { font-size: var(--text-xl); font-weight: 700; margin-bottom: var(--space-4); color: var(--color-muted); }
   .tools__blurb { color: var(--color-muted); max-width: 60ch; margin-bottom: var(--space-8); font-size: var(--text-sm); }
+
+  .lead { display: grid; gap: var(--space-8); align-items: center; margin-bottom: var(--space-12); }
+  @media (min-width: 900px) {
+    .lead { grid-template-columns: minmax(0, 1fr) minmax(0, 2.2fr); gap: var(--space-12); }
+  }
+
   .tools { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--space-6); list-style: none; }
   .tools__item { border-left: var(--border-width-thick) solid var(--color-border); padding-left: var(--space-4); }
   .tools__name { font-size: var(--text-lg); font-weight: 700; margin-bottom: var(--space-1); }
   .tools__stack { font-size: var(--text-xs); color: var(--color-accent-strong); margin-bottom: var(--space-3); }
   .tools__desc { font-size: var(--text-sm); color: var(--color-muted); line-height: 1.6; }
+
+  /* macOS-style window: traffic lights, title bar, rounded corners, soft shadow. */
+  .win { min-width: 0; border: var(--border-width) solid var(--color-border); border-radius: 12px; overflow: hidden; background: var(--color-fg); box-shadow: 0 24px 48px -16px rgb(26 26 26 / 0.4); }
+  .win__bar { position: relative; display: flex; align-items: center; gap: 8px; height: 2.25rem; padding-inline: var(--space-3); background: var(--color-fg); border-bottom: 1px solid rgb(245 240 232 / 0.16); }
+  .win__dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+  .win__dot--close { background: #ff5f57; }
+  .win__dot--min { background: #febc2e; }
+  .win__dot--zoom { background: #28c840; }
+  .win__title { position: absolute; inset-inline: 0; text-align: center; font-size: var(--text-xs); color: rgb(245 240 232 / 0.7); pointer-events: none; }
+  .win__screen { position: relative; aspect-ratio: 1280 / 696; background: #000; }
+  .win__screen video { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  .win__toggle { position: absolute; right: var(--space-3); bottom: var(--space-3); min-height: 44px; padding: 0 var(--space-4); background: var(--color-surface); color: var(--color-fg); border: var(--border-width) solid var(--color-border); font-size: var(--text-xs); font-weight: 700; cursor: pointer; }
+  .win__toggle:focus-visible { outline: 2px solid var(--color-accent-strong); outline-offset: 2px; }
+  .win[data-state='paused'] .win__toggle { inset: 50% auto auto 50%; transform: translate(-50%, -50%); background: var(--color-accent-strong); color: var(--color-surface); box-shadow: var(--shadow-brut-sm); }
 </style>

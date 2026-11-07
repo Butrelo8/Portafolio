@@ -57,3 +57,29 @@ Rows in `references.md` (ids `pricing`, `pricing-modules`, `pricing-copy`).
 | modules | Citas y cobros +2,500 MXN; Eventos con inscripción 3,000 MXN por evento, paid in advance; Google al día with no price (owner, 2026-11-06 21:50: not for sale yet) | R, owner |
 | "Próximamente" | mono `--text-xs` 700 `--color-accent-strong` over the Google al día line: it is not for sale yet, so no price is shown | R (sheet: "Próximamente", no price) |
 | left out | Temporada, combos, Factura y pagos en partes, visual mensual, IVA wording, any ranking or client claim | R ("Fuera de la hoja"), B |
+
+# DESIGN: tool strip, cc-deck lead (`ToolStrip.astro`)
+
+On `index.astro` and `en/index.astro`, same place as before (after the case studies). The owner
+asked for the look directly (2026-11-06 23:13), so the window frame goes in despite the rebrand
+freeze. B = the owner's brief (`mothership/docs/queue/2026-11-06-portfolio-tools-mothership.md`),
+T = site tokens (`tokens.css`, `global.css`). Rows in `references.md` (ids `tool-window`,
+`tool-video`, `tool-layout`, `tool-copy`).
+
+| element | value | source |
+|---|---|---|
+| section heading, blurb | unchanged idiom (`// herramientas propias`, mono `--text-xl` muted); blurb shortened | T, B (keep the heading idea, tighten copy) |
+| lead layout | text left, window right (1fr / 2.2fr) ≥ 900 px; one column below, text first | B (featured card), tool-layout row (`ai-slop-tells.md` 7, 10) |
+| window frame | 2 px `--color-border` edge, 12 px radius, `0 24px 48px -16px rgb(26 26 26 / 0.4)` | B ("rounded corners, soft shadow"); the owner's frame overrides tells 10 and 19 (owner rule: brand wins), the 2 px edge is T |
+| title bar | 36 px, `--color-fg` ground, 1 px hairline of `--color-bg` at 16%, mono `--text-xs` title "cc-deck — mothership" centred at 70% `--color-bg` | B (title bar), T (colours, mono label; tell 18 accepted, the site owns mono labels) |
+| traffic lights | three 12 px dots `#ff5f57` `#febc2e` `#28c840`, `aria-hidden` | B (macOS convention, the values are Apple's standard) |
+| screen | 1280×696 video, `aspect-ratio` set so there is no layout shift, black ground | B (screen recording), raycast / framer fichas (real UI as proof) |
+| video | muted, autoplay, loop, playsinline, `preload="metadata"`, sources attached only when the window is within 300 px of the viewport, WebM (VP9) first then MP4 (H.264), 3.5x, no audio | B |
+| poster | webp from `src/assets/shots/`, optimised at build by `astro:assets` at 1280 px | B, T (shots live in `src/assets`, never `public/`) |
+| reduced motion | no autoplay, no download until pressed; poster plus a centred "Reproducir" / "Play" button | B |
+| pause control | the same button, small bottom-right while playing ("Pausa" / "Pause"), 44 px tall; hidden until JS runs (no JS: poster only) | WCAG 2.2.2 (autoplay over 5 s needs a stop), T (`.brut-btn`'s mono 700 label, `--shadow-brut-sm` on the centred state) |
+| other entries | three left-ruled items in the existing `.tools` grid: Life-OS, Sonus + Sotto, MPAF | B, T (unchanged item style) |
+| copy | Spanish first, mirrored in English; facts from cc-deck `CLAUDE.md`, the Life-OS README, the Sonus and Sotto READMEs; "3.5x" is stated because the clip is sped up | B, tool-copy row |
+| dropped | ApuestasWrapper; the Bitácora name and its TODO | B |
+| lazy loader | the one `IntersectionObserver` in the component only attaches the video sources near the viewport; it reveals nothing and hides no content (slop-check `js-intersection-reveal` REVIEW, tell 13 does not apply) | B (lazy), tell 13 |
+| privacy | the clip is OCR-checked and redacted with solid bars (client and project names, prices, cost counters) before it is committed; `public/media/cc-deck-3-5x.{webm,mp4}` stay uncommitted until the owner has watched them | B |
