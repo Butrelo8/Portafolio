@@ -120,3 +120,4 @@ Life-OS project tag: portafolio
 <!-- mpaf:diseno-figma:start -->
 Figma: before any `figma:*` skill or Figma tool, load the skill `figma`.
 <!-- mpaf:diseno-figma:end -->
+No claim about how something looks without `revisar.sh` numbers.
