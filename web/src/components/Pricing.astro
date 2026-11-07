@@ -17,32 +17,25 @@ const t =
         includes: [
           'Tu sitio, con un visual propio hecho con tu material.',
           'Listo para Google: ficha de Maps verificada, Search Console, una página por servicio y tu nombre, dirección y teléfono iguales en todos lados.',
-          'Mes de ajustes: el primer mes después de la entrega, ajustes visuales sin costo (textos, fotos, colores, orden), hasta 3 rondas. Funciones o secciones nuevas se cotizan aparte.',
-          'Año 1 de cuidado: del mes 2 al 12, una ronda de cambios al mes.',
-          'Te aviso si se cae o si se acerca el vencimiento de tu dominio o tu certificado.',
+          'Mes de ajustes: el primer mes después de la entrega, ajustes visuales sin costo (textos, fotos, colores, orden). Funciones o secciones nuevas se cotizan aparte.',
         ],
-        renewal: 'Del año 2 en adelante son 2,800 MXN al año. Es opcional.',
+        renewal: 'Después del mes de ajustes, el cuidado mensual es opcional.',
         guaranteeLabel: 'Garantía',
         guarantee:
-          'Si tu sitio no está en línea 14 días después de que me mandes tu material, el año 2 corre por mi cuenta.',
+          'Si tu sitio no está en línea 14 días después de que me mandes tu material, te regalo 3 meses de cuidado mensual.',
         cta: 'Quiero mi sitio',
         ctaHref: '#contact',
         modulesTitle: 'Se suman a tu sitio',
         modules: [
           {
+            name: 'Cuidado mensual',
+            price: '400 MXN al mes',
+            desc: 'Una ronda de cambios al mes. Te aviso si se cae o si se acerca el vencimiento de tu dominio o tu certificado. Cada mes reviso que no haya enlaces rotos y te mando un reporte con tus estrellas y reseñas de Google y tu lugar en Maps frente a tu competencia. Sin plazo forzoso.',
+          },
+          {
             name: 'Citas y cobros',
             price: '+2,500 MXN',
             desc: 'Tus clientes agendan y pagan su anticipo en línea con Turnito y Mercado Pago. Incluye una guía para que lo manejes tú.',
-          },
-          {
-            name: 'Eventos con inscripción',
-            price: '3,000 MXN por evento',
-            desc: 'Registro, anticipo, lista y pases. Se paga por adelantado.',
-          },
-          {
-            name: 'Google al día',
-            desc: 'Cuidado mensual de tu ficha de Google.',
-            soon: 'Próximamente',
           },
         ],
       }
@@ -54,32 +47,25 @@ const t =
         includes: [
           'Your site, with a visual made from your own material.',
           'Ready for Google: verified Maps listing, Search Console, one page per service, and your name, address and phone the same everywhere.',
-          'Adjustment month: for the first month after delivery, visual tweaks at no cost (text, photos, colors, order), up to 3 rounds. New features or sections are quoted separately.',
-          'Year 1 of care: from month 2 to 12, one round of changes per month.',
-          'I tell you if it goes down or when your domain or certificate is about to expire.',
+          'Adjustment month: for the first month after delivery, visual tweaks at no cost (text, photos, colors, order). New features or sections are quoted separately.',
         ],
-        renewal: 'From year 2 on it is 2,800 MXN a year. It is optional.',
+        renewal: 'After the adjustment month, monthly care is optional.',
         guaranteeLabel: 'Guarantee',
         guarantee:
-          'If your site is not live 14 days after you send me your material, year 2 is on me.',
+          'If your site is not live 14 days after you send me your material, 3 months of monthly care are on me.',
         cta: 'I want my site',
         ctaHref: '/en/#contact',
         modulesTitle: 'Add to your site',
         modules: [
           {
+            name: 'Monthly care',
+            price: '400 MXN a month',
+            desc: 'One round of changes a month. I tell you if your site goes down or when your domain or certificate is about to expire. Every month I check for broken links and send you a report with your Google stars and reviews and where you rank on Maps against your competitors. No minimum term.',
+          },
+          {
             name: 'Bookings and payments',
             price: '+2,500 MXN',
             desc: 'Your customers book and pay a deposit online with Turnito and Mercado Pago. Includes a guide so you can run it yourself.',
-          },
-          {
-            name: 'Events with sign-up',
-            price: '3,000 MXN per event',
-            desc: 'Registration, deposit, attendee list and passes. Paid in advance.',
-          },
-          {
-            name: 'Google up to date',
-            desc: 'Monthly care of your Google listing.',
-            soon: 'Coming soon',
           },
         ],
       };
@@ -109,7 +95,6 @@ const t =
               <h4 class="modules__name mono">{m.name}</h4>
               {m.price && <p class="modules__price mono">{m.price}</p>}
             </div>
-            {m.soon && <p class="modules__soon mono">{m.soon}</p>}
             <p class="modules__desc">{m.desc}</p>
           </li>
         ))}
@@ -143,6 +128,5 @@ const t =
   .modules__head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; column-gap: var(--space-4); row-gap: var(--space-1); }
   .modules__name { font-size: var(--text-base); font-weight: 700; }
   .modules__price { font-size: var(--text-base); font-weight: 700; white-space: nowrap; }
-  .modules__soon { font-size: var(--text-xs); font-weight: 700; color: var(--color-accent-strong); }
   .modules__desc { font-size: var(--text-sm); color: var(--color-fg-soft); max-width: 52ch; }
 </style>
