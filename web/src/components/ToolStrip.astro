@@ -15,9 +15,9 @@ const posterImg = await getImage({ src: poster, width: 1280, format: 'webp' });
 // they're here as evidence of range, not as products. The lead entry gets the window.
 const lead = {
   name: 'cc-deck / mothership',
-  stack: 'Bash · tmux · Claude Code',
-  en: 'I built my own instead of using an existing one: I needed to run many agents at once while the same PC renders 3D scenes, generates video and images and runs local AI models. It lives in the terminal: I drive it over ssh from my Mac or any device. One central session hands work to several Claude Code agents, each with its own role, model and git branch. Every agent reports back with a verdict and, at 30% of its context, hands off. That is my screen, sped up 3.5x. Runs on Windows (WSL) and Mac.',
-  es: 'Lo armé yo en vez de usar uno ya hecho: necesitaba manejar muchos agentes a la vez mientras la misma PC renderiza escenas 3D, genera video e imágenes y corre modelos de IA locales. Vive en la terminal: lo manejo por ssh desde mi Mac o cualquier dispositivo. Una sesión central reparte trabajo a agentes de Claude Code, cada uno con su rol, modelo y rama de git. Cada agente regresa con un veredicto y, al llegar al 30% de su contexto, entrega el relevo. Esa es mi pantalla, a 3.5x. Corre en Windows (WSL) y Mac.',
+  stack: 'Bash · tmux · Claude Code · pi · opencode',
+  en: 'I built my own instead of using an existing one: I needed to run many agents at once while the same PC renders 3D scenes, generates video and images and runs local AI models. It lives in the terminal: I drive it over ssh from my Mac or any device. One central session hands work to several Claude Code, pi and opencode agents (that is how I use local and free models), each with its own role, model and git branch. Every agent reports back with a verdict and, at 30% of its context, hands off. That is my screen, sped up 3.5x. Runs on Windows (WSL) and Mac.',
+  es: 'Lo armé yo en vez de usar uno ya hecho: necesitaba manejar muchos agentes a la vez mientras la misma PC renderiza escenas 3D, genera video e imágenes y corre modelos de IA locales. Vive en la terminal: lo manejo por ssh desde mi Mac o cualquier dispositivo. Una sesión central reparte trabajo a agentes de Claude Code, pi y opencode (así uso modelos locales y gratuitos), cada uno con su rol, modelo y rama de git. Cada agente regresa con un veredicto y, al llegar al 30% de su contexto, entrega el relevo. Esa es mi pantalla, a 3.5x. Corre en Windows (WSL) y Mac.',
 };
 
 const tools = [
