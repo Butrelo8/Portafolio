@@ -46,18 +46,17 @@ Rows in `references.md` (ids `pricing`, `pricing-modules`, `pricing-copy`).
 | section title | `// precios` mono `--text-xl` 700 `--color-muted`, same markup and styles as every other section | T (the site's own heading idiom; slop tell 18 accepted, the site owns mono labels) |
 | layout | grid: base card left (1.1fr), module list right (1fr) ≥ 900 px; one column below, card first | B (reuse existing look), orangetheory ficha (price is the loudest thing after the name) |
 | base card | `.brut-card` (3 px border, 6 px brut shadow, `--space-8` padding); hover lift switched off because it is information, not a link | T (card), same choice as the globe panel; shadow is the site's neobrutalist world (tell 19 does not apply) |
-| package name | "Sitio en 14 días", mono `--text-xl` 700 | R |
-| price | "6,500 MXN" mono `--text-2xl` 700, `nowrap` | R; type from T |
+| package name | "Sitio listo para Google en 21 días como máximo", mono `--text-xl` 700 | R; owner 2026-11-11 21:33, copy from `research/portafolio-precios-borrador-2026-11-11.md` (draft) |
+| price | "9,000 MXN" mono `--text-2xl` 700, `nowrap`; the line under it (`priceNote`, `.pricing__note`) says final launch price for the first 5 clients in exchange for showing the site as a case, then 12,000 MXN final price | draft; type from T |
 | payment line | "Pago: 50% para empezar y 50% al entregar." `--text-sm` `--color-fg-soft` | R (ee432c3), owner 2026-11-06 21:53, verbatim |
-| includes | five plain list lines (visual, Google, Mes de ajustes, Año 1 de cuidado, uptime and expiry alerts; the adjustment and care lines are verbatim from the owner via uncdrone, R ee432c3), 3 px `--color-accent-strong` left rule (same device as `ToolStrip` items) | R (what the base holds); T |
-| pages + extra page | two include lines after the visual line: "5 páginas que tú eliges, por ejemplo Inicio, Nosotros, Servicios, Preguntas frecuentes y Contacto. Las páginas de servicio cuentan dentro de las 5." and "Página extra: 1,500 MXN cada una, mismo precio durante la obra y después de entregar."; "una página por servicio" removed from the Google line | owner 2026-11-07 14:07 (`mothership/docs/queue/2026-11-07-portafolio-pricing-pages.md`), R `research/paginas-incluidas-2026-11-07.md` (median 5 pages; extra page ~1,230 MXN) |
-| renewal | "Del año 2 en adelante son 2,800 MXN al año. Es opcional." 600 | R |
-| guarantee | label "Garantía." mono + sentence: online 14 days after the material, or year 2 is free | R (keeps the "after the material" condition) |
+| includes | nine plain list lines in the draft's order (own visual; 5 pages; .com domain; .mx option; 2 emails; Google-ready; Mes de ajustes; uptime; footer credit), 3 px `--color-accent-strong` left rule (same device as `ToolStrip` items). The WhatsApp-counter line stays commented out in the source until the counter counts in production and the monthly report runs | draft; T |
+| pages + extra page | "5 páginas que tú eliges…" is an include line; the extra page (1,500 MXN c/u, same price during the build and after delivery) is a row of the module list | owner 2026-11-07 14:07 and 2026-11-11, draft |
+| renewal | "Después del mes de ajustes, el cuidado mensual es opcional. El hosting no se cobra mientras tu sitio sea estático." 600 | draft |
+| guarantee | label "Garantía." mono + sentence: not live 21 days after deposit and content reach the owner, 3 months of monthly care free | draft (clock starts at deposit and content) |
 | CTA | `.brut-btn` "Quiero mi sitio" → `#contact` (es), `/en/#contact` (en); 181×53 at 390 | T (button), B (existing contact path) |
 | module list | `<ul>` rows, 3 px top rule, 2 px row rules; name mono 700 + price mono 700 `nowrap` on one flex line that wraps at 390; one `--text-sm` line below | slop tells 4, 7, 10 (list, not cards); T |
-| modules | Citas y cobros +2,500 MXN; Eventos con inscripción 3,000 MXN por evento, paid in advance; Google al día with no price (owner, 2026-11-06 21:50: not for sale yet) | R, owner |
-| "Próximamente" | mono `--text-xs` 700 `--color-accent-strong` over the Google al día line: it is not for sale yet, so no price is shown | R (sheet: "Próximamente", no price) |
-| left out | Temporada, combos, Factura y pagos en partes, visual mensual, IVA wording, any ranking or client claim | R ("Fuera de la hoja"), B |
+| modules | Cuidado mensual 400 MXN al mes (the sheet says 500 with the radar; stays 400 until the radar runs in a client), Página extra 1,500 MXN c/u, Citas y cobros +2,500 MXN; no fourth module, no printed visual-production module | draft, owner 2026-11-11 |
+| left out | Temporada, combos, Eventos, Google al día, Factura y pagos en partes, visual mensual, "+ IVA" (prices are final), any ranking or client claim, any cheaper tier | draft ("Resumen"), owner |
 
 # DESIGN: tool strip, cc-deck lead (`ToolStrip.astro`)
 
