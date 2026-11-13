@@ -18,9 +18,9 @@ const t =
         payment: 'Pago: 50% para empezar y 50% al entregar.',
         includes: [
           'Tu sitio, con un visual propio hecho con tu material.',
-          '5 páginas que tú eliges, por ejemplo Inicio, Nosotros, Servicios, Preguntas frecuentes y Contacto. Las páginas de servicio cuentan dentro de las 5.',
+          '5 páginas, las que tú elijas. Por ejemplo: Inicio, Nosotros, Servicios, Preguntas frecuentes y Contacto. Puedes cambiar cualquiera por Galería, Precios o menú, Reseñas, o Ubicación y horarios. Cada página de servicio cuenta como una de las 5; de la sexta en adelante es una página extra.',
           'Tu dominio .com a tu nombre y en tu cuenta. El primer año va por mi cuenta: lo pagas al registrarlo y te lo descuento del pago final. Desde el segundo año el registrador te lo cobra directo, a su precio.',
-          '¿Prefieres un .mx o un .com.mx? Pagas la diferencia el primer año y la renovación completa después. Antes de elegir te digo cuánto cuesta renovarlo.',
+          '¿Prefieres otra terminación? Puede ser .com.mx, .mx, .net, .shop o .studio, entre otras. Pagas la diferencia el primer año y la renovación completa después. Ojo: algunas, como .store, .online o .site, cuestan poco el primer año y varias veces más al renovar. Antes de elegir te digo cuánto cuesta renovarla.',
           '2 correos con tu dominio, por ejemplo hola@tunegocio.com, que llegan al Gmail que ya usas. En la entrega dejo tu Gmail listo para contestar desde ellos. Un buzón propio es aparte, al costo y en tu cuenta.',
           'Listo para Google: ficha de Maps verificada, Search Console y tu nombre, dirección y teléfono iguales en todos lados.',
           'Tu botón de WhatsApp cuenta los clics: cada mes te digo cuántas personas lo tocaron desde tu sitio (con el cuidado mensual).',
@@ -35,6 +35,7 @@ const t =
           'Si tu sitio no está en línea 21 días después de que me llegan el anticipo y tu contenido (textos y fotos), te regalo 3 meses de cuidado mensual. El plazo se pausa mientras espero material o respuestas tuyas.',
         cta: 'Quiero mi sitio',
         ctaHref: '#contact',
+        leadBold: '5 páginas',
         modulesTitle: 'Se suman a tu sitio',
         modules: [
           {
@@ -53,6 +54,8 @@ const t =
             desc: 'Tus clientes agendan y pagan su anticipo en línea con Turnito y Mercado Pago. Incluye una guía para que lo manejes tú.',
           },
         ],
+        modulesNote:
+          '¿Quieres más video, 3D o animación para tu sitio o tus redes? Se cotiza por trabajo: te mando el precio por escrito en 48 horas.',
       }
     : {
         heading: '// pricing',
@@ -63,9 +66,9 @@ const t =
         payment: 'Payment: 50% to start, 50% on delivery.',
         includes: [
           'Your site, with a visual made from your own material.',
-          '5 pages you choose, for example Home, About, Services, FAQ and Contact. Service pages count toward the 5.',
+          '5 pages, the ones you choose. For example: Home, About, Services, FAQ and Contact. You can swap any of them for Gallery, Prices or menu, Reviews, or Location and hours. Each service page counts as one of the 5; from the sixth on, it is an extra page.',
           'Your .com domain, in your name and in your own account. The first year is on me: you pay it when you register it and I take it off the final payment. From year two the registrar bills you directly, at its price.',
-          'Prefer a .mx or .com.mx? You pay the difference in year one and the full renewal after. Before you choose, I tell you what the renewal costs.',
+          'Prefer a different ending? It can be .com.mx, .mx, .net, .shop or .studio, among others. You pay the difference in year one and the full renewal after. Careful: some, like .store, .online or .site, are cheap the first year and cost several times more to renew. Before you choose, I tell you what the renewal costs.',
           '2 email addresses on your domain, for example hello@yourbusiness.com, forwarded to the Gmail you already use. At delivery I set up your Gmail to reply from them. A separate inbox is extra, at cost, in your own account.',
           'Ready for Google: verified Maps listing, Search Console, and your name, address and phone the same everywhere.',
           'Your WhatsApp button counts clicks: every month I tell you how many people tapped it on your site (with monthly care).',
@@ -80,6 +83,7 @@ const t =
           'If your site is not live 21 days after your deposit and your content (texts and photos) reach me, 3 months of monthly care are on me. The clock pauses while I wait on your material or answers.',
         cta: 'I want my site',
         ctaHref: '/en/#contact',
+        leadBold: '5 pages',
         modulesTitle: 'Add to your site',
         modules: [
           {
@@ -98,6 +102,8 @@ const t =
             desc: 'Your customers book and pay a deposit online with Turnito and Mercado Pago. Includes a guide so you can run it yourself.',
           },
         ],
+        modulesNote:
+          'Want more video, 3D or animation for your site or your social media? It is quoted per job: I send you the price in writing within 48 hours.',
       };
 ---
 
@@ -110,7 +116,13 @@ const t =
       <p class="pricing__note">{t.priceNote}</p>
       <p class="pricing__note">{t.payment}</p>
       <ul class="pricing__includes">
-        {t.includes.map((line) => <li>{line}</li>)}
+        {t.includes.map((line) => (
+          <li>
+            {line.startsWith(t.leadBold) ? (
+              <><strong>{t.leadBold}</strong>{line.slice(t.leadBold.length)}</>
+            ) : line}
+          </li>
+        ))}
       </ul>
       <p class="pricing__renewal">{t.renewal}</p>
       <p class="pricing__guarantee"><strong class="mono">{t.guaranteeLabel}.</strong> {t.guarantee}</p>
@@ -130,6 +142,7 @@ const t =
           </li>
         ))}
       </ul>
+      <p class="modules__note">{t.modulesNote}</p>
     </div>
   </div>
 </section>
@@ -159,5 +172,7 @@ const t =
   .modules__head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; column-gap: var(--space-4); row-gap: var(--space-1); }
   .modules__name { font-size: var(--text-base); font-weight: 700; }
   .modules__price { font-size: var(--text-base); font-weight: 700; white-space: nowrap; }
+  .pricing__includes strong { color: var(--color-fg); }
+  .modules__note { margin-top: var(--space-4); font-size: var(--text-sm); color: var(--color-fg-soft); max-width: 52ch; }
   .modules__desc { font-size: var(--text-sm); color: var(--color-fg-soft); max-width: 52ch; }
 </style>
