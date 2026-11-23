@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
+import vm from 'node:vm';
 import { handleEvent, isExcluded, parseEvent } from '../events.js';
 
 const MOBILE =
@@ -44,12 +46,14 @@ test('excludes the nolog=1 cookie only', () => {
 });
 
 test('parseEvent accepts pv and click', () => {
-  assert.deepEqual(parseEvent('{"t":"pv","p":"/about"}'), ['pv', '/about', '']);
-  assert.deepEqual(parseEvent('{"t":"click","id":"cta-start","p":"/en/"}'), [
-    'click',
-    '/en/',
-    'cta-start',
-  ]);
+  assert.deepEqual(parseEvent('{"t":"pv","p":"/about"}'), {
+    blobs: ['pv', '/about', ''],
+    doubles: [1, 0, 0],
+  });
+  assert.deepEqual(parseEvent('{"t":"click","id":"cta-start","p":"/en/"}'), {
+    blobs: ['click', '/en/', 'cta-start'],
+    doubles: [1, 0, 0],
+  });
 });
 
 test('parseEvent rejects invalid payloads', () => {
@@ -76,7 +80,7 @@ test('writes one data point for a normal visitor', async () => {
   const env = spyEnv();
   const res = await handleEvent(post({ t: 'pv', p: '/about' }), env);
   assert.equal(res.status, 204);
-  assert.deepEqual(env.writes, [{ blobs: ['pv', '/about', ''], doubles: [1] }]);
+  assert.deepEqual(env.writes, [{ blobs: ['pv', '/about', ''], doubles: [1, 0, 0] }]);
 });
 
 test('drops excluded traffic with 204 and writes nothing', async () => {
@@ -96,4 +100,90 @@ test('invalid payload is 400 and non-POST is 405, both without writes', async ()
   assert.equal((await handleEvent(post('nope'), env)).status, 400);
   assert.equal((await handleEvent(post('', { 'user-agent': MOBILE }, 'GET'), env)).status, 405);
   assert.equal(env.writes.length, 0);
+});
+
+test('nd and nm of 1 land in doubles 2 and 3 on a pv; other values and clicks count 0', async () => {
+  const env = spyEnv();
+  await handleEvent(post({ t: 'pv', p: '/', nd: 1, nm: 1 }), env);
+  await handleEvent(post({ t: 'pv', p: '/', nd: 1 }), env);
+  await handleEvent(post({ t: 'pv', p: '/', nm: 1 }), env);
+  await handleEvent(post({ t: 'pv', p: '/', nd: '1', nm: 2 }), env);
+  await handleEvent(post({ t: 'click', id: 'cta', p: '/', nd: 1, nm: 1 }), env);
+  assert.deepEqual(
+    env.writes.map((w) => w.doubles),
+    [
+      [1, 1, 1],
+      [1, 1, 0],
+      [1, 0, 1],
+      [1, 0, 0],
+      [1, 0, 0],
+    ],
+  );
+});
+
+test('bots and nolog are dropped even with nd and nm', async () => {
+  const env = spyEnv();
+  const body = { t: 'pv', p: '/', nd: 1, nm: 1 };
+  await handleEvent(post(body, { 'user-agent': 'HeadlessChrome' }), env);
+  await handleEvent(post(body, { 'user-agent': MOBILE, cookie: 'nolog=1' }), env);
+  assert.equal(env.writes.length, 0);
+});
+
+// Runs the real public/e.js against a fake page; returns the beacon bodies it sent.
+const EJS = readFileSync(new URL('../public/e.js', import.meta.url), 'utf8');
+function runClient({ storage, now = new Date(2026, 10, 23, 12), search = '' }) {
+  const sent = [];
+  const listeners = [];
+  const ctx = {
+    location: { search, pathname: '/en/' },
+    document: { cookie: '', addEventListener: (_t, fn) => listeners.push(fn) },
+    navigator: { sendBeacon: (_u, body) => sent.push(JSON.parse(body)) },
+    URLSearchParams,
+    JSON,
+    localStorage: storage,
+    Date: class extends Date {
+      constructor(...a) {
+        super(...(a.length ? a : [now]));
+      }
+    },
+  };
+  vm.runInNewContext(EJS, ctx);
+  return { sent, listeners, ctx };
+}
+const memory = (init = {}) => {
+  const m = { ...init };
+  return { m, getItem: (k) => m[k] ?? null, setItem: (k, v) => (m[k] = v) };
+};
+
+test('client: first visit sends nd and nm and stores the local day and month', () => {
+  const storage = memory();
+  const { sent } = runClient({ storage });
+  assert.deepEqual(sent, [{ t: 'pv', nd: 1, nm: 1, p: '/en/' }]);
+  assert.deepEqual(storage.m, { ev_d: '2026-11-23', ev_m: '2026-11' });
+});
+
+test('client: same day sends no flags, next day only nd, next month both', () => {
+  const storage = memory({ ev_d: '2026-11-23', ev_m: '2026-11' });
+  assert.deepEqual(runClient({ storage }).sent, [{ t: 'pv', p: '/en/' }]);
+  assert.deepEqual(runClient({ storage, now: new Date(2026, 10, 24) }).sent, [
+    { t: 'pv', nd: 1, p: '/en/' },
+  ]);
+  assert.deepEqual(runClient({ storage, now: new Date(2026, 11, 1) }).sent, [
+    { t: 'pv', nd: 1, nm: 1, p: '/en/' },
+  ]);
+});
+
+test('client: storage that throws sends a plain pv and clicks still work', () => {
+  const boom = {
+    getItem: () => {
+      throw new Error('denied');
+    },
+    setItem: () => {
+      throw new Error('denied');
+    },
+  };
+  const { sent, listeners } = runClient({ storage: boom });
+  assert.deepEqual(sent, [{ t: 'pv', p: '/en/' }]);
+  listeners[0]({ target: { closest: () => ({ dataset: { track: 'cta' } }) } });
+  assert.deepEqual(sent[1], { t: 'click', id: 'cta', p: '/en/' });
 });
