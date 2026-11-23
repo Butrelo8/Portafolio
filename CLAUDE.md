@@ -124,3 +124,7 @@ Life-OS project tag: portafolio
 Figma: before any `figma:*` skill or Figma tool, load the skill `figma`.
 No claim about how something looks without `revisar.sh` numbers.
 <!-- mpaf:diseno-figma:end -->
+
+## Production, deploy and measurement
+- Production deploys from `main`, automatically on push (`deploy-web.yml`).
+- `web/` `/e` counts page views, clicks (`data-track` ids) and unique visitors into Analytics Engine `portafolio_events` (binding `EVENTS`); bots/drones and `?nolog=1` devices excluded. Contract: `~/projects/cronjobs/docs/site-events.md`.
