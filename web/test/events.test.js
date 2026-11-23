@@ -47,7 +47,7 @@ test('excludes the nolog=1 cookie only', () => {
 
 test('parseEvent accepts pv and click', () => {
   assert.deepEqual(parseEvent('{"t":"pv","p":"/about"}'), {
-    blobs: ['pv', '/about', ''],
+    blobs: ['pv', '/about', '', '', '', '', '', '', '', ''],
     doubles: [1, 0, 0],
   });
   assert.deepEqual(parseEvent('{"t":"click","id":"cta-start","p":"/en/"}'), {
@@ -80,7 +80,9 @@ test('writes one data point for a normal visitor', async () => {
   const env = spyEnv();
   const res = await handleEvent(post({ t: 'pv', p: '/about' }), env);
   assert.equal(res.status, 204);
-  assert.deepEqual(env.writes, [{ blobs: ['pv', '/about', ''], doubles: [1, 0, 0] }]);
+  assert.deepEqual(env.writes, [
+    { blobs: ['pv', '/about', '', '', '', '', '', '', '', ''], doubles: [1, 0, 0] },
+  ]);
 });
 
 test('drops excluded traffic with 204 and writes nothing', async () => {
@@ -129,16 +131,83 @@ test('bots and nolog are dropped even with nd and nm', async () => {
   assert.equal(env.writes.length, 0);
 });
 
+const withCf = (body, cf, headers = { 'user-agent': MOBILE }) => {
+  const req = post(body, headers);
+  Object.defineProperty(req, 'cf', { value: cf });
+  return req;
+};
+
+test('pv with referrer, all UTMs and cf fields writes the 7 source blobs in order', async () => {
+  const env = spyEnv();
+  await handleEvent(
+    withCf(
+      { t: 'pv', p: '/', r: 'google.com', us: 'news', um: 'email', uc: 'launch-1' },
+      { country: 'MX', region: 'Veracruz', city: 'Xalapa' },
+    ),
+    env,
+  );
+  assert.deepEqual(env.writes[0].blobs, [
+    'pv',
+    '/',
+    '',
+    'google.com',
+    'news',
+    'email',
+    'launch-1',
+    'MX',
+    'Veracruz',
+    'Xalapa',
+  ]);
+});
+
+test('missing source fields and missing cf give empty strings', async () => {
+  const env = spyEnv();
+  await handleEvent(post({ t: 'pv', p: '/' }), env);
+  assert.deepEqual(env.writes[0].blobs.slice(3), ['', '', '', '', '', '', '']);
+});
+
+test('over-long or junk source fields are dropped, not a 400', async () => {
+  const env = spyEnv();
+  const res = await handleEvent(
+    post({ t: 'pv', p: '/', r: 'a'.repeat(65), us: 'has space', um: 5, uc: 'OK_x!' }),
+    env,
+  );
+  assert.equal(res.status, 204);
+  assert.deepEqual(env.writes[0].blobs.slice(3, 7), ['', '', '', '']);
+});
+
+test('source fields are normalised: trimmed and lowercased', async () => {
+  const env = spyEnv();
+  await handleEvent(post({ t: 'pv', p: '/', r: ' Google.COM ', us: 'News' }), env);
+  assert.deepEqual(env.writes[0].blobs.slice(3, 5), ['google.com', 'news']);
+});
+
+test('clicks keep the 3-blob layout even with source fields and cf', async () => {
+  const env = spyEnv();
+  await handleEvent(
+    withCf({ t: 'click', id: 'cta', p: '/', r: 'x.com', us: 'a' }, { country: 'MX' }),
+    env,
+  );
+  assert.deepEqual(env.writes[0], { blobs: ['click', '/', 'cta'], doubles: [1, 0, 0] });
+});
+
 // Runs the real public/e.js against a fake page; returns the beacon bodies it sent.
 const EJS = readFileSync(new URL('../public/e.js', import.meta.url), 'utf8');
-function runClient({ storage, now = new Date(2026, 10, 23, 12), search = '' }) {
+function runClient({
+  storage,
+  now = new Date(2026, 10, 23, 12),
+  search = '',
+  referrer = '',
+  host = 'ivanaguirre.dev',
+}) {
   const sent = [];
   const listeners = [];
   const ctx = {
-    location: { search, pathname: '/en/' },
-    document: { cookie: '', addEventListener: (_t, fn) => listeners.push(fn) },
+    location: { search, pathname: '/en/', hostname: host },
+    document: { cookie: '', referrer, addEventListener: (_t, fn) => listeners.push(fn) },
     navigator: { sendBeacon: (_u, body) => sent.push(JSON.parse(body)) },
     URLSearchParams,
+    URL,
     JSON,
     localStorage: storage,
     Date: class extends Date {
@@ -184,6 +253,32 @@ test('client: storage that throws sends a plain pv and clicks still work', () =>
   };
   const { sent, listeners } = runClient({ storage: boom });
   assert.deepEqual(sent, [{ t: 'pv', p: '/en/' }]);
+  listeners[0]({ target: { closest: () => ({ dataset: { track: 'cta' } }) } });
+  assert.deepEqual(sent[1], { t: 'click', id: 'cta', p: '/en/' });
+});
+
+test('client: pv carries referrer host and UTMs, normalised; same-host referrer omitted', () => {
+  const storage = memory({ ev_d: '2026-11-23', ev_m: '2026-11' });
+  const a = runClient({
+    storage,
+    referrer: 'https://WWW.Google.com/search?q=x',
+    search: `?utm_source= News &utm_medium=Email&utm_campaign=${'c'.repeat(80)}`,
+  });
+  assert.deepEqual(a.sent, [
+    { t: 'pv', p: '/en/', r: 'google.com', us: 'news', um: 'email', uc: 'c'.repeat(64) },
+  ]);
+  const b = runClient({ storage, referrer: 'https://www.ivanaguirre.dev/es/' });
+  assert.deepEqual(b.sent, [{ t: 'pv', p: '/en/' }]);
+  const c = runClient({ storage, referrer: 'not a url' });
+  assert.deepEqual(c.sent, [{ t: 'pv', p: '/en/' }]);
+});
+
+test('client: clicks do not carry source fields', () => {
+  const { sent, listeners } = runClient({
+    storage: memory(),
+    referrer: 'https://google.com/',
+    search: '?utm_source=a',
+  });
   listeners[0]({ target: { closest: () => ({ dataset: { track: 'cta' } }) } });
   assert.deepEqual(sent[1], { t: 'click', id: 'cta', p: '/en/' });
 });

@@ -1,4 +1,4 @@
-// Counts page views and clicks on [data-track]. Sends only the event name, path and button id.
+// Counts page views and clicks on [data-track]. Sends only the event name, path and button id; a page view also carries the referrer host and UTM tags.
 // A page view also says whether it is this device's first of the day (nd) or month (nm): two dates in
 // localStorage (ev_d, ev_m), no id. Storage that throws sends nothing extra.
 (() => {
@@ -24,7 +24,21 @@
     }
     flags = f;
   } catch {}
-  send({ t: 'pv', ...flags });
+  const src = {};
+  try {
+    const host = new URL(document.referrer).hostname.toLowerCase().replace(/^www\./, '');
+    if (host && host !== location.hostname.toLowerCase().replace(/^www\./, '')) src.r = host;
+  } catch {}
+  const q = new URLSearchParams(location.search);
+  for (const [k, name] of [
+    ['us', 'utm_source'],
+    ['um', 'utm_medium'],
+    ['uc', 'utm_campaign'],
+  ]) {
+    const v = (q.get(name) ?? '').trim().toLowerCase().slice(0, 64);
+    if (v) src[k] = v;
+  }
+  send({ t: 'pv', ...flags, ...src });
   document.addEventListener('click', (ev) => {
     const el = ev.target.closest?.('[data-track]');
     if (el) send({ t: 'click', id: el.dataset.track });
