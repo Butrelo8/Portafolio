@@ -49,7 +49,7 @@ const t =
       <h3 class="contact__title mono">{t.title}</h3>
       <p class="contact__blurb">{t.blurb}</p>
       <p class="contact__direct mono">
-        {t.or} <a href="mailto:av.ivan.8@gmail.com">av.ivan.8@gmail.com</a>
+        {t.or} <a data-track="email" href="mailto:av.ivan.8@gmail.com">av.ivan.8@gmail.com</a>
       </p>
     </div>
 
@@ -76,7 +76,7 @@ const t =
           <textarea name="message" rows="5" required placeholder={t.placeholder}></textarea>
         </label>
 
-        <button type="submit" class="brut-btn">{t.send}</button>
+        <button type="submit" data-track="contact-send" class="brut-btn">{t.send}</button>
       </form>
     ) : (
       <p class="contact__missing mono">{t.missing}</p>

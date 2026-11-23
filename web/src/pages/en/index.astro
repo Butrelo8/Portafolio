@@ -31,7 +31,7 @@ const projects = (await getCollection('projects', (p) => p.id.startsWith('en/'))
           ready to show up on Google from day one. Not brochures. Four shipped and running.
         </p>
         <div class="hero__cta">
-          <a href="/en/#contact" class="brut-btn">Start a project</a>
+          <a data-track="cta-start" href="/en/#contact" class="brut-btn">Start a project</a>
         </div>
       </div>
       <Portrait loading="eager" />

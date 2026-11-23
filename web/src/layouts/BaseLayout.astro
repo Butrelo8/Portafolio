@@ -30,6 +30,7 @@ const pageUrl = new URL(currentPath, Astro.site).href
     {image && <meta property="og:image" content={image} />}
     <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script is:inline src="/e.js" defer></script>
   </head>
   <body>
     <Nav lang={lang} currentPath={currentPath} />
@@ -38,7 +39,7 @@ const pageUrl = new URL(currentPath, Astro.site).href
       <div class="container footer__inner mono">
         <p>© {new Date().getFullYear()} Ivan Aguirre — {lang === 'en' ? 'sites that do the work' : 'sitios que hacen el trabajo'}</p>
         <div class="footer__social">
-          <a href="https://github.com/Butrelo8" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a data-track="github" href="https://github.com/Butrelo8" target="_blank" rel="noopener noreferrer">GitHub</a>
         </div>
       </div>
     </footer>
