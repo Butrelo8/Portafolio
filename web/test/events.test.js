@@ -34,7 +34,6 @@ test('excludes bot and automation user agents', () => {
     assert.equal(isExcluded(post({}, { 'user-agent': ua })), true, ua);
   }
   assert.equal(isExcluded(post({})), false);
-  assert.equal(isExcluded(post({}, {})), false);
 });
 
 test('excludes the nolog=1 cookie only', () => {
@@ -281,4 +280,28 @@ test('client: clicks do not carry source fields', () => {
   });
   listeners[0]({ target: { closest: () => ({ dataset: { track: 'cta' } }) } });
   assert.deepEqual(sent[1], { t: 'click', id: 'cta', p: '/en/' });
+});
+
+test('empty user agent and foreign Origin are dropped with 204, same Origin is written', async () => {
+  const env = spyEnv();
+  const body = { t: 'pv', p: '/' };
+  assert.equal((await handleEvent(post(body, {}), env)).status, 204);
+  const foreign = await handleEvent(
+    post(body, { 'user-agent': MOBILE, origin: 'https://evil.test' }),
+    env,
+  );
+  assert.equal(foreign.status, 204);
+  assert.equal(env.writes.length, 0);
+  await handleEvent(post(body, { 'user-agent': MOBILE, origin: 'https://example.test' }), env);
+  await handleEvent(post(body), env);
+  assert.equal(env.writes.length, 2);
+});
+
+test('path is normalised: lowercased and cut to 60, not dropped', () => {
+  assert.equal(
+    parseEvent('{"t":"pv","p":"/Proyectos/Foo_Bar.html"}').blobs[1],
+    '/proyectos/foo_bar.html',
+  );
+  assert.equal(parseEvent(`{"t":"pv","p":"/${'A'.repeat(100)}"}`).blobs[1], `/${'a'.repeat(59)}`);
+  assert.equal(parseEvent('{"t":"click","id":"cta","p":"/EN/"}').blobs[1], '/en/');
 });

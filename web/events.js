@@ -5,7 +5,10 @@ const BOT_UA =
 const MAX_BODY = 1024;
 
 export function isExcluded(request) {
-  if (BOT_UA.test(request.headers.get('user-agent') ?? '')) return true;
+  const ua = request.headers.get('user-agent') ?? '';
+  if (!ua || BOT_UA.test(ua)) return true;
+  const origin = request.headers.get('origin');
+  if (origin && origin !== new URL(request.url).origin) return true;
   return /(?:^|;\s*)nolog=1(?:;|$)/.test(request.headers.get('cookie') ?? '');
 }
 
@@ -31,15 +34,16 @@ export function parseEvent(text, cf = {}) {
   const { t, p, id, nd, nm, r, us, um, uc } = body;
   if (t !== 'pv' && t !== 'click') return null;
   if (typeof p !== 'string' || p[0] !== '/' || p.length > 200) return null;
+  const path = p.toLowerCase().slice(0, 60);
   if (t === 'pv') {
     const geo = [cf.country, cf.region, cf.city].map((v) => (typeof v === 'string' ? v : ''));
     return {
-      blobs: [t, p, '', clean(r), clean(us), clean(um), clean(uc), ...geo],
+      blobs: [t, path, '', clean(r), clean(us), clean(um), clean(uc), ...geo],
       doubles: [1, nd === 1 ? 1 : 0, nm === 1 ? 1 : 0],
     };
   }
   if (typeof id !== 'string' || !/^[\w-]{1,64}$/.test(id)) return null;
-  return { blobs: [t, p, id], doubles: [1, 0, 0] };
+  return { blobs: [t, path, id], doubles: [1, 0, 0] };
 }
 
 export async function handleEvent(request, env) {
