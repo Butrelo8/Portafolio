@@ -33,3 +33,12 @@ Branch `portfolio-redo`, last commit `d4f5801`. Merge only on the owner's word.
   untouched and never staged.
 - revisar `img-upscaled-390` FAILs every `srcset` image: `naturalWidth` is density-corrected to the `sizes` slot, so it reads
   390 for an 800 px file. Not a defect of the page.
+
+## Deviations from the DESIGN.md trace (write them into DESIGN.md once its foreign edits are settled)
+- At 390 the client · year meta sits under the name, not right-aligned (long client names squeezed the name to two lines).
+- At ≥ 900 px names are `nowrap`; the meta wraps on the right instead.
+- At 390 there is no tagline, no Coast caption and no "Visitar sitio" under a row; the case page carries the live link
+  (`pages/projects/[slug].astro:41`).
+- Keyboard at ≥ 900 px: the panel comes after the four rows in tab order and follows `focusin`, so only the last focused
+  row's panel (its live link, Coast's pause button) is reachable. Fix candidate: put each row's panel controls in the row,
+  or switch the panel on row focus and move the panel right after the active row in DOM order.
