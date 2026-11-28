@@ -162,11 +162,11 @@ const rows = projects.map((p) => {
   .work__li { position: relative; border-top: 1px solid var(--color-border); padding-top: var(--space-3); }
   /* The whole row is the link; the clip's button sits above the stretched area. */
   .work__row::after { content: ''; position: absolute; inset: 0; }
-  .work__row { display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: var(--space-2) var(--space-4); min-height: 47px; padding-block: var(--space-3); }
+  .work__row { display: grid; gap: var(--space-1); min-height: 47px; padding-block: var(--space-3); }
   .work__shot { display: block; }
-  .work__shot :global(img), .clip video { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; object-position: top center; }
+  .work__shot :global(img), .clip video { display: block; width: 100%; aspect-ratio: 16 / 9; height: auto; object-fit: cover; object-position: top center; }
   .work__name { font-size: var(--text-lg); font-weight: 700; }
-  .work__meta { font-size: var(--text-xs); color: var(--color-muted); text-align: right; }
+  .work__meta { font-size: var(--text-xs); color: var(--color-muted); }
   .work__row:hover .work__name, .work__row:focus-visible .work__name { color: var(--color-accent-strong); }
   .work__row:focus-visible::after { outline: 2px solid var(--color-accent-strong); outline-offset: 2px; }
 
@@ -176,9 +176,12 @@ const rows = projects.map((p) => {
     .work { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: var(--space-12); align-items: start; }
     .work__shot { display: none; }
     .work__li { padding-top: 0; }
+    .work__row { grid-template-columns: auto 1fr; align-items: baseline; column-gap: var(--space-6); }
+    .work__name { white-space: nowrap; }
+    .work__meta { text-align: right; }
     .work__panel { display: block; position: sticky; top: var(--space-8); }
     .work__item:not([data-active]) { display: none; }
-    .work__item :global(img) { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; object-position: top center; border: 1px solid var(--color-border); }
+    .work__item :global(img) { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; object-position: top center; border: 1px solid var(--color-border); }
     .work__item .clip video { border: 1px solid var(--color-border); }
   }
 
