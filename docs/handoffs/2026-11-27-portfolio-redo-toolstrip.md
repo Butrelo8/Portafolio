@@ -16,17 +16,25 @@ Branch `portfolio-redo`, last commit `d4f5801`. Merge only on the owner's word.
 - Checks: lint (1 pre-existing warning, `public/e.js`), typecheck 0 errors, build OK, slop-check no new tell,
   revisar on the served build (see the report for the table).
 
-## To build next
-1. `ToolStrip.astro` per DESIGN.md rows "cc-deck lead" and "tools list":
-   - Capture a still of cc-deck's real list at 1:1 type size, cropped to one group (`cc-deck ui`), into `web/src/assets/shots/`.
-     Keep the Mac window; load the 3.5x clip only when `matchMedia('(min-width: 1200px)')` matches; still only below.
-   - Stills for Life-OS (hide personal data with `evaluate_script` before the capture), Sonus + Sotto, MPAF. Until all three
-     exist, keep the current left-rule list: alternating rows with empty stills is slop tell 6 (tier A).
-   - The Playwright MCP has no browser here (`chrome-for-testing` missing). Capture with a script on the global `playwright`
-     package (the way `revisar/web.mjs` loads it); the one used this session was scratchpad `cap/shots.cjs` (not kept).
-2. Tool videos stay a plan (ticket 08).
-3. Re-run: lint, typecheck, build, slop-check, revisar 390 + 1440 on `astro preview --port 3100`; phone link
-   https://thiccpc-wsl.tail82d42e.ts.net:4411/ (proxies 127.0.0.1:3100).
+## Step 3 done (same session, `281320b`)
+- `ToolStrip.astro`: cc-deck's window shows `cc-deck-group.webp` (one real group, 758 CSS px at 2x, so 1:1 type size; the
+  window crops its right side on phones). The 3.5x clip downloads and plays only when the visitor presses "Ver grabación",
+  and that button exists only at ≥ 1200 px. Life-OS, Sonus + Sotto and MPAF are alternating rows: a dimmed 16:9 still and a
+  12 rem text panel, still above text at 390.
+- How each still was made (all from the running app, text replaced in the live DOM before the shot, every one checked at
+  100 %): cc-deck `localhost:8790` group, task/command/quote lines replaced with neutral web work, polling cut first;
+  Life-OS `127.0.0.1:3200` top 1100×619, both decision cards rewritten to non-client work and the project grid removed;
+  MPAF UI started locally on :8799 (`npx tsx src/cli/index.ts ui`, stopped after), one chip with a third party's handle removed;
+  Sonus `sonus-tui` built into the scratchpad (`--locked`, nothing written to the repo), run in tmux with a throwaway HOME,
+  the model path replaced by its default `~/.sonus/models/small.gguf`, rendered from ANSI.
+- Sotto has no usable still (the only Mac screenshots are debug captures); the Sonus + Sotto row shows Sonus. A Sotto
+  still needs the Mac.
+- The Playwright MCP has no browser here (`chrome-for-testing` missing); captures used the global `playwright` package.
+
+## Next
+1. Tool videos stay a plan (ticket 08).
+2. The keyboard-reach fix in the work index (below).
+3. Owner's look, then merge.
 
 ## Notes
 - `main`'s foreign uncommitted `docs/design/DESIGN.md` and `web/src/components/Pricing.astro` edits are still in the tree,
