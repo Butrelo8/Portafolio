@@ -83,3 +83,24 @@ T = site tokens (`tokens.css`, `global.css`). Rows in `references.md` (ids `tool
 | dropped | ApuestasWrapper; the Bitácora name and its TODO | B |
 | lazy loader | the one `IntersectionObserver` in the component only attaches the video sources near the viewport; it reveals nothing and hides no content (slop-check `js-intersection-reveal` REVIEW, tell 13 does not apply) | B (lazy), tell 13 |
 | privacy | the clip is OCR-checked and redacted with solid bars (client and project names, prices, cost counters) before it is committed; `public/media/cc-deck-3-5x.{webm,mp4}` stay uncommitted until the owner has watched them | B |
+
+# DESIGN: portfolio redo (work index, "Así trabajo", tools) — 2026-11-27
+
+Owner's picks 2026-11-27 22:03, rows in `references.md` (ids `work-grid`, `work-3d`, `how-i-work`, `tools-list`, `tool-ccdeck`,
+`tool-videos`). T = site tokens (`tokens.css`, `global.css`). C = webdev-ops contract
+(`contratos/contrato-sitio-clausulas-2026-11-13.md`). Ticket 07 (PI): only what exists today, the contract's own limits, no round
+number, no "24/7", no "until you're satisfied". Ticket 04 keeps MTO out; ticket 05 keeps the ocean out. Spanish first, English mirrored.
+
+| element | value | source |
+|---|---|---|
+| work index (`WorkIndex.astro`, replaces the `ProjectCard` grid on both home pages) | a `<ul>` of projects, one row each, no cards: 1 px `--color-border` rule above every row and below the last; row ≥ 47 px (≥ 44 tap), whole row is the link to the case; name mono `--text-lg` 700 left, client · year mono `--text-xs` muted right | work-grid (c) locomotive (rules, 47 px rows, no cards); T |
+| one image beside the list | ≥ 900 px: list 1fr / panel 1.2fr, the panel sticky at the top; it shows the hovered or focused row's shot (first row by default), with the tagline and "Visitar sitio ↗" under it | work-grid (c) locomotive ("one image beside the list") |
+| index at 390 | no panel; each row carries its own 16:9 shot above the name | not in the ficha (its 390 is not described): the simplest option, listed as a choice |
+| Coast row media | the `/merch` clip instead of `coast.png`: `/media/coast-merch-3d.mp4`, 960×540, 6 s loop at 20 fps, 141 kB, poster `assets/shots/coast-merch-3d-poster.webp` (22 kB); `muted loop playsinline preload="none"`, sources set when near the viewport, paused under `prefers-reduced-motion` with the visible play/pause button (same script as `ToolStrip`) | work-3d (c) unseen (locked-off: page still, only the shirt turns); captured 2026-11-27 from the live page by driving its own "Girar" slider 0→357° in 3° steps (revisar `--loop`: seam 2.66 ≤ 2.92 pass, strobe 0) |
+| Coast caption | one line: the shirt is a 3D model on the live merch page, turned by the visitor; stack named once ("three.js, model-viewer") | ticket 06 format (client, problem, what was built, one number); content from Coast, not a claim of sales |
+| "Así trabajo" (`HowIWork.astro`, after the work index, before tools) | heading in the site's idiom; two columns ≥ 900 px, stacked below; each column = h3 mono `--text-lg` + a `<ul>` of rows split by 1 px hairlines, rows ≥ 56 px, no icons, no numbers | how-i-work (a) linear (two plain lists, hairline rows); slop tells 4, 15 |
+| column "Vistas previas" | only what runs today: a preview link at each stage you open on your phone; the uptime check with an alert; the WhatsApp click counter (both already lines of the price sheet); exact wording from PI `ctx` before writing | ticket 07; `Pricing.astro` include lines |
+| column "Dirección de diseño" | changes to what the site already has (C cl. 1-2); you send them as one list in one WhatsApp message and I work one list at a time (C cl. 3); on the care plan I reply within 2 business days, reference about 4 requests a month (C l.60-63) | ticket 07; C |
+| cc-deck lead | keep the Mac window (owner's brief 2026-11-06); inside it, a still of cc-deck's real list at 1:1 type size cropped to one group, not the whole screen scaled down; the 3.5x clip only ≥ 1200 px wide, behind the same play/pause button | tool-ccdeck (c) linear (grouped list 36 px header + 40 px rows, mock dropped at 390); still to capture from `cc-deck ui` |
+| tools list | rows that alternate sides: a dimmed still (16:9, `filter: brightness(.85)`) and a fixed-height text panel (name, stack, two lines); one column at 390, still above text | tools-list (b) framer (alternating dim screenshot + fixed-height panel); stills for Life-OS (personal data hidden), Sonus + Sotto, MPAF still to capture |
+| tool videos (ticket 08 plan, no generation here) | each tool gets two cuts of the same ~10 s take: 16:9 for ≥ 900 px and 9:16 for phones, chosen by `<source media>`; muted, poster, loaded near the viewport; order: cc-deck (re-cut of the existing 3.5x take), Life-OS, Sonus + Sotto, MPAF | tool-videos (a) leeroy (one cut per ratio, ~10 s) |
