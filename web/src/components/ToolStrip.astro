@@ -1,6 +1,10 @@
 ---
-import { getImage } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import poster from '../assets/shots/cc-deck-poster.webp';
+import group from '../assets/shots/cc-deck-group.webp';
+import lifeOs from '../assets/shots/life-os.webp';
+import sonus from '../assets/shots/sonus-tui.webp';
+import mpaf from '../assets/shots/mpaf.webp';
 
 interface Props {
   lang: 'en' | 'es';
@@ -16,8 +20,8 @@ const posterImg = await getImage({ src: poster, width: 1280, format: 'webp' });
 const lead = {
   name: 'cc-deck / mothership',
   stack: 'Bash · tmux · Claude\u00a0Code\u00a0· pi · opencode',
-  en: 'I built my own instead of using an existing one: I needed to run many agents at once while the same PC renders 3D scenes, generates video and images and runs local AI models. It lives in the terminal: I drive it over ssh from my Mac or any device. One central session hands work to several Claude Code, pi and opencode agents (I use different model providers per task), each with its own role, model and git branch. Every agent reports back with a verdict and, at 30% of its context, hands off. That is my screen, sped up 3.5x. Runs on Windows (WSL) and Mac.',
-  es: 'Lo armé yo en vez de usar uno ya hecho: necesitaba manejar muchos agentes a la vez mientras la misma PC renderiza escenas 3D, genera video e imágenes y corre modelos de IA locales. Vive en la terminal: lo manejo por ssh desde mi Mac o cualquier dispositivo. Una sesión central reparte trabajo a agentes de Claude Code, pi y opencode (modelos de distintos proveedores, según la tarea), cada uno con su rol, modelo y rama de git. Cada agente regresa con un veredicto y, al llegar al 30% de su contexto, entrega el relevo. Esa es mi pantalla, a 3.5x. Corre en Windows (WSL) y Mac.',
+  en: 'I built my own instead of using an existing one: I needed to run many agents at once while the same PC renders 3D scenes, generates video and images and runs local AI models. It lives in the terminal: I drive it over ssh from my Mac or any device. One central session hands work to several Claude Code, pi and opencode agents (I use different model providers per task), each with its own role, model and git branch. Every agent reports back with a verdict and, at 30% of its context, hands off. The window shows one group as it looks on my screen; on a wide screen you can watch the recording at 3.5x. Runs on Windows (WSL) and Mac.',
+  es: 'Lo armé yo en vez de usar uno ya hecho: necesitaba manejar muchos agentes a la vez mientras la misma PC renderiza escenas 3D, genera video e imágenes y corre modelos de IA locales. Vive en la terminal: lo manejo por ssh desde mi Mac o cualquier dispositivo. Una sesión central reparte trabajo a agentes de Claude Code, pi y opencode (modelos de distintos proveedores, según la tarea), cada uno con su rol, modelo y rama de git. Cada agente regresa con un veredicto y, al llegar al 30% de su contexto, entrega el relevo. La ventana muestra un grupo tal como se ve en mi pantalla; en una pantalla ancha puedes ver la grabación a 3.5x. Corre en Windows (WSL) y Mac.',
 };
 
 const tools = [
@@ -26,18 +30,27 @@ const tools = [
     stack: 'React · Node · PostgreSQL · MCP',
     en: 'The board where I run my work and my week: tasks, goals, weekly plan, finances, health and notes. My AI agents write to it through its MCP server; I only read.',
     es: 'El tablero donde llevo mi trabajo y mi semana: pendientes, metas, plan semanal, finanzas, salud y notas. Mis agentes de IA escriben en él por su servidor MCP; yo solo leo.',
+    still: lifeOs,
+    altEs: 'Inicio de Life-OS: cuántos agentes trabajan y dos decisiones que esperan respuesta, con sus botones.',
+    altEn: 'Life-OS home: how many agents are working and two decisions waiting for an answer, with their buttons.',
   },
   {
     name: 'Sonus + Sotto',
     stack: 'Rust · Swift · whisper.cpp',
     en: 'Voice dictation that runs on the machine itself: no cloud, no account. Sonus on Windows, Sotto on macOS. Hotkey, speak, the text lands at the cursor.',
     es: 'Dictado por voz que corre en la propia máquina: sin nube ni cuenta. Sonus en Windows, Sotto en macOS. Atajo, hablas, el texto aparece en el cursor.',
+    still: sonus,
+    altEs: 'Panel de configuración de Sonus en la terminal: traducción, voz, modelo, atajos e idioma.',
+    altEn: 'Sonus config panel in the terminal: translation, voice, model, hotkeys and language.',
   },
   {
     name: 'MPAF',
     stack: 'TypeScript · Node',
     en: 'The registry of rules and skills I install in every project, this site included.',
     es: 'El registro de reglas y habilidades que instalo en cada proyecto, este sitio incluido.',
+    still: mpaf,
+    altEs: 'Registro de MPAF: buscador, filtros por tipo y paquete, y la lista de habilidades con su descripción.',
+    altEn: 'MPAF registry: search, filters by type and preset, and the list of skills with their descriptions.',
   },
 ];
 
@@ -49,7 +62,8 @@ const t =
           'Las armé para mi propio trabajo. No están a la venta; están aquí porque quien automatiza lo suyo sabe cuánto vale automatizar lo tuyo.',
         winTitle: 'cc-deck — mothership',
         videoLabel: 'Grabación de mi pantalla de trabajo con cc-deck, a 3.5x, en bucle y sin audio.',
-        play: 'Reproducir',
+        stillAlt: 'Un grupo de cc-deck: la sesión central y tres agentes, cada uno con su tarea, su último mensaje, su modelo y cuánto contexto lleva.',
+        play: 'Ver grabación',
         pause: 'Pausa',
       }
     : {
@@ -58,7 +72,8 @@ const t =
           'Built for my own work. Not for sale — here because someone who automates their own job knows what automating yours is worth.',
         winTitle: 'cc-deck — mothership',
         videoLabel: 'Recording of my work screen running cc-deck, at 3.5x, looping, no audio.',
-        play: 'Play',
+        stillAlt: 'One cc-deck group: the central session and three agents, each with its task, its last message, its model and how much context it has used.',
+        play: 'Watch recording',
         pause: 'Pause',
       };
 ---
@@ -74,7 +89,7 @@ const t =
       <p class="tools__desc">{lang === 'es' ? lead.es : lead.en}</p>
     </div>
 
-    <div class="win" data-tool-win data-state="idle" data-play={t.play} data-pause={t.pause}>
+    <div class="win" data-tool-win data-state="still" data-play={t.play} data-pause={t.pause}>
       <div class="win__bar" aria-hidden="true">
         <span class="win__dot win__dot--close"></span>
         <span class="win__dot win__dot--min"></span>
@@ -82,12 +97,15 @@ const t =
         <span class="win__title mono">{t.winTitle}</span>
       </div>
       <div class="win__screen">
+        <div class="win__still">
+          <Image src={group} alt={t.stillAlt} width={758} densities={[1, 2]} loading="lazy" />
+        </div>
         <video
+          hidden
           muted
-          autoplay
           loop
           playsinline
-          preload="metadata"
+          preload="none"
           poster={posterImg.src}
           width="1280"
           height="696"
@@ -96,27 +114,30 @@ const t =
           <source data-src="/media/cc-deck-3-5x.webm" type="video/webm" />
           <source data-src="/media/cc-deck-3-5x.mp4" type="video/mp4" />
         </video>
-        <button class="win__toggle mono" type="button" hidden>{t.pause}</button>
+        <button class="win__toggle mono" type="button" hidden>{t.play}</button>
       </div>
     </div>
   </div>
 
-  <ul class="tools" role="list">
+  <ul class="rows" role="list">
     {tools.map((tool) => (
-      <li class="tools__item">
-        <h3 class="tools__name mono">{tool.name}</h3>
-        <p class="tools__stack mono">{tool.stack}</p>
-        <p class="tools__desc">{lang === 'es' ? tool.es : tool.en}</p>
+      <li class="row">
+        <Image class="row__still" src={tool.still} alt={lang === 'es' ? tool.altEs : tool.altEn} widths={[644, 1100]} sizes="(min-width: 1200px) 644px, (min-width: 900px) 54vw, 100vw" loading="lazy" />
+        <div class="row__text tools__item">
+          <h3 class="tools__name mono">{tool.name}</h3>
+          <p class="tools__stack mono">{tool.stack}</p>
+          <p class="tools__desc">{lang === 'es' ? tool.es : tool.en}</p>
+        </div>
       </li>
     ))}
   </ul>
 </section>
 
 <script>
-  // The clip downloads only when the window is near the viewport. Under
-  // prefers-reduced-motion it waits for the visitor to press play. The button
-  // doubles as the pause control, so the loop can always be stopped.
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // The window shows a still of one cc-deck group at its real type size. On screens
+  // 1200 px and wider a button swaps it for the 3.5x recording, which downloads only
+  // then; the same button pauses it. Nothing plays on its own, so reduced motion holds.
+  const wide = matchMedia('(min-width: 1200px)');
 
   for (const win of document.querySelectorAll<HTMLElement>('[data-tool-win]')) {
     const video = win.querySelector('video');
@@ -135,34 +156,27 @@ const t =
 
     const sync = () => {
       const playing = !video.paused;
-      win.dataset.state = playing ? 'playing' : 'paused';
+      if (playing) win.dataset.state = 'playing';
+      else if (win.dataset.state === 'playing') win.dataset.state = 'paused';
       button.textContent = playing ? win.dataset.pause ?? '' : win.dataset.play ?? '';
     };
 
     video.addEventListener('play', sync);
     video.addEventListener('pause', sync);
-    button.hidden = false;
+
+    const fit = () => {
+      button.hidden = !wide.matches;
+      if (!wide.matches && !video.paused) video.pause();
+    };
+    wide.addEventListener('change', fit);
+    fit();
 
     button.addEventListener('click', () => {
-      if (!loaded) load();
+      load();
+      video.hidden = false;
       if (video.paused) void video.play();
       else video.pause();
     });
-
-    if (reduce) {
-      video.removeAttribute('autoplay');
-      video.pause();
-      sync();
-    } else {
-      new IntersectionObserver(
-        (entries, observer) => {
-          if (!entries.some((e) => e.isIntersecting)) return;
-          load();
-          observer.disconnect();
-        },
-        { rootMargin: '300px' },
-      ).observe(win);
-    }
   }
 </script>
 
@@ -176,7 +190,15 @@ const t =
     .lead { grid-template-columns: minmax(0, 1fr) minmax(0, 2.2fr); gap: var(--space-12); }
   }
 
-  .tools { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--space-6); list-style: none; }
+  /* Alternating rows: a dimmed still beside a fixed-height text panel (framer feature rows). */
+  .rows { display: grid; gap: var(--space-12); list-style: none; }
+  .row { display: grid; gap: var(--space-4); }
+  .row__still { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; object-position: top left; filter: brightness(0.85); border: 1px solid var(--color-border); }
+  @media (min-width: 900px) {
+    .row { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: var(--space-12); align-items: center; }
+    .row__text { height: 12rem; }
+    .row:nth-child(even) .row__still { order: 1; }
+  }
   .tools__item { border-left: var(--border-width-thick) solid var(--color-border); padding-left: var(--space-4); }
   .tools__name { font-size: var(--text-lg); font-weight: 700; margin-bottom: var(--space-1); }
   .tools__stack { font-size: var(--text-xs); color: var(--color-accent-strong); margin-bottom: var(--space-3); text-wrap: balance; }
@@ -190,8 +212,13 @@ const t =
   .win__dot--min { background: #febc2e; }
   .win__dot--zoom { background: #28c840; }
   .win__title { position: absolute; inset-inline: 0; text-align: center; font-size: var(--text-xs); color: rgb(245 240 232 / 0.7); pointer-events: none; }
-  .win__screen { position: relative; aspect-ratio: 1280 / 696; background: #000; }
-  .win__screen video { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .win__screen { position: relative; background: var(--color-surface); }
+  /* 1:1 type size: the still keeps its CSS width and the window crops it at the right. */
+  .win__still { overflow: hidden; }
+  .win__still :global(img) { width: 758px; max-width: none; height: auto; }
+  .win__screen video { display: block; width: 100%; height: auto; aspect-ratio: 1280 / 696; background: #000; }
+  .win__screen video[hidden] { display: none; }
+  .win:not([data-state='still']) .win__still { display: none; }
 
   .win__toggle { position: absolute; right: var(--space-3); bottom: var(--space-3); min-height: 44px; padding: 0 var(--space-4); background: var(--color-surface); color: var(--color-fg); border: var(--border-width) solid var(--color-border); font-size: var(--text-xs); font-weight: 700; cursor: pointer; }
   .win__toggle:focus-visible { outline: 2px solid var(--color-accent-strong); outline-offset: 2px; }
